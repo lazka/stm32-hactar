@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <title>CAN Bit Timing</title>
+
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+  <style type="text/css">
+    html, body {margin: 0; padding: 0; background-color: #EEE; font-family: sans-serif;line-height:1.1em}
+    input[type=text], select {width: 5em; margin-right: 0.5em; font-size: 1em}
+    td {font-size: 0.7em; padding-left: 0.7em}
+    th {text-align:left;font-size: 0.8em}
+    p  {font-size: 0.8em;}
+    span {font-weight: bold}
+    h1 {font-size: 0.75em; color: #75507B}
+    h1, th {text-shadow: #AAA 1px 1px 2px}
+    #wrap{margin: 10px 0 0 10px}
+    .error {color: #EF2929}
+  </style>
+
+  <script type="text/javascript">
+  function r(val)
+  {
+    return Math.round(val*1000)/1000;
+  }
+  function calc()
+  {
+    var ts1 = parseInt(document.getElementById("ts1").value);
+    var ts2 = parseInt(document.getElementById("ts2").value);
+    var brp = parseInt(document.getElementById("brp").value);
+    var apb1 = parseFloat(document.getElementById("apb1").value);
+
+    var tq = (1/apb1) * (1 + brp);
+    var bs1 = tq * (ts1 + 1);
+    var bs2 = tq * (ts2 + 1);
+    var baud = 1000000/(tq + bs1 + bs2);
+    document.getElementById("t_q").innerHTML = r(tq) + " µs";
+    document.getElementById("t_bs1").innerHTML = r(bs1) + " µs";
+    document.getElementById("t_bs2").innerHTML = r(bs2) + " µs";
+    document.getElementById("nbt").innerHTML = r(tq + bs1 + bs2) + " µs";
+    document.getElementById("br").innerHTML = r(baud/(8*1024)) + " kB/s";
+
+    var total = ts1+1+ts2+1+1;
+    document.getElementById("msg").innerHTML = total +" * t_q";
+    document.getElementById("sample").innerHTML = ((ts1 + 2) / (ts1 + 1 + ts2 + 1 + 1)) * 100 + "%";
+  }
+  </script>
+
+</head>
+<body onload="calc();">
+  <div id="wrap">
+    <h1>CAN Bit Timing (page 627, STM32 manual)</h1>
+    <img src="can.png" alt="">
+
+    <table>
+    <tr>
+      <td>Bautrate</td><td>=</td><td>1 / NominalBitTime</td>
+    </tr>
+    <tr>
+      <td>t_BS1</td><td>=</td><td>t_q * (TS1 + 1)</td>
+    </tr>
+    <tr>
+      <td>t_BS2</td><td>=</td><td>t_q * (TS2 + 1)</td>
+    </tr>
+    <tr>
+      <td>t_q</td><td>=</td><td>(BRP + 1) + t_PCLK</td>
+    </tr>
+    <tr>
+      <td>Quanta</td><td>=</td><td>TS1 + TS2 + 3</td>
+    </tr>
+    <tr>
+      <td>SamplePoint</td><td>=</td><td>(TS1 + 2) / (TS1 + TS2 + 3) * 100</td>
+    </tr>
+    </table>
+
+    <table>
+    <tr>
+    <td>TS1 (0..15):</td><td><input type="text" id="ts1" value="14" onchange="calc();"></td>
+    </tr><tr>
+    <td>TS2 (0..7):</td><td><input type="text" id="ts2" value="3" onchange="calc();"></td>
+    </tr><tr>
+    <td>BRP (0..1024):</td><td><input type="text" id="brp" value="0" onchange="calc();"></td>
+    </tr>
+    <td>APB1 CLK (&lt;=36):</td><td><input type="text" id="apb1" value="36" onchange="calc();"> MHz</td>
+    </table>
+
+    <table>
+    <tr>
+      <td>t_q</td><td>=</td><td><span id="t_q"></span></td>
+    </tr><tr>
+      <td>t_BS1</td><td>=</td><td><span id="t_bs1"></span></td>
+    </tr><tr>
+      <td>t_BS2</td><td>=</td><td><span id="t_bs2"></span></td>
+    </tr><tr>
+      <td>NominalBitTime</td><td>=</td><td><span id="nbt"></span></td>
+    </tr><tr>
+      <td>Baudrate</td><td>=</td><td><span id="br"></span></td>
+    </tr>
+    <tr>
+      <td>Time quanta</td><td>=</td><td><span  id="msg"></span></td>
+    </tr>
+    <tr>
+      <td>Sample Point</td><td>=</td><td><span id="sample"></span></td>
+    </tr>
+    </table>
+    <p><b>8 &lt;= quanta &lt;= 25 allowed, but should be 25 if possible.</b></p>
+    <p><b>Sample point should be around 80%.</b></p>
+  </div>
+</body>
+</html>

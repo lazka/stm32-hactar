@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="57cm" height="28cm" viewBox="299 -150 1122 560" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #fce94f" x="300" y="-20" width="93.75" height="68" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="300" y="-20" width="93.75" height="68" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="346.875" y="1.9">
+      <tspan x="346.875" y="1.9">High Speed</tspan>
+      <tspan x="346.875" y="17.9">External </tspan>
+      <tspan x="346.875" y="33.9">Oscillator</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #fce94f" x="300" y="-143.101" width="93.75" height="68" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="300" y="-143.101" width="93.75" height="68" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="346.875" y="-121.201">
+      <tspan x="346.875" y="-121.201">High Speed</tspan>
+      <tspan x="346.875" y="-105.201">Internal</tspan>
+      <tspan x="346.875" y="-89.2006">Oscillator</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #fce94f" x="300" y="80" width="89.55" height="68" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="300" y="80" width="89.55" height="68" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="344.775" y="101.9">
+      <tspan x="344.775" y="101.9">Low Speed</tspan>
+      <tspan x="344.775" y="117.9">External</tspan>
+      <tspan x="344.775" y="133.9">Oscillator</tspan>
+    </text>
+  </g>
+  <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="362" y="-29.5">
+    <tspan x="362" y="-29.5"></tspan>
+  </text>
+  <g>
+    <rect style="fill: #ef2929" x="721.414" y="69.8994" width="83" height="52" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="721.414" y="69.8994" width="83" height="52" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="762.914" y="91.7994">
+      <tspan x="762.914" y="91.7994">Real Time</tspan>
+      <tspan x="762.914" y="107.799">Clock</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="620" y1="114" x2="580" y2="134"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="620" y1="114" x2="580" y2="94"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="580" y1="134" x2="580" y2="94"/>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 620 114 C 685.57,114 654.85,95.8994 720.42,95.8994"/>
+  <g>
+    <rect style="fill: #fce94f" x="300" y="160" width="89.55" height="68" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="300" y="160" width="89.55" height="68" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="344.775" y="181.9">
+      <tspan x="344.775" y="181.9">Low Speed</tspan>
+      <tspan x="344.775" y="197.9">Internal</tspan>
+      <tspan x="344.775" y="213.9">Oscillator</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 389.55 114 C 460.416,114 509.134,114 580,114"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 389.55 194 C 460.15,194 509.4,130 580,130"/>
+  <g>
+    <rect style="fill: #ef2929" x="720" y="140" width="101.25" height="52" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="720" y="140" width="101.25" height="52" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="770.625" y="161.9">
+      <tspan x="770.625" y="161.9">Independent</tspan>
+      <tspan x="770.625" y="177.9">Watchdog</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 389.55 194 C 512.274,194 597.276,166 720,166"/>
+  <g>
+    <rect style="fill: #729fcf" x="440" y="60" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="440" y="60" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="480" y="81.9">
+      <tspan x="480" y="81.9">/128</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 520 78 C 560.926,79.5 551.926,98.5 580,98"/>
+  <g>
+    <rect style="fill: #729fcf" x="439" y="-32" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="439" y="-32" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="479" y="-10.1">
+      <tspan x="479" y="-10.1">/2</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 393.75 14 C 422.716,14 410.034,-14 439,-14"/>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="598" y1="-2" x2="558" y2="18"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="598" y1="-2" x2="558" y2="-22"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="558" y1="18" x2="558" y2="-22"/>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 519 -14 C 541.576,-14 535.424,-14 558,-14"/>
+  <g>
+    <rect style="fill: #729fcf" x="440" y="-90.7574" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="440" y="-90.7574" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="480" y="-68.8574">
+      <tspan x="480" y="-68.8574">/2</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 393.75 -109.101 C 431.926,-104 411.926,-79 440,-72.7574"/>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="671" y1="-14" x2="631" y2="6"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="671" y1="-14" x2="631" y2="-34"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="631" y1="6" x2="631" y2="-34"/>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 598 -2 C 611.28,-2 617.72,-2 631,-2"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 520 -72.7574 C 562.828,-72.7574 588.172,-26 631,-26"/>
+  <g>
+    <rect style="fill: #729fcf" x="697.344" y="-31.6274" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="697.344" y="-31.6274" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="737.344" y="-9.7274">
+      <tspan x="737.344" y="-9.7274">2..16</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 671 -14 C 696.232,-14 671.132,-13.6274 696.364,-13.6274"/>
+  <g>
+    <rect style="fill: #729fcf" x="840" y="-112" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="840" y="-112" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="880" y="-90.1">
+      <tspan x="880" y="-90.1">/1,1.5</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ef2929" x="960" y="-120" width="80" height="52" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="960" y="-120" width="80" height="52" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1000" y="-98.1">
+      <tspan x="1000" y="-98.1">USB</tspan>
+      <tspan x="1000" y="-82.1">Interface</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 777.344 -13.6274 C 819.926,-12 793.926,-91.0294 840,-94"/>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="900" y1="-14" x2="860" y2="-34"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="900" y1="-14" x2="860" y2="6"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="860" y1="-34" x2="860" y2="6"/>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 777.344 -13.6274 C 810.476,-13.6274 826.866,-14 860,-14"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 393.75 -109.101 C 916.75,-103.101 749.2,-28.1944 860,-30"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 393.75 14 C 595.75,76 702.2,18.3056 860,2"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 393.75 14 C 415.478,14 408.926,80 440,78"/>
+  <g>
+    <rect style="fill: #729fcf" x="960" y="-32" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="960" y="-32" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1000" y="-10.1">
+      <tspan x="1000" y="-10.1">/1..512</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #729fcf" x="480" y="248" width="89.4" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="480" y="248" width="89.4" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="524.7" y="269.9">
+      <tspan x="524.7" y="269.9">/1,2,4,8,16</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #729fcf" x="480" y="315.072" width="89.4" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="480" y="315.072" width="89.4" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="524.7" y="336.972">
+      <tspan x="524.7" y="336.972">/1,2,4,8,16</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ef2929" x="1260" y="-136" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1260" y="-136" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1300" y="-114.1">
+      <tspan x="1300" y="-114.1">SysTick</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="1244.68" y1="-117.875" x2="1200" y2="-140"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="1244.68" y1="-117.875" x2="1200" y2="-95.7508"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #73d216" x1="1200" y1="-140" x2="1200" y2="-95.7508"/>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 1244.68 -117.875 C 1279.87,-117.875 1223.83,-118 1259.02,-118"/>
+  <g>
+    <rect style="fill: #729fcf" x="1088" y="-149" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1088" y="-149" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1128" y="-127.1">
+      <tspan x="1128" y="-127.1">/8</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 1040 -14 C 1160,-18 1160,-100 1200,-104.601"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 1168 -131 C 1194.14,-131 1173.86,-131.15 1200,-131.15"/>
+  <g>
+    <rect style="fill: #ef2929" x="960" y="96" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="960" y="96" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1000" y="117.9">
+      <tspan x="1000" y="117.9">I2S2</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ef2929" x="960" y="140.515" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="960" y="140.515" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1000" y="162.415">
+      <tspan x="1000" y="162.415">I2S3</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 900 -14 C 949.2,-12.1944 918.926,119.5 960,114"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 900 -14 C 942.894,-14 901.926,158.5 960,158.515"/>
+  <g>
+    <rect style="fill: #ef2929" x="1260" y="-24.6984" width="150.55" height="52" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1260" y="-24.6984" width="150.55" height="52" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1335.28" y="-2.7984">
+      <tspan x="1335.28" y="-2.7984">SDIO (Secure Digital</tspan>
+      <tspan x="1335.28" y="13.2016">Input Output)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ef2929" x="1260" y="38.9584" width="152.85" height="52" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1260" y="38.9584" width="152.85" height="52" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1336.43" y="60.8584">
+      <tspan x="1336.43" y="60.8584">FSMC (Flexible static</tspan>
+      <tspan x="1336.43" y="76.8584">memory controller)</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 1040 -14 C 1113.04,-14 1186.96,1.3016 1260,1.3016"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 1040 -14 C 1113.04,-14 1186.96,64.9584 1260,64.9584"/>
+  <g>
+    <rect style="fill: #ef2929" x="1260" y="102.858" width="116.6" height="52" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1260" y="102.858" width="116.6" height="52" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1318.3" y="124.758">
+      <tspan x="1318.3" y="124.758">AHB Bus, DMA,</tspan>
+      <tspan x="1318.3" y="140.758">Memory</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 1040 -14 C 1113.04,-14 1186.96,128.858 1260,128.858"/>
+  <g>
+    <rect style="fill: #fce94f" x="300" y="276" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="300" y="276" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="340" y="297.9">
+      <tspan x="340" y="297.9">HCLK</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #fce94f" x="1260" y="166.544" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1260" y="166.544" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1300" y="188.444">
+      <tspan x="1300" y="188.444">HCLK</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 1040 -14 C 1113.04,-14 1186.96,184.544 1260,184.544"/>
+  <g>
+    <rect style="fill: #729fcf" x="1149" y="213.058" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1149" y="213.058" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1189" y="234.958">
+      <tspan x="1189" y="234.958">/2</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 1040 -14 C 1118.4,-12 1089,233.058 1149,231.058"/>
+  <g>
+    <rect style="fill: #ef2929" x="1260" y="213.058" width="113.3" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1260" y="213.058" width="113.3" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1316.65" y="234.958">
+      <tspan x="1316.65" y="234.958">SDIO Interface</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 1229 231.058 C 1242.28,231.058 1246.72,231.058 1260,231.058"/>
+  <g>
+    <rect style="fill: #729fcf" x="720" y="208.486" width="144.75" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="720" y="208.486" width="144.75" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="792.375" y="230.386">
+      <tspan x="792.375" y="230.386">(APB1 == 1) ? 1 : 2</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #729fcf" x="718.586" y="282.828" width="144.75" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="718.586" y="282.828" width="144.75" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="790.961" y="304.728">
+      <tspan x="790.961" y="304.728">(APB2 == 1) ? 1 : 2</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ef2929" x="940" y="289.072" width="88.1" height="52" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="940" y="289.072" width="88.1" height="52" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="984.05" y="310.972">
+      <tspan x="984.05" y="310.972">TIMER 1,8,</tspan>
+      <tspan x="984.05" y="326.972">9,10,11</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 569.4 266 C 596.956,266 692.444,226.486 720,226.486"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 569.4 333.072 C 596.956,333.072 691.03,300.828 718.586,300.828"/>
+  <g>
+    <rect style="fill: #ef2929" x="940" y="199.757" width="113.6" height="52" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="940" y="199.757" width="113.6" height="52" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="996.8" y="221.657">
+      <tspan x="996.8" y="221.657">TIMER 2,3,4,</tspan>
+      <tspan x="996.8" y="237.657">5,6,7,12,13,14</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 863.336 300.828 C 888.834,300.828 914.502,315.072 940,315.072"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 864.75 226.486 C 883.608,226.486 921.142,225.758 940,225.758"/>
+  <g>
+    <rect style="fill: #729fcf" x="720" y="361.344" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="720" y="361.344" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="760" y="383.244">
+      <tspan x="760" y="383.244">/2,4,6,8</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 569.4 333.072 C 596.956,333.072 692.444,379.344 720,379.344"/>
+  <g>
+    <rect style="fill: #ef2929" x="832" y="361" width="84.15" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="832" y="361" width="84.15" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="874.075" y="382.9">
+      <tspan x="874.075" y="382.9">ADC 1,2,3</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 800 379.344 C 839.308,379.344 792.692,379 832,379"/>
+  <g>
+    <rect style="fill: #ef2929" x="1260" y="260.774" width="159.4" height="84" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1260" y="260.774" width="159.4" height="84" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1339.7" y="282.674">
+      <tspan x="1339.7" y="282.674">DAC / Power / Backup</tspan>
+      <tspan x="1339.7" y="298.674">CAN / USB / I2C1,2</tspan>
+      <tspan x="1339.7" y="314.674">USART2,3,4,5 / SPI2,3</tspan>
+      <tspan x="1339.7" y="330.674">Window Watchdog</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ef2929" x="1260" y="356.562" width="160" height="52" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1260" y="356.562" width="160" height="52" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1340" y="378.462">
+      <tspan x="1340" y="378.462">USART1 / SPI1</tspan>
+      <tspan x="1340" y="394.462">IO Ports A,B,C,D,E,F,G</tspan>
+    </text>
+  </g>
+  <text style="fill: #75507b;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="547.072" y="30.5858">
+    <tspan x="547.072" y="30.5858">PLLXTPRE</tspan>
+  </text>
+  <text style="fill: #75507b;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="628.758" y="-42.1006">
+    <tspan x="628.758" y="-42.1006">PLLSRC</tspan>
+  </text>
+  <text style="fill: #75507b;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="714.928" y="-38.3138">
+    <tspan x="714.928" y="-38.3138">PLLMUL</tspan>
+  </text>
+  <text style="fill: #75507b;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="841.344" y="-119.314">
+    <tspan x="841.344" y="-119.314">USB Prescaler</tspan>
+  </text>
+  <text style="fill: #75507b;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="957" y="19.6568">
+    <tspan x="957" y="19.6568">AHB Prescaler</tspan>
+  </text>
+  <text style="fill: #75507b;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="480" y="239.072">
+    <tspan x="480" y="239.072">APB1 Prescaler</tspan>
+  </text>
+  <text style="fill: #75507b;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="479" y="370">
+    <tspan x="479" y="370">APB2 Prescaler</tspan>
+  </text>
+  <text style="fill: #75507b;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="718.586" y="356.858">
+    <tspan x="718.586" y="356.858">ADC Prescaler</tspan>
+  </text>
+  <text style="fill: #75507b;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="578.586" y="88.8994">
+    <tspan x="578.586" y="88.8994">RTCSEL</tspan>
+  </text>
+  <text style="fill: #75507b;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="873.314" y="-33.6862">
+    <tspan x="873.314" y="-33.6862">SW</tspan>
+  </text>
+  <text style="fill: #75507b;text-anchor:start;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1199" y="-81">
+    <tspan x="1199" y="-81">STKSRC</tspan>
+  </text>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 569.4 333.072 C 932.4,320 920,380 1260,382.562"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 569.4 266 C 1032.4,240 1033.24,302.774 1260,302.774"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 1040 -14 C 1080.93,-17 1051.93,-130 1088,-131"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 900 -14 C 919.92,-14 940.08,-14 960,-14"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 380 294 C 413.2,294 446.8,266 480,266"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 480 333.072 C 446.8,333.072 413.2,294 380,294"/>
+  <g>
+    <rect style="fill: #ef2929" x="1260" y="-88" width="116.3" height="52" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1260" y="-88" width="116.3" height="52" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1318.15" y="-66.1">
+      <tspan x="1318.15" y="-66.1">FCLK (Free</tspan>
+      <tspan x="1318.15" y="-50.1">Running Clock)</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 1040 -14 C 1113.04,-14 1186.96,-62 1260,-62"/>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="620" y="-33.5">
+    <tspan x="620" y="-33.5">1</tspan>
+  </text>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="621" y="-9.5">
+    <tspan x="621" y="-9.5">2</tspan>
+  </text>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="547" y="-18.5">
+    <tspan x="547" y="-18.5">1</tspan>
+  </text>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="547" y="8.5">
+    <tspan x="547" y="8.5">2</tspan>
+  </text>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="568" y="92.5">
+    <tspan x="568" y="92.5">1</tspan>
+  </text>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="583" y="119.5">
+    <tspan x="583" y="119.5">2</tspan>
+  </text>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="568" y="143.5">
+    <tspan x="568" y="143.5">3</tspan>
+  </text>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="849.79" y="-35">
+    <tspan x="849.79" y="-35">1</tspan>
+  </text>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="864.79" y="-9">
+    <tspan x="864.79" y="-9">2</tspan>
+  </text>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="850.79" y="19">
+    <tspan x="850.79" y="19">3</tspan>
+  </text>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="1188.79" y="-138">
+    <tspan x="1188.79" y="-138">1</tspan>
+  </text>
+  <text style="fill: #555753;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="1189.79" y="-109">
+    <tspan x="1189.79" y="-109">2</tspan>
+  </text>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 393.75 14 C 448.28,14 503.468,14 558,14"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 920 -94 C 928.964,-94 951.036,-94 960,-94"/>
+  <g>
+    <rect style="fill: #fce94f" x="960" y="50" width="80" height="36" rx="10" ry="10"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="960" y="50" width="80" height="36" rx="10" ry="10"/>
+    <text style="fill: #000000;text-anchor:middle;font-size:12.8;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="1000" y="71.9">
+      <tspan x="1000" y="71.9">Sysclock</tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 900 -14 C 958,-4.5 927,64.5 960,68"/>
+</svg>

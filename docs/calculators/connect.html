@@ -1,0 +1,370 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <title>Clock Calculator for STM32F101xx / STM32F102xx / STM32F103xx</title>
+
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+  <style type="text/css">
+    html, body {margin: 0; padding: 0; background-color: #EEE; font-family: sans-serif;line-height:1.1em}
+    input[type=text], select {width: 5em; margin-right: 0.5em; font-size: 1em}
+    td {font-size: 0.7em; padding-left: 0.7em}
+    th {text-align:left;font-size: 0.8em}
+    span {font-weight: bold}
+    h1 {font-size: 0.75em; color: #75507B}
+    h1, th {text-shadow: #AAA 1px 1px 2px}
+    #wrap{margin: 10px 0 0 10px}
+    #left {float:left; width: 14em; padding-bottom: 1.5em}
+    #right {margin-left: 14em}
+    img, #results {width: 900px; border:none}
+    .val {width: 14%}
+    .key {width: 19%}
+    .error {color: #EF2929}
+  </style>
+
+  <script type="text/javascript">
+  function get_select_value(id)
+  {
+    var elm = document.getElementById(id);
+    return elm.options[elm.options.selectedIndex].value;
+  }
+
+  function get_radio(name)
+  {
+    var rads = document.getElementsByName(name);
+    for(var rad in rads)
+    {
+      if(rads[rad].checked)
+        return rads[rad].value;
+    }
+    return 1;
+  }
+
+  function get_input(id)
+  {
+    return document.getElementById(id).value;
+  }
+
+  function printe(id, value, error)
+  {
+    value = Math.round(value*100)/100
+    elm = document.getElementById(id)
+    if(error)
+      elm.innerHTML = "<span class=\"error\">" + value + " (!!)</span>"
+    else
+      elm.innerHTML = value
+  }
+
+  function calc()
+  {
+    var hsi_clk = parseFloat(get_input("hsi_clk"));
+    var hse_clk = parseFloat(get_input("hse_clk"));
+    var lse_clk = parseFloat(get_input("lse_clk"));
+    var lsi_clk = parseFloat(get_input("lsi_clk"));
+
+    var rtcsel = parseInt(get_radio("rtcsel"));
+    var sw = parseInt(get_radio("sw"));
+    var stksrc = parseInt(get_radio("stksrc"));
+    var pllsrc = parseInt(get_radio("pllsrc"));
+    var prediv1src = parseInt(get_radio("prediv1src"));
+    var i2s2src = parseInt(get_radio("i2s2src"));
+    var i2s3src = parseInt(get_radio("i2s3src"));
+
+    var usb = parseFloat(get_select_value("usb"));
+    var ahb = parseFloat(get_input("ahb"));
+    var apb1 = parseFloat(get_select_value("apb1"));
+    var apb2 = parseFloat(get_select_value("apb2"));
+    var adc = parseFloat(get_select_value("adc"));
+
+    var prediv2 = parseFloat(get_select_value("prediv2"));
+    var pll2mul = parseFloat(get_select_value("pll2mul"));
+    var pll3mul = parseFloat(get_select_value("pll3mul"));
+    var prediv1 = parseFloat(get_select_value("prediv1"));
+    var pllmul = parseFloat(get_select_value("pllmul"));
+
+    //-------------------------------------------------------------------------
+    var post_pllmul = 0;
+    if(pllsrc == 1)
+      post_pllmul = hsi_clk / 2;
+    else if(pllsrc == 2)
+    {
+      if(prediv1src == 1)
+        post_pllmul = hse_clk;
+      else if(prediv1src == 2)
+        post_pllmul = (hse_clk / prediv2) * pll2mul;
+      post_pllmul /= prediv1;
+    }
+    post_pllmul *= pllmul;
+    //-------------------------------------------------------------------------
+    var out_sysclk = 0;
+    if(sw == 1)
+      out_sysclk = post_pllmul;
+    else if(sw == 2)
+      out_sysclk = hsi_clk;
+    else if(sw == 3)
+      out_sysclk = hse_clk;
+    printe("out_sysclk", out_sysclk, out_sysclk > 72);
+    //-------------------------------------------------------------------------
+    var out_i2s2 = 0;
+    if(i2s2src == 1)
+      out_i2s2 = out_sysclk;
+    else if(i2s2src == 2)
+      out_i2s2 = (hse_clk / prediv2) * pll3mul * 2;
+    printe("out_i2s2", out_i2s2);
+    //-------------------------------------------------------------------------
+    var out_i2s3 = 0;
+    if(i2s3src == 1)
+      out_i2s3 = out_sysclk;
+    else if(i2s3src == 2)
+      out_i2s3 = (hse_clk / prediv2) * pll3mul * 2;
+    printe("out_i2s3", out_i2s3);
+    //-------------------------------------------------------------------------
+    var out_usb = (post_pllmul * 2) / usb;
+    printe("out_usb", out_usb, out_usb != 48);
+    //-------------------------------------------------------------------------
+    var out_rtc = 0;
+    if(rtcsel == 1)
+      out_rtc = (hse_clk * 1000) / 128;
+    else if(rtcsel == 2)
+      out_rtc = lse_clk;
+    else if(rtcsel == 3)
+      out_rtc = lsi_clk;
+    printe("out_rtc", out_rtc);
+    //-------------------------------------------------------------------------
+    var out_iwd = lsi_clk;
+    printe("out_iwd", out_iwd);
+    //-------------------------------------------------------------------------
+    var out_hckl = out_sysclk / ahb;
+    printe("out_hckl", out_hckl);
+    //-------------------------------------------------------------------------
+    printe("out_ethernet", out_hckl, out_hckl <= 25);
+    //-----------------------------------------------------------------------
+    var out_apb2 = out_hckl / apb2;
+    printe("out_apb2_periph", out_apb2);
+    //-----------------------------------------------------------------------
+    var out_adc = out_apb2 / adc;
+    printe("out_adc", out_adc, out_adc > 14);
+    //-----------------------------------------------------------------------
+    printe("out_apb2_timer", ((apb2 == 1) ? 1 : 2) * out_apb2);
+    //-----------------------------------------------------------------------
+    var out_apb1 = out_hckl / apb1;
+    printe("out_apb1_periph", out_apb1, out_apb1 > 36);
+    //-----------------------------------------------------------------------
+    printe("out_apb1_timer", ((apb1 == 1) ? 1 : 2) * out_apb1);
+    //-----------------------------------------------------------------------
+    var out_stk = 0;
+    if(stksrc == 1)
+      out_stk = out_hckl;
+    else if (stksrc == 2)
+      out_stk = out_hckl / 8;
+    printe("out_stk", out_stk);
+  }
+  </script>
+</head>
+
+<body onload="calc();">
+  <div id="wrap">
+    <div id="left">
+      <h1>Clock Calculator for STM32F105xx / STM32F107xx</h1>
+      <table>
+        <tr><th colspan="2"><hr>Clocks</th></tr>
+        <tr><td>HSI CLK</td><td><input type="text" value="8" id="hsi_clk" disabled="disabled" onchange="calc();"> MHz</td></tr>
+        <tr><td>HSE CLK</td><td><input type="text" value="25" id="hse_clk" onchange="calc();"> (3-25) MHz</td></tr>
+        <tr><td>LSI CLK</td><td><input type="text" value="40" id="lsi_clk" disabled="disabled" onchange="calc();"> kHz</td></tr>
+        <tr><td>LSE CLK</td><td><input type="text" value="32.768" id="lse_clk" onchange="calc();"> (0-1000) kHz</td></tr>
+        <tr><th colspan="2"><hr>Muxer</th></tr>
+        <tr>
+          <td>RTCSEL</td>
+          <td>
+            <input type="radio" name="rtcsel" value="1" onchange="calc();" checked> 1 &#160;
+            <input type="radio" name="rtcsel" value="2" onchange="calc();"> 2 &#160;
+            <input type="radio" name="rtcsel" value="3" onchange="calc();"> 3
+          </td>
+        </tr>
+        <tr>
+          <td>PREDIV1SRC</td>
+          <td>
+            <input type="radio" name="prediv1src" value="1" onchange="calc();"> 1 &#160;
+            <input type="radio" name="prediv1src" value="2" onchange="calc();" checked> 2
+          </td>
+        </tr>
+        <tr>
+          <td>PLLSRC</td>
+          <td>
+            <input type="radio" name="pllsrc" value="1" onchange="calc();"> 1 &#160;
+            <input type="radio" name="pllsrc" value="2" onchange="calc();" checked> 2
+          </td>
+        </tr>
+        <tr>
+          <td>SW</td>
+          <td>
+            <input type="radio" name="sw" value="1" onchange="calc();" checked> 1 &#160;
+            <input type="radio" name="sw" value="2" onchange="calc();"> 2 &#160;
+            <input type="radio" name="sw" value="3" onchange="calc();"> 3
+          </td>
+        </tr>
+        <tr>
+          <td>STKSRC</td>
+          <td>
+            <input type="radio" name="stksrc" value="1" onchange="calc();" checked> 1 &#160;
+            <input type="radio" name="stksrc" value="2" onchange="calc();"> 2
+          </td>
+        </tr>
+        <tr>
+          <td>I2S2SRC</td>
+          <td>
+            <input type="radio" name="i2s2src" value="1" onchange="calc();" checked> 1 &#160;
+            <input type="radio" name="i2s2src" value="2" onchange="calc();"> 2
+          </td>
+        </tr>
+        <tr>
+          <td>I2S3SRC</td>
+          <td>
+            <input type="radio" name="i2s3src" value="1" onchange="calc();" checked> 1 &#160;
+            <input type="radio" name="i2s3src" value="2" onchange="calc();"> 2
+          </td>
+        </tr>
+        <tr><th colspan="2"><hr>Prescaler</th></tr>
+        <tr>
+          <td>PREDVI2</td>
+          <td>
+            <select id="prediv2" onchange="calc();">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+            <option selected>5</option><option>6</option><option>7</option>
+            <option>8</option><option>9</option><option>10</option>
+            <option>11</option><option>12</option><option>13</option>
+            <option>14</option><option>15</option><option>16</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>PREDIV1</td>
+          <td>
+            <select id="prediv1" onchange="calc();">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+            <option selected>5</option><option>6</option><option>7</option>
+            <option>8</option><option>9</option><option>10</option>
+            <option>11</option><option>12</option><option>13</option>
+            <option>14</option><option>15</option><option>16</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>PLLMUL</td>
+          <td>
+            <select id="pllmul" onchange="calc();">
+            <option>4</option><option>5</option><option>6</option><option>6.5</option>
+            <option>7</option><option>8</option><option selected>9</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>PLL2MUL</td>
+          <td>
+            <select id="pll2mul" onchange="calc();">
+            <option selected>8</option><option>9</option><option>10</option>
+            <option>11</option><option>12</option><option>13</option>
+            <option>14</option><option>16</option><option>20</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>PLL3MUL</td>
+          <td>
+            <select id="pll3mul" onchange="calc();">
+            <option>8</option><option selected>9</option><option>10</option>
+            <option>11</option><option>12</option><option>13</option>
+            <option>14</option><option>16</option><option>20</option>
+            </select>
+          </td>
+        </tr>
+        <tr><td>AHB</td><td><input type="text" value="1" id="ahb" onchange="calc();"> (1..512)</td></tr>
+        <tr>
+          <td>APB1</td>
+          <td>
+            <select id="apb1" onchange="calc();">
+            <option>1</option><option selected>2</option><option>4</option>
+            <option>8</option><option>16</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>APB2</td>
+          <td>
+            <select id="apb2" onchange="calc();">
+            <option>1</option><option>2</option><option>4</option>
+            <option>8</option><option>16</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>ADC</td>
+          <td>
+            <select id="adc" onchange="calc();">
+            <option>2</option><option>4</option><option selected>6</option>
+            <option>8</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>USB</td>
+          <td>
+            <select id="usb" onchange="calc();">
+            <option>2</option><option selected>3</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div id ="right">
+      <a href="connect_diag.dia"><img src="connect_diag.svg" alt="STM32 clock tree" title="clock tree"></a>
+      <table id="results">
+        <tr>
+          <th colspan="6"><hr>Results</th>
+        </tr>
+        <tr>
+          <td class="key">AHB/HCLK</td>
+          <td class="val"><span id="out_hckl">0</span> MHz</td>
+          <td class="key">Real Time Clock</td>
+          <td class="val"><span id="out_rtc">0</span> kHz</td>
+          <td class="key">ADC (&lt;=14)</td>
+          <td><span id="out_adc">0</span> MHz</td>
+        </tr>
+        <tr>
+          <td>Systick</td>
+          <td><span id="out_stk">0</span> MHz</td>
+          <td>Independent Watchdog</td>
+          <td><span id="out_iwd">0</span> kHz</td>
+          <td>APB1 Timer</td>
+          <td><span id="out_apb1_timer">0</span> MHz</td>
+        </tr>
+        <tr>
+          <td>I2S2:</td>
+          <td><span id="out_i2s2">0</span> MHz</td>
+          <td>APB1 Periph (&lt;=36)</td>
+          <td><span id="out_apb1_periph">0</span> MHz</td>
+          <td>APB2 Timer</td>
+          <td><span id="out_apb2_timer">0</span> MHz</td>
+        </tr>
+        <tr>
+          <td>I2S3</td>
+          <td><span id="out_i2s3">0</span> MHz</td>
+          <td>APB2 Periph</td>
+          <td><span id="out_apb2_periph">0</span> MHz</td>
+          <td>USB (==48)</td>
+          <td><span id="out_usb">0</span> MHz</td>
+        </tr>
+        <tr>
+          <td>Sysclock (&lt;=72)</td>
+          <td><span id="out_sysclk">0</span> MHz</td>
+          <td>Ethernet (&gt;25)</td>
+          <td><span id="out_ethernet">0</span> MHz</td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
