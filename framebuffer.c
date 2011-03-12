@@ -247,9 +247,9 @@ void fbCopyRect(FbInfo *fb, size_t x1, size_t y1,
                 fbGetPixel(fb, i , j));
 }
 
-// Draws a charakter usign the given font info. x, y specify the
-// top left corner of the charakter
-void fbDrawCharakter(FbInfo *fb, const FontInfo *font, uint8_t c,
+// Draws a character usign the given font info. x, y specify the
+// top left corner of the character
+void fbDrawCharacter(FbInfo *fb, const FontInfo *font, uint8_t c,
     size_t x, size_t y, uint32_t flags)
 {
     size_t x2, y2, skip, bytes, offset, i, j;
@@ -275,7 +275,7 @@ void fbDrawCharakter(FbInfo *fb, const FontInfo *font, uint8_t c,
 
 // Draws a string usign the given font info. x, y specify the
 // top left corner of the string. Spacing is the space between
-// two charakers. A negative number means charakters overlap.
+// two characters. A negative number means characters overlap.
 void fbDrawString(FbInfo *fb, const FontInfo *font, char *s,
     size_t x, size_t y, int spacing, uint32_t flags)
 {
@@ -288,7 +288,7 @@ void fbDrawString(FbInfo *fb, const FontInfo *font, char *s,
 
     for(i = 0; s[i] != '\0'; ++i)
     {
-        fbDrawCharakter(fb, font, s[i], x, y, flags);
+        fbDrawCharacter(fb, font, s[i], x, y, flags);
         x += dx;
         y += dy;
     }

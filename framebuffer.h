@@ -74,7 +74,7 @@ void fbCopyRect(FbInfo *fb, size_t x1, size_t y1,
 void fbDebugPrint(FbInfo *fb);
 #endif
 
-void fbDrawCharakter(FbInfo *fb, const FontInfo *font, unsigned char c,
+void fbDrawCharacter(FbInfo *fb, const FontInfo *font, unsigned char c,
     size_t x, size_t y, uint32_t flags);
 
 void fbDrawString(FbInfo *fb, const FontInfo *font, char *s,
