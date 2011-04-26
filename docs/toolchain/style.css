@@ -6,6 +6,7 @@ body {
     min-width: 400px;
     max-width: 850px;
     line-height: 1.5em;
+    padding-bottom: 20px;
 }
 
 h1, h2 {
@@ -31,7 +32,9 @@ p, table, .literal-block {
 
 .literal-block {
     font-size: 1.2em;
-    background-color: #eeeeec;
+    background-color: #f5f5fa;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .section {
@@ -62,6 +65,7 @@ img {
 
 ul, li {
     padding-left: 5px;
+    margin-left: 10px;
 }
 
 a {

@@ -51,6 +51,16 @@ Eclipse independed of the current path::
     set PATH=%PATH%;%CD%\ide\yagarto-toolchain\bin;%CD%\ide\yagarto-tools\bin
     ide\eclipse\eclipse.exe
 
+Get the Standard Peripheral Library
+-----------------------------------
+
+The file is a bit hard to find on the website.. so here is a small description:
+
+http://www.st.com/
+
+`Support -> Tools & Resources -> Runtime Software -> STM32 ->
+ARM-based 32-bit MCU STM32F10xxx standard peripheral library`
+
 Set up a new Project
 --------------------
 
@@ -91,3 +101,39 @@ Add a new `GDB Hardware Debugging` entry and switch to `Debugger`.
 
 .. image:: img/client_config.png
 
+Now we need to define the include paths for the peripheral standard library.
+Because there is no reason to edit this library it is placed under the
+`libraries` directory and not included in the project.
+
+The start.bat file defines 2 environment variables for include paths (it
+seems eclipse does not understand lists, so they are separate)::
+
+    set STM32_STD_CORE_INC=%CD%\libraries\stm32f10x_stdperiph_lib\Libraries\CMSIS\CM3\CoreSupport
+    set STM32_STD_DEVICE_INC=%CD%\libraries\stm32f10x_stdperiph_lib\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x
+
+To add the paths to the project go to `Project -> Properties -> C/C++ General
+-> Paths and Symbols -> Includes`, select `GNU C`, `All configurations`
+and add the two paths using the `Add...` button.
+
+.. image:: img/includes.png
+
+The standard peripheral library needs one define before it can be included
+(using `#include <stm32f10x.h>`).
+
+One of the following variables has to be defined to specify the chip:
+
+ * STM32F10X_LD
+ * STM32F10X_LD_VL
+ * STM32F10X_MD
+ * STM32F10X_MD_VL
+ * STM32F10X_HD
+ * STM32F10X_HD_VL
+ * STM32F10X_XL
+ * STM32F10X_CL
+
+Either in the source before the include or using the project properties
+that can be found under `Project -> Properties -> C/C++ General -> Paths
+and Symbols -> Symbols`. Select `GNU C`, `All configurations` and add the
+define using the `Add...` button.
+
+.. image:: img/symbol.png
