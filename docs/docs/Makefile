@@ -1,4 +1,4 @@
-NAME=tc
+NAME=docs
 
 all: $(NAME).html
 

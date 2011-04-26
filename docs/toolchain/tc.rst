@@ -91,14 +91,3 @@ Add a new `GDB Hardware Debugging` entry and switch to `Debugger`.
 
 .. image:: img/client_config.png
 
-
-
-
-
-
-
-
-
-
-
-

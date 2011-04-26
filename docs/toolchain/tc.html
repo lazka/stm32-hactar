@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
+<title>STM32 IDE HowTo</title>
+<style type="text/css">
+
+body {
+    background-color: #eeeeec;
+    margin: auto;
+    font-family: sans-serif;
+    font-size: 75%;
+    min-width: 400px;
+    max-width: 850px;
+    line-height: 1.5em;
+}
+
+h1, h2 {
+    margin-bottom: 0px;
+    padding-left: 16px;
+    text-shadow: #aaa 0.03em 0.03em 0.1em;
+}
+
+h1 {
+    line-height: 1.5em;
+    font-size: 1.5em;
+    color: #3465a4;
+    background-color: #d3d7cf;
+}
+
+h2 {
+    color: #4e9a06;
+}
+
+p, table, .literal-block {
+    padding-left: 10px
+}
+
+.literal-block {
+    font-size: 1.2em;
+    background-color: #eeeeec;
+}
+
+.section {
+    color: #000000;
+    background-color: #ffffff;
+    padding-bottom: 5px;
+}
+
+.section p, .section .literal-block {
+    padding-left: 35px;
+}
+
+.title {
+    font-size: 2.5em;
+    color: #cc0000;
+    text-align: center;
+    background-color: inherit;
+}
+
+cite {
+    background-color: #eeeeec;
+}
+
+img {
+    margin: 5px 0 5px 45px;
+    border: 1px solid #444;
+}
+
+ul, li {
+    padding-left: 5px;
+}
+
+a {
+  text-decoration: none;
+  color: #204a87;
+}
+
+a:hover {
+  border-bottom: 1px dashed #204a87;
+}
+
+a[href^="http"] {
+  padding-right: 13px;
+  background-image: url(img/external.png);
+  background-position: right !important;
+  background-repeat: no-repeat;
+}
+
+</style>
+</head>
+<body>
+<div class="document" id="stm32-ide-howto">
+<h1 class="title">STM32 IDE HowTo</h1>
+
+<div class="section" id="pre-requirements">
+<h1>Pre Requirements</h1>
+<blockquote>
+<ul class="simple">
+<li>Install the Java JRE (<a class="reference external" href="http://www.java.com/download/">http://www.java.com/download/</a>)</li>
+<li>Get Eclipse Helios (<a class="reference external" href="http://www.eclipse.org/downloads/">http://www.eclipse.org/downloads/</a>)</li>
+<li>Get the Yagarto toolchain (<a class="reference external" href="http://www.yagarto.de/">http://www.yagarto.de/</a>)</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="set-up-gnu-arm-eclipse-plug-in">
+<h1>Set up GNU ARM Eclipse Plug-in</h1>
+<p>Needed to get a nice interface for setting the CPU type, compiler and linker
+options etc.</p>
+<p><cite>Help -&gt; Install New Software</cite></p>
+<img alt="img/install_menu.png" src="img/install_menu.png" />
+<p><cite>Add -&gt; Location</cite>: <a class="reference external" href="http://gnuarmeclipse.sourceforge.net/updates">http://gnuarmeclipse.sourceforge.net/updates</a></p>
+<p>In case it's slow, untick &quot;Check All Servers&quot;.</p>
+<img alt="img/arm_tools.png" src="img/arm_tools.png" />
+</div>
+<div class="section" id="set-up-hardware-debugging">
+<h1>Set up Hardware Debugging</h1>
+<p>Help -&gt; Install New Software</p>
+<p>Add -&gt; <a class="reference external" href="http://download.eclipse.org/tools/cdt/releases/helios">http://download.eclipse.org/tools/cdt/releases/helios</a></p>
+<p>Select <cite>C/C++ GDB Hardware Debugging</cite></p>
+<img alt="img/hardware_debugger.png" src="img/hardware_debugger.png" />
+</div>
+<div class="section" id="set-up-the-toolchain">
+<h1>Set up the Toolchain</h1>
+<p>First the toolchain needs to be added to the current path. In this case the
+following folder structure was choosen:</p>
+<img alt="img/tree.png" src="img/tree.png" />
+<p>The following code in a bat file adds the toolchain to the path and starts
+Eclipse independed of the current path:</p>
+<pre class="literal-block">
+set PATH=%PATH%;%CD%\ide\yagarto-toolchain\bin;%CD%\ide\yagarto-tools\bin
+ide\eclipse\eclipse.exe
+</pre>
+</div>
+<div class="section" id="set-up-a-new-project">
+<h1>Set up a new Project</h1>
+<p><cite>File -&gt; New -&gt; Project</cite></p>
+<p><cite>ARM Cross Target Application -&gt; Empty Project -&gt; Yagarto</cite></p>
+<img alt="img/new_project.png" src="img/new_project.png" />
+<p>Now we need to set up GDB debugging.</p>
+<p>Switch Elcipse to Debug mode, first the server.</p>
+<p><cite>Run -&gt; External Tools -&gt; External Tools Configuration</cite> or click on the toolbar
+button shown below.</p>
+<img alt="img/server.png" src="img/server.png" />
+<p>Location needs to be the ST-Link GDB server taken from Atollic. It's a
+modified GDB Server that includes a driver for ST-Link.</p>
+<p>Arguments (taken from Atollic as well): <cite>-e -d -l 31 -p 61234 -v -r 15</cite></p>
+<p>This could be started without Eclipse, but this way it is a one click
+operation and Eclipse will watch the process, show debug output and notify
+in case the process crashes.</p>
+<img alt="img/server_config.png" src="img/server_config.png" />
+<p>Now the client. <cite>Run -&gt; Debug Configurations...</cite> or the button shown below.</p>
+<img alt="img/client.png" src="img/client.png" />
+<p>Add a new <cite>GDB Hardware Debugging</cite> entry and switch to <cite>Debugger</cite>.</p>
+<p><cite>GDB Command</cite> needs to be the toolchains gdb executable. In this case it's
+<cite>arm-none-eabi-gdb.exe</cite> since yagarto is in the current path.</p>
+<img alt="img/client_config.png" src="img/client_config.png" />
+</div>
+</div>
+</body>
+</html>
