@@ -101,6 +101,9 @@ Add a new `GDB Hardware Debugging` entry and switch to `Debugger`.
 
 .. image:: img/client_config.png
 
+Cofigure the toolchain
+----------------------
+
 Now we need to define the include paths for the peripheral standard library.
 Because there is no reason to edit this library it is placed under the
 `libraries` directory and not included in the project.
@@ -108,8 +111,18 @@ Because there is no reason to edit this library it is placed under the
 The start.bat file defines 2 environment variables for include paths (it
 seems eclipse does not understand lists, so they are separate)::
 
-    set STM32_STD_CORE_INC=%CD%\libraries\stm32f10x_stdperiph_lib\Libraries\CMSIS\CM3\CoreSupport
-    set STM32_STD_DEVICE_INC=%CD%\libraries\stm32f10x_stdperiph_lib\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x
+    set STM32_STD_PATH=%CD%\libraries\stm32f10x_stdperiph_lib
+    set STM32_STD_CORE_INC=%STM32_STD_PATH%\Libraries\CMSIS\CM3\CoreSupport
+    set STM32_STD_DEVICE_INC=%STM32_STD_PATH%\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x
+    set STM32_STD_DRIVER_INC=%STM32_STD_PATH%\Libraries\STM32F10x_StdPeriph_Driver\inc
+
+    set STM32_STD_UTILS_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL
+    set STM32_STD_UTILS_COMMON_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\Common
+    set STM32_EVAL_STM3210C_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\STM3210C_EVAL
+    set STM32_EVAL_STM3210B_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\STM3210B_EVAL
+    set STM32_EVAL_STM32100B_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\STM32100B_EVAL
+    set STM32_EVAL_STM32100E_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\STM32100E_EVAL
+    set STM32_EVAL_STM3210E_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\STM3210E_EVAL
 
 To add the paths to the project go to `Project -> Properties -> C/C++ General
 -> Paths and Symbols -> Includes`, select `GNU C`, `All configurations`

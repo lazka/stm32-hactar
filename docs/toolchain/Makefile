@@ -2,8 +2,8 @@ NAME=tc
 
 all: $(NAME).html
 
-$(NAME).html: $(NAME).rst style.css
-	rst2html --stylesheet=style.css $(NAME).rst > $(NAME).html
+$(NAME).html: $(NAME).rst ../common/style.css
+	rst2html --stylesheet=../common/style.css $(NAME).rst > $(NAME).html
 
 pdf: $(NAME).pdf
 
