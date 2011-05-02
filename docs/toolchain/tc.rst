@@ -2,15 +2,18 @@
 STM32 IDE HowTo
 ===============
 
-Pre Requirements
-----------------
+Setting up the IDE + toolchain
+------------------------------
+
+**You should not have to do this.**
+There is a finished IDE + toolchain on the AFS server (under SW/stm32lib).
 
  * Install the Java JRE (http://www.java.com/download/)
  * Get Eclipse Helios (http://www.eclipse.org/downloads/)
- * Get the Yagarto toolchain (http://www.yagarto.de/)
+ * Get the Codesourcery toolchain (http://www.codesourcery.com/sgpp/lite/arm/download.html)
 
-Set up GNU ARM Eclipse Plug-in
-------------------------------
+Setting up GNU ARM Eclipse Plug-in
+==================================
 
 Needed to get a nice interface for setting the CPU type, compiler and linker
 options etc.
@@ -25,9 +28,8 @@ In case it's slow, untick "Check All Servers".
 
 .. image:: img/arm_tools.png
 
-
-Set up Hardware Debugging
--------------------------
+Setting up Hardware Debugging
+=============================
 
 Help -> Install New Software
 
@@ -37,22 +39,8 @@ Select `C/C++ GDB Hardware Debugging`
 
 .. image:: img/hardware_debugger.png
 
-Set up the Toolchain
---------------------
-
-First the toolchain needs to be added to the current path. In this case the
-following folder structure was choosen:
-
-.. image:: img/tree.png
-
-The following code in a bat file adds the toolchain to the path and starts
-Eclipse independed of the current path::
-
-    set PATH=%PATH%;%CD%\ide\yagarto-toolchain\bin;%CD%\ide\yagarto-tools\bin
-    ide\eclipse\eclipse.exe
-
-Get the Standard Peripheral Library
------------------------------------
+Getting the Standard Peripheral Library
+=======================================
 
 The file is a bit hard to find on the website.. so here is a small description:
 
@@ -61,28 +49,86 @@ http://www.st.com/
 `Support -> Tools & Resources -> Runtime Software -> STM32 ->
 ARM-based 32-bit MCU STM32F10xxx standard peripheral library`
 
-Set up a new Project
---------------------
+**Important:** You have to change all file extensions under
+`Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup` to uppercase (.S) or
+eclipse will not recognize them as assembler files.
+
+Description of the existing IDE + toolchain package
+---------------------------------------------------
+
+There are two main batch files in the main dir. `start_eclipse.bat` which sets
+the right environment variables and starts eclipse is probably all you need.
+
+Linker scripts
+==============
+
+`generate_linker_scripts.bat` uses the GCC compiler in preprocessor only
+mode, to generate linker scripts for all available STM32 chips. The linker
+script template can be found under `linker_scripts/stm32_flash.ld.in`. All
+linker scripts will be saved under `linker_scripts`.
+
+Manuals
+=======
+
+The `manuals` directory includes various manuals.
+
+Toolchain
+=========
+
+`codesourcery-toolchain` includes the toolchain. First the yatargo toolchain
+was used, but it failed to include debug symbols in the elf file (could have
+been an error on my side) which prevented proper debugging.
+
+ST-Link GDB Server
+==================
+
+The `st-link-gdb-server` directory includes the modified gdb server taken from
+the Atollic toolchain. It includes a driver for the ST-LINK.
+
+The ST-LINK device uses an uncommon way for talking with the PC. It's
+implemented by directly writing to the mounted pseudo filesystem. Since this
+is completely different from other programmers it is unlikely that it will ever
+be supported by free alternatives like openocd (according to the mailing list)
+
+(Also the pseudo FS fails to mount most of the times under linux)
+
+Libraries
+=========
+
+The library directory includes the standard peripheral library.
+
+ * `Libraries/CMSIS`: The Cortex Microcontroller Software Interface Standard.
+   Don't try to update the CMSIS to the newest version! The included one
+   is a modified version which includes many more functions. The basic
+   CMSIS library only includes function, which all CMSIS compatible libraries
+   must support.
+ * `Libraries/STM32F10x_StdPeriph_Driver`: Includes various functions for
+   accessing the STM peripherials.
+ * `Project`: Various example projects.
+ * `Utilities`: Includes drivers for all the eval boards.(LCD etc.)
+
+
+Creating a project
+------------------
+
+Execute `start_eclipse.bat`.
+
+New Project
+===========
 
 `File -> New -> Project`
 
-`ARM Cross Target Application -> Empty Project -> Yagarto`
+`ARM Cross Target Application -> Empty Project -> Sourcery G++ Lite`
 
 .. image:: img/new_project.png
 
-Now we need to set up GDB debugging.
+Adding a launcher for the GDB server
+====================================
 
-Switch Elcipse to Debug mode, first the server.
-
-`Run -> External Tools -> External Tools Configuration` or click on the toolbar
-button shown below.
+Switch Elcipse to Debug mode. `Run -> External Tools -> External Tools
+Configuration` or click on the toolbar button shown below.
 
 .. image:: img/server.png
-
-Location needs to be the ST-Link GDB server taken from Atollic. It's a
-modified GDB Server that includes a driver for ST-Link.
-
-Arguments (taken from Atollic as well): `-e -d -l 31 -p 61234 -v -r 15`
 
 This could be started without Eclipse, but this way it is a one click
 operation and Eclipse will watch the process, show debug output and notify
@@ -90,50 +136,69 @@ in case the process crashes.
 
 .. image:: img/server_config.png
 
-Now the client. `Run -> Debug Configurations...` or the button shown below.
+Arguments: `-e -d -l 0 -p 61234 -r 15`
+
+Adding a Debug Launcher
+=======================
+
+`Run -> Debug Configurations...` or the button shown below.
 
 .. image:: img/client.png
 
 Add a new `GDB Hardware Debugging` entry and switch to `Debugger`.
 
-`GDB Command` needs to be the toolchains gdb executable. In this case it's
-`arm-none-eabi-gdb.exe` since yagarto is in the current path.
-
 .. image:: img/client_config.png
 
-Cofigure the toolchain
-----------------------
+`GDB Command` needs to be the toolchains gdb executable. In this case it's
+`arm-none-eabi-gdb.exe` since codesourcery is in the current path.
 
-Now we need to define the include paths for the peripheral standard library.
-Because there is no reason to edit this library it is placed under the
-`libraries` directory and not included in the project.
+.. image:: img/client_config2.png
 
-The start.bat file defines 2 environment variables for include paths (it
-seems eclipse does not understand lists, so they are separate)::
+Under `startup` you can set a breakpoint at main and check `resume` so the
+code will be started and will pause at main (otherwise it would start in
+the reset handler)
 
-    set STM32_STD_PATH=%CD%\libraries\stm32f10x_stdperiph_lib
-    set STM32_STD_CORE_INC=%STM32_STD_PATH%\Libraries\CMSIS\CM3\CoreSupport
-    set STM32_STD_DEVICE_INC=%STM32_STD_PATH%\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x
-    set STM32_STD_DRIVER_INC=%STM32_STD_PATH%\Libraries\STM32F10x_StdPeriph_Driver\inc
+.. image:: img/client_config3.png
 
-    set STM32_STD_UTILS_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL
-    set STM32_STD_UTILS_COMMON_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\Common
-    set STM32_EVAL_STM3210C_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\STM3210C_EVAL
-    set STM32_EVAL_STM3210B_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\STM3210B_EVAL
-    set STM32_EVAL_STM32100B_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\STM32100B_EVAL
-    set STM32_EVAL_STM32100E_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\STM32100E_EVAL
-    set STM32_EVAL_STM3210E_INC=%STM32_STD_PATH%\Utilities\STM32_EVAL\STM3210E_EVAL
+If you want to start debugging without writing the program to the controller
+add another debug launcher with `load image` and `load symbols` unchecked.
 
-To add the paths to the project go to `Project -> Properties -> C/C++ General
--> Paths and Symbols -> Includes`, select `GNU C`, `All configurations`
-and add the two paths using the `Add...` button.
+Info: Setting many breakpoints will slow down debugging (takes forever
+to load the flash image etc.). Try to keep the number of breakpoints low.
 
-.. image:: img/includes.png
+Configuring the toolchain
+=========================
 
-The standard peripheral library needs one define before it can be included
-(using `#include <stm32f10x.h>`).
+`Project -> Properties -> C/C++ Build -> Settings - > C Compiler ->
+Optimization`
 
-One of the following variables has to be defined to specify the chip:
+Set `Function sections` and `Data sections`. This will tell the compiler
+to split everything in separate sections. Together with the linker
+optimizations this can lead to image size reductions.
+
+.. image:: img/compiler.png
+
+`Project -> Properties -> C/C++ Build -> Settings - > C Linker -> General`
+
+Specify the right linker script. There should be a linker script under
+`linker-scripts` for every chip. In case the directory is empty, execute
+`generate_linker_scripts.bat`.
+
+`--gc-sections` will enable removing of unused sections produced by the
+compiler settings above (These three options are the dead code removal in
+Atollic)
+
+.. image:: img/linker.png
+
+Under `Project -> Properties -> C/C++ Build -> Behavior` you can enable
+parallel make (make -j).
+
+.. image:: img/makej.png
+
+Include Paths, Source Paths and Symbols
+=======================================
+
+FIXME
 
  * STM32F10X_LD
  * STM32F10X_LD_VL
@@ -144,9 +209,12 @@ One of the following variables has to be defined to specify the chip:
  * STM32F10X_XL
  * STM32F10X_CL
 
-Either in the source before the include or using the project properties
-that can be found under `Project -> Properties -> C/C++ General -> Paths
-and Symbols -> Symbols`. Select `GNU C`, `All configurations` and add the
-define using the `Add...` button.
+`USE_STDPERIPH_DRIVER`, `USE_STM3210C_EVAL`
 
 .. image:: img/symbol.png
+
+.. image:: img/includes.png
+
+.. image:: img/sources.png
+
+.. image:: img/library_filter.png
