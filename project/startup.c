@@ -19,9 +19,18 @@
 #include "stm32f10x_rcc.h"
 
 #include "platform.h"
+#include "startup.h"
+
+// This gets called from the startup asm
+void SystemInit(void)
+{
+    hactarStartup();
+}
 
 void hactarStartup(void)
 {
+    // disable all clock interrupts and clear pending bits
+    RCC->CIR = (RCC->CIR & ~0xFFFF) | 0xFF0000;
 
 #if (HACTAR_CLK_MUX_RTC == HACTAR_CLK_MUX_RTC_SRC_LSE) && \
     (defined HACTAR_CLK_DEV_RTC)
@@ -35,7 +44,7 @@ void hactarStartup(void)
 #ifdef HACTAR_CLK_DEV_RTC
 
     // set RTC src
-    RCC->BDCR = (RCC->BDCR & ~(0x3 << 8)) | HACTAR_CLK_MUX_RTC_SRC_MASK;
+    RCC->BDCR = (RCC->BDCR & ~RCC_BDCR_RTCSEL) | HACTAR_CLK_MUX_RTC_SRC_MASK;
     // enable clock
     RCC->BDRC |= RCC_BDCR_RTCEN;
 
@@ -49,6 +58,21 @@ void hactarStartup(void)
 
 #endif
 
+    // Calculate system clock for setting the number of flash wait states
+    uint32_t sysclk = hactarGetSystemClock();
+    uint32_t flash_wait_states;
+    if(sysclk <= 24000000)
+        flash_wait_states = 0;
+    else if(sysclk <= 48000000)
+        flash_wait_states = 1;
+    else
+        flash_wait_states = 2;
+
+    // Prefetch buffer enable
+    FLASH->ACR |= FLASH_ACR_PRFTBE;
+    // Set flash latency / wait states
+    FLASH->ACR = (FLASH->ACR & ~FLASH_ACR_LATENCY) | flash_wait_states;
+
     // datasheet says this has to be disabled before clearing the PLL1
     RCC->AHBENR &= ~RCC_AHBENR_OTGFSEN;
 
@@ -59,8 +83,8 @@ void hactarStartup(void)
 
     // set prediv2 scale (set it always, checking would be too complicated)
     // needs PLL2/3 disabled
-    RCC->CFGR2 = (RCC->CFGR2 & ~(0xF << 4)) | \
-                 ((HACTAR_CLK_SCALE_PREDIV2 - 1) << 4);
+    RCC->CFGR2 = (RCC->CFGR2 & ~RCC_CFGR2_PREDIV2) | \
+                 (((uint32_t)HACTAR_CLK_SCALE_PREDIV2 - 1) << 4);
 
 // check if we need PLL3
 #if ((defined HACTAR_CLK_DEV_I2S2) && \
@@ -70,10 +94,10 @@ void hactarStartup(void)
 
     // set multiplier (PLL3 disabled!)
     if(HACTAR_CLK_SCALE_PLL3MUL == 20)
-        RCC->CFGR2 = (RCC->CFGR2 & ~(0xF << 12)) | (0xF << 12);
+        RCC->CFGR2 = (RCC->CFGR2 & ~RCC_CFGR2_PLL3MUL) | RCC_CFGR2_PLL3MUL20;
     else {
-        RCC->CFGR2 = (RCC->CFGR2 & ~(0xF << 12)) | \
-                     ((HACTAR_CLK_SCALE_PLL3MUL - 2) << 12);
+        RCC->CFGR2 = (RCC->CFGR2 & ~RCC_CFGR2_PLL3MUL) | \
+                     (((uint32_t)HACTAR_CLK_SCALE_PLL3MUL - 2) << 12);
     }
 
     // finally enable PLL3
@@ -88,10 +112,10 @@ void hactarStartup(void)
 
     // set PLL MUL
     if(HACTAR_CLK_SCALE_PLLMUL == 65)
-        RCC->CFGR = (RCC->CFGR & ~(0xF << 18)) | (0xD << 18);
+        RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PLLMULL) | RCC_CFGR_PLLMULL6_5;
     else
-        RCC->CFGR = (RCC->CFGR & ~(0xF << 18)) | \
-                    ((HACTAR_CLK_SCALE_PLLMUL - 2) << 18);
+        RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PLLMULL) | \
+                    (((uint32_t)(HACTAR_CLK_SCALE_PLLMUL / 10) - 2) << 18);
 
     // set the USB prescaler
 #if (defined HACTAR_CLK_DEV_USB) && HACTAR_CLK_SCALE_USB == 2
@@ -110,7 +134,8 @@ void hactarStartup(void)
     RCC->CFGR |= RCC_CFGR_PLLSRC;
 
     // set prediv1 scale
-    RCC->CFGR2 = (RCC->CFGR2 & ~0xF) | (HACTAR_CLK_SCALE_PREDIV1 - 1);
+    RCC->CFGR2 = (RCC->CFGR2 & ~RCC_CFGR2_PREDIV1) | \
+                 ((uint32_t)HACTAR_CLK_SCALE_PREDIV1 - 1);
 
 #if HACTAR_CLK_MUX_PREDIV1 == HACTAR_CLK_MUX_PREDIV1_SRC_HSE
 
@@ -121,11 +146,11 @@ void hactarStartup(void)
 
     // set multiplier (PLL 2 disabled!)
     if(HACTAR_CLK_SCALE_PLL2MUL == 20) {
-        RCC->CFGR2 = (RCC->CFGR2 & ~(0xF << 8)) | (0xF << 8);
+        RCC->CFGR2 = (RCC->CFGR2 & ~RCC_CFGR2_PLL2MUL) | RCC_CFGR2_PLL2MUL20;
     }
     else {
-        RCC->CFGR2 = (RCC->CFGR2 & ~(0xF << 8)) | \
-                     ((HACTAR_CLK_SCALE_PLL2MUL - 2) << 8);
+        RCC->CFGR2 = (RCC->CFGR2 & ~RCC_CFGR2_PLL2MUL) | \
+                     (((uint32_t)HACTAR_CLK_SCALE_PLL2MUL - 2) << 8);
     }
 
     // enable PLL2 again
@@ -151,7 +176,7 @@ void hactarStartup(void)
 #endif
 
     // SW source: clear last two bits and set right source
-    RCC->CFGR = (RCC->CFGR & ~0x3) | HACTAR_CLK_MUX_SW_SRC_MASK;
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_SW) | HACTAR_CLK_MUX_SW_SRC_MASK;
 
 #if (HACTAR_CLK_MUX_RTC != HACTAR_CLK_MUX_RTC_SRC_LSI) && \
     !(defined HACTAR_CLK_DEV_WATCHDOG) && !(defined HACTAR_CLK_DEV_RTC)
@@ -169,4 +194,37 @@ void hactarStartup(void)
 
 #endif
 
+}
+
+// Returns the system clock based on the configuration given in platform.h
+uint32_t hactarGetSystemClock(void)
+{
+    static uint32_t sysclk = 0;
+
+    if(sysclk != 0)
+        return sysclk;
+
+#if HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_HSI
+    sysclk = HSI_VALUE;
+#elif HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_HSE
+    sysclk = HSE_VALUE;
+#else
+
+#if HACTAR_CLK_MUX_PLL == HACTAR_CLK_MUX_PLL_SRC_DIV2
+    sysclk = HSI_VALUE / 2;
+#else
+
+    sysclk = HSE_VALUE;
+#if HACTAR_CLK_MUX_PREDIV1 == HACTAR_CLK_MUX_PREDIV1_SRC_PLL2MUL
+    sysclk /= HACTAR_CLK_SCALE_PREDIV2;
+    sysclk *= HACTAR_CLK_SCALE_PLL2MUL;
+#endif
+
+    sysclk /= (uint32_t)HACTAR_CLK_SCALE_PREDIV1;
+#endif
+
+    sysclk *= ((uint32_t)HACTAR_CLK_SCALE_PLLMUL / 10);
+#endif
+
+    return sysclk;
 }

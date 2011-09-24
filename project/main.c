@@ -31,77 +31,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifdef USE_STM3210B_EVAL
- #include "stm32_eval.h"
- #include "stm3210b_eval_lcd.h"
- #define USE_BOARD
- #define USE_LED
-#elif defined USE_STM3210E_EVAL
- #include "stm32_eval.h"
- #include "stm3210e_eval_lcd.h"
- #define USE_BOARD
- #define USE_LED
-#elif defined USE_STM3210C_EVAL
- #include "stm32_eval.h"
- #include "stm3210c_eval_lcd.h"
- #include "stm32_eval_i2c_ee.h"
- #define USE_BOARD
- #define USE_LED
- #define USE_SEE
-#elif defined USE_STM32100B_EVAL
- #include "stm32_eval.h"
- #include "stm32100b_eval_lcd.h"
- #define USE_BOARD
- #define USE_LED
-#elif defined USE_STM32100E_EVAL
- #include "stm32_eval.h"
- #include "stm32100e_eval_lcd.h"
- #include "stm32_eval_i2c_ee.h"
- #define USE_BOARD
- #define USE_LED
- #define USE_SEE
-#elif defined USE_STM32_DISCOVERY
- #include "STM32vldiscovery.h"
-#elif defined USE_IAR_STM32F103ZE
- #include "board.h"
- #define USE_LED
-#elif defined USE_KEIL_MCBSTM32
- #include "board.h"
- #define USE_LED
-#endif
 
+#include "stm32_eval.h"
+#include "stm3210c_eval_lcd.h"
+#include "stm32_eval_i2c_ee.h"
 
-/* Private typedef */
-/* Private define  */
-#ifdef USE_STM3210B_EVAL
-  #define MESSAGE1   "STM32 Medium Density"
-  #define MESSAGE2   " Device running on  "
-  #define MESSAGE3   "   STM3210B-EVAL    "
-  #define MESSAGE4   "                    "
-#elif defined USE_STM3210E_EVAL
-  #define MESSAGE1   " STM32 High Density "
-  #define MESSAGE2   " Device running on  "
-  #define MESSAGE3   "   STM3210E-EVAL    "
-  #define MESSAGE4   "                    "
-#elif defined USE_STM3210C_EVAL
-  #define MESSAGE1   " STM32 Connectivity "
-  #define MESSAGE2   " Line Device running"
-  #define MESSAGE3   " on STM3210C-EVAL   "
-  #define MESSAGE4   "                    "
-#elif defined USE_STM32100B_EVAL
-  #define MESSAGE1   "STM32 Medium Density"
-  #define MESSAGE2   " Value Line Device  "
-  #define MESSAGE3   "    running on      "
-  #define MESSAGE4   "   STM32100B-EVAL   "
-#elif defined USE_STM32100E_EVAL
-  #define MESSAGE1   " STM32 High Density "
-  #define MESSAGE2   " Value Line Device  "
-  #define MESSAGE3   "    running on      "
-  #define MESSAGE4   "   STM32100E-EVAL   "
-#endif
-  #define MESSAGE5   " program built with "
-  #define MESSAGE6   " Atollic TrueSTUDIO "
+#define USE_BOARD
+#define USE_LED
+#define USE_SEE
 
+#include "startup.h"
 
 void SysTick_Handler(void)
 {
@@ -225,22 +164,19 @@ int main(void)
 
   RCC_ClocksTypeDef test;
   RCC_GetClocksFreq(&test);
-  char buffer[15];
-  char buffer2[15];
-  char buffer3[15];
-  char buffer4[15];
-  char buffer5[15];
-  sprintf(buffer, "ADC %u ", (unsigned int)test.ADCCLK_Frequency);
-  sprintf(buffer2, "H %u ", (unsigned int)test.HCLK_Frequency);
-  sprintf(buffer3, "P1 %u ", (unsigned int)test.PCLK1_Frequency);
-  sprintf(buffer4, "P2 %u ", (unsigned int)test.PCLK2_Frequency);
-  sprintf(buffer5, "SYS %u ", (unsigned int)test.SYSCLK_Frequency);
+  char buffer[5][20];
 
-  LCD_DisplayStringLine(Line0, (uint8_t *)buffer);
-  LCD_DisplayStringLine(Line1, (uint8_t *)buffer2);
-  LCD_DisplayStringLine(Line2, (uint8_t *)buffer3);
-  LCD_DisplayStringLine(Line3, (uint8_t *)buffer4);
-  LCD_DisplayStringLine(Line4, (uint8_t *)buffer5);
+  sprintf(buffer[0], "ADC %u ", (unsigned int)test.ADCCLK_Frequency);
+  sprintf(buffer[1], "H %u ", (unsigned int)test.HCLK_Frequency);
+  sprintf(buffer[2], "P1 %u ", (unsigned int)test.PCLK1_Frequency);
+  sprintf(buffer[3], "P2 %u ", (unsigned int)test.PCLK2_Frequency);
+  sprintf(buffer[4], "SYS %u ", (unsigned int)test.SYSCLK_Frequency);
+  sprintf(buffer[5], "SYS2 %u ", (unsigned int)hactarGetSystemClock());
+
+  int l;
+  for(l=0; l < 6; l++)
+      LCD_DisplayStringLine(LINE(l), (uint8_t *)buffer[l]);
+
   /* Infinite loop */
   while (1)
   {
