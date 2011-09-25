@@ -8,7 +8,7 @@
 #include "stm3210c_eval_lcd.h"
 #include "stm32_eval_i2c_ee.h"
 
-#include "startup.h"
+#include "hactar/hactar.h"
 
 void SysTick_Handler(void)
 {

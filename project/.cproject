@@ -5,9 +5,7 @@
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.debug.1474451143">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.debug.1474451143" moduleId="org.eclipse.cdt.core.settings" name="Debug">
-				<externalSettings>
-					<externalSetting/>
-				</externalSettings>
+				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
@@ -24,7 +22,12 @@
 						<toolChain id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.toolchain.debug.1772335745" name="ARM Windows GCC (Sourcery G++ Lite)" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.toolchain.debug">
 							<option id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.option.debugging.level.2047265096" name="Debug level" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.option.debugging.level" value="org.eclipse.cdt.cross.arm.gnu.base.option.debugging.level.max" valueType="enumerated"/>
 							<targetPlatform id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.platform.debug.1613971284" isAbstract="false" name="Windows Platform" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.platform.debug"/>
-							<builder buildPath="${workspace_loc:/stm/Debug}" id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.builder.debug.861468196" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="ARM Sourcery Windows GNU Make builder" parallelBuildOn="true" parallelizationNumber="-1" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.builder.debug"/>
+							<builder buildPath="${workspace_loc:/stm/Debug}" id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.builder.debug.861468196" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="ARM Sourcery Windows GNU Make builder" parallelBuildOn="true" parallelizationNumber="3" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.builder.debug">
+								<outputEntries>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Release"/>
+								</outputEntries>
+							</builder>
 							<tool id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.assembler.debug.913170865" name="ARM Sourcery Windows GCC Assembler" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.assembler.debug">
 								<option id="org.eclipse.cdt.cross.arm.gnu.assembler.option.preprocessor.def.185854684" name="Defined symbols (-D)" superClass="org.eclipse.cdt.cross.arm.gnu.assembler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="STM32F10X_CL"/>
@@ -32,14 +35,15 @@
 									<listOptionValue builtIn="false" value="USE_STM3210C_EVAL"/>
 								</option>
 								<option id="org.eclipse.cdt.cross.arm.gnu.assembler.option.include.paths.2100343123" name="Include paths (-I)" superClass="org.eclipse.cdt.cross.arm.gnu.assembler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_CORE_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_DEVICE_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_DRIVER_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_PATH}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_UTILS_COMMON_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_UTILS_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_EVAL_STM3210C_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Libraries/CMSIS/CM3/CoreSupport"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Libraries/STM32F10x_StdPeriph_Driver/inc"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Utilities/STM32_EVAL/Common"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Utilities/STM32_EVAL"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Utilities/STM32_EVAL/STM3210C_EVAL"/>
+									<listOptionValue builtIn="false" value="C:/workspace/stm"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Documents and Settings/xy/My Documents/Downloads/PortableGit-1.7.6-preview20110709/stm32lib&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.assembler.base.input.201932442" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.assembler.base.input"/>
 							</tool>
@@ -53,14 +57,15 @@
 									<listOptionValue builtIn="false" value="USE_STM3210C_EVAL"/>
 								</option>
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.compiler.option.include.paths.1287514100" name="Include paths (-I)" superClass="org.eclipse.cdt.cross.arm.gnu.c.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_CORE_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_DEVICE_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_DRIVER_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_PATH}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_UTILS_COMMON_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_STD_UTILS_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${STM32_EVAL_STM3210C_INC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Libraries/CMSIS/CM3/CoreSupport"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Libraries/STM32F10x_StdPeriph_Driver/inc"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Utilities/STM32_EVAL/Common"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Utilities/STM32_EVAL"/>
+									<listOptionValue builtIn="false" value="C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Utilities/STM32_EVAL/STM3210C_EVAL"/>
+									<listOptionValue builtIn="false" value="C:/workspace/stm"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Documents and Settings/xy/My Documents/Downloads/PortableGit-1.7.6-preview20110709/stm32lib&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.c.compiler.base.input.1546650257" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.c.compiler.base.input"/>
 							</tool>
@@ -71,6 +76,7 @@
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.scriptfile.448525393" name="Script file (-T)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.scriptfile" value="C:\STM32IDE\linker-scripts\stm32_flash_STM32F107VC.ld" valueType="string"/>
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.nostart.1410604056" name="Do not use standard start files (-nostartfiles)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.nostart" value="false" valueType="boolean"/>
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.gcsections.1377553100" name="Remove unused sections (-Xlinker --gc-sections)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.gcsections" value="true" valueType="boolean"/>
+								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.paths.1426090017" name="Library search path (-L)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.paths" valueType="libPaths"/>
 								<inputType id="org.eclipse.cdt.cross.arm.gnu.c.linker.input.885939035" superClass="org.eclipse.cdt.cross.arm.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -84,9 +90,10 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="STM3210C_EVAL|Libraries|Debug" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/arm/|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/gcc_ride7/|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/iar/|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_hd_vl.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_hd.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_ld_vl.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_ld.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md_vl.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_xl.S" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Libraries"/>
+						<entry excluding="Debug|STM3210C_EVAL|stm32lib|Libraries|hactar" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_xl.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/iar/|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/arm/|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_hd_vl.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/gcc_ride7/|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_hd.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_ld_vl.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/system_stm32f10x.h|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md_vl.S|CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_ld.S" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Libraries"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="STM3210C_EVAL"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hactar"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -1970,6 +1977,7 @@
 								<option id="org.eclipse.cdt.cross.arm.gnu.cpp.compiler.option.optimization.level.1394018999" name="Optimization level" superClass="org.eclipse.cdt.cross.arm.gnu.cpp.compiler.option.optimization.level" value="org.eclipse.cdt.cross.arm.gnu.base.option.optimization.level.size" valueType="enumerated"/>
 							</tool>
 							<tool id="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.c.linker.release.115583359" name="ARM Sourcery Windows GCC C Linker" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.windows.elf.c.linker.release">
+								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.paths.925511678" name="Library search path (-L)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.paths" valueType="libPaths"/>
 								<inputType id="org.eclipse.cdt.cross.arm.gnu.c.linker.input.315649783" superClass="org.eclipse.cdt.cross.arm.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

@@ -10,6 +10,10 @@
 			<triggers>clean,full,incremental,</triggers>
 			<arguments>
 				<dictionary>
+					<key>?children?</key>
+					<value>?name?=outputEntries\|?children?=?name?=entry\\\\\\\|\\\|?name?=entry\\\\\\\|\\\|\||</value>
+				</dictionary>
+				<dictionary>
 					<key>?name?</key>
 					<value></value>
 				</dictionary>
@@ -23,7 +27,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildArguments</key>
-					<value>-j</value>
+					<value>-j3</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildCommand</key>
@@ -89,6 +93,11 @@
 			<name>STM3210C_EVAL</name>
 			<type>2</type>
 			<location>C:/STM32IDE/libraries/stm32f10x_stdperiph_lib/Utilities/STM32_EVAL/STM3210C_EVAL</location>
+		</link>
+		<link>
+			<name>hactar</name>
+			<type>2</type>
+			<location>C:/Documents and Settings/xy/My Documents/Downloads/PortableGit-1.7.6-preview20110709/stm32lib/hactar</location>
 		</link>
 	</linkedResources>
 </projectDescription>
