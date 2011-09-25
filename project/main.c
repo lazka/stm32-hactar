@@ -15,8 +15,17 @@ void SysTick_Handler(void)
   STM_EVAL_LEDToggle(LED2);
 }
 
+
 int main(void)
 {
+  spinlock_t lock;
+
+  hactarSpinInit(&lock);
+  hactarSpinLock(&lock);
+  hactarSpinTrylock(&lock);
+  hactarSpinUnlock(&lock);
+  hactarSpinLock(&lock);
+
   STM_EVAL_LEDInit(LED1);
   STM_EVAL_LEDInit(LED2);
   STM_EVAL_LEDInit(LED3);

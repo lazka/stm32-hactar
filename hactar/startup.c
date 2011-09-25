@@ -32,7 +32,7 @@ void SystemInit(void)
 // there is a rounding error) or < 0 if setting failed.
 int hactarConfigureSystickTimer(uint32_t frequency)
 {
-    uint32_t ticks, real;
+    uint32_t ticks;
     uint32_t systick_clk = hactarGetSystemClock() / HACTAR_CLK_SCALE_AHB;
 
 #if HACTAR_CLK_MUX_STK == HACTAR_CLK_MUX_STK_SRC_DIV8

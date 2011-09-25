@@ -22,5 +22,6 @@
 #include "framebuffer.h"
 #include "display.h"
 #include "font.h"
+#include "locks.h"
 
 #endif
