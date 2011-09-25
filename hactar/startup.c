@@ -27,6 +27,29 @@ void SystemInit(void)
     hactarStartup();
 }
 
+// Frequency in HZ
+// Returns the frequency that was set (If the clock is low,
+// there is a rounding error) or < 0 if setting failed.
+int hactarConfigureSystickTimer(uint32_t frequency)
+{
+    uint32_t ticks, real;
+    uint32_t systick_clk = hactarGetSystemClock() / HACTAR_CLK_SCALE_AHB;
+
+#if HACTAR_CLK_MUX_STK == HACTAR_CLK_MUX_STK_SRC_DIV8
+    systick_clk /= 8;
+#endif
+
+    ticks = systick_clk / frequency;
+
+    if(!ticks || ticks > SysTick_LOAD_RELOAD_Msk)
+        return -1;
+
+    if(SysTick_Config(ticks) != 0)
+        return -1;
+
+    return systick_clk / ticks;
+}
+
 void hactarStartup(void)
 {
     // disable all clock interrupts and clear pending bits
@@ -192,6 +215,22 @@ void hactarStartup(void)
     // HSI (we can disable if we don't use it and after switching away from it)
     RCC->CR &= ~RCC_CR_HSION;
 
+#endif
+
+    // set AHB prescaler
+    int32_t i;
+    for(i = 0; i < 9; i++) {
+        if(HACTAR_CLK_SCALE_AHB == (1 << i)) {
+            RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE) | ((0x8 + (i - 1)) << 4);
+            break;
+        }
+    }
+
+    // Set systick source
+#if HACTAR_CLK_MUX_STK == HACTAR_CLK_MUX_STK_SRC_AHBPRE
+    SysTick->CTRL |= SysTick_CLKSource_HCLK;
+#else
+    SysTick->CTRL &= SysTick_CLKSource_HCLK_Div8;
 #endif
 
 }

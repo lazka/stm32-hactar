@@ -28,10 +28,9 @@ int main(void)
   STM_EVAL_LEDOn(LED4);
   STM_EVAL_LEDOff(LED3);
 
-  SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK_Div8);
-  SysTick_Config(9000000);
-
   STM3210C_LCD_Init();
+
+  assert(hactarConfigureSystickTimer(1) >= 0);
 
   LCD_Clear(LCD_COLOR_BLUE);
   LCD_SetBackColor(LCD_COLOR_BLUE);

@@ -18,6 +18,7 @@
 #ifndef __HACTAR_STARTUP
 #define __HACTAR_STARTUP
 
+int hactarConfigureSystickTimer(uint32_t frequency);
 uint32_t hactarGetSystemClock(void);
 void hactarStartup(void);
 void SystemInit(void);
