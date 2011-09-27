@@ -33,21 +33,32 @@ void SystemInit(void)
 int hactarConfigureSystickTimer(uint32_t frequency)
 {
     uint32_t ticks;
-    uint32_t systick_clk = hactarGetSystemClock() / HACTAR_CLK_SCALE_AHB;
+
+    if(frequency == 0)
+        return -1;
 
 #if HACTAR_CLK_MUX_STK == HACTAR_CLK_MUX_STK_SRC_DIV8
-    systick_clk /= 8;
+    frequency *= 8;
 #endif
 
-    ticks = systick_clk / frequency;
+    ticks = hactarGetSystemClock() / (frequency * HACTAR_CLK_SCALE_AHB);
 
-    if(!ticks || ticks > SysTick_LOAD_RELOAD_Msk)
+    // the register needs n-1 set do trigger the event every n ticks
+    // zero ticks is possible but would simply disable it
+    if(ticks <= 2 || (ticks - 1) > SysTick_LOAD_RELOAD_Msk)
         return -1;
 
-    if(SysTick_Config(ticks) != 0)
-        return -1;
+    SysTick->LOAD = ((ticks - 1) & SysTick_LOAD_RELOAD_Msk);
 
-    return systick_clk / ticks;
+    NVIC_SetPriority (SysTick_IRQn, (1 << __NVIC_PRIO_BITS) - 1);
+
+    SysTick->VAL = 0xdeadbeef; // any write clears it
+
+    SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk |
+                    SysTick_CTRL_TICKINT_Msk |
+                    SysTick_CTRL_ENABLE_Msk;
+
+    return hactarGetSystemClock() / ticks;
 }
 
 void hactarStartup(void)

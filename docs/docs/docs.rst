@@ -19,7 +19,7 @@ Have at look in /projects/stm32lib on the AFS server.
 Basically only the standard peripheral library from ST is needed. It includes
 a version of the CMSIS library, which is a standardized abstraction layer for
 ARM chip producers. Even thought there is a newer CMSIS available at ARM,
-the one included in the std periph is a modificated version, so don't try
+the one included in the std periph is a modified version, so don't try
 to update it.
 
 The std library also includes a utilities folder which includes drivers for
@@ -40,3 +40,6 @@ Probably a bug because something was changed in the main `C/C++ Build` panel.
 Workarround: Add the needed commands manually under `C/C++ Build -> Settings
 -> Build Steps -> Post-build steps`
 
+** The GDB server dies everytime I start it, returning -256 or -7 ... **
+
+Hold down the STM32 reset button while starting the GDB server.
