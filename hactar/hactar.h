@@ -21,6 +21,7 @@
 #include "startup.h"
 #include "framebuffer.h"
 #include "display.h"
+#include "display_func.h"
 #include "font.h"
 #include "locks.h"
 

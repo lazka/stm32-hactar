@@ -8,7 +8,7 @@
 #ifndef FRAMEBUFFER_H__
 #define FRAMEBUFFER_H__
 
-#define FB_DEBUG 1
+#define FB_DEBUG 0
 
 #include <stddef.h>
 #include <stdint.h>
