@@ -46,8 +46,7 @@ The file is a bit hard to find on the website.. so here is a small description:
 
 http://www.st.com/
 
-`Support -> Tools & Resources -> Runtime Software -> STM32 ->
-ARM-based 32-bit MCU STM32F10xxx standard peripheral library`
+`Products -> Micors & Memories -> Microcontrollers -> STM32 -> Resources -> Software Resources -> Firmware`
 
 **Important:** You have to change all file extensions under
 `Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup` to uppercase (.S) or
@@ -84,6 +83,10 @@ ST-Link GDB Server
 
 The `st-link-gdb-server` directory includes the modified gdb server taken from
 the Atollic toolchain. It includes a driver for the ST-LINK.
+
+ * ST-LINK_gdbserver.exe is taken from Atollic 2.2
+ * STLinkUSBDriver.dll from an older version (newer ones need a WinVista
+   or an extra driver that is also shipped with Attolic)
 
 The ST-LINK device uses an uncommon way for talking with the PC. It's
 implemented by directly writing to the mounted pseudo filesystem. Since this
