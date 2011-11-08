@@ -1,19 +1,9 @@
-/* Copyright (C) 2011  Christoph Reiter <christoph.reiter@gmx.at>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
+// Copyright 2011 Christoph Reiter
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License version 2 as
+// published by the Free Software Foundation.
+//
 
 #include "stm32f10x.h"
 #include "stm32f10x_rcc.h"
@@ -25,40 +15,6 @@
 void SystemInit(void)
 {
     hactarStartup();
-}
-
-// Frequency in HZ
-// Returns the frequency that was set (If the clock is low,
-// there is a rounding error) or < 0 if setting failed.
-int hactarConfigureSystickTimer(uint32_t frequency)
-{
-    uint32_t ticks;
-
-    if(frequency == 0)
-        return -1;
-
-#if HACTAR_CLK_MUX_STK == HACTAR_CLK_MUX_STK_SRC_DIV8
-    frequency *= 8;
-#endif
-
-    ticks = hactarGetSystemClock() / (frequency * HACTAR_CLK_SCALE_AHB);
-
-    // the register needs n-1 set do trigger the event every n ticks
-    // zero ticks is possible but would simply disable it
-    if(ticks <= 2 || (ticks - 1) > SysTick_LOAD_RELOAD_Msk)
-        return -1;
-
-    SysTick->LOAD = ((ticks - 1) & SysTick_LOAD_RELOAD_Msk);
-
-    NVIC_SetPriority (SysTick_IRQn, (1 << __NVIC_PRIO_BITS) - 1);
-
-    SysTick->VAL = 0xdeadbeef; // any write clears it
-
-    SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk |
-                    SysTick_CTRL_TICKINT_Msk |
-                    SysTick_CTRL_ENABLE_Msk;
-
-    return hactarGetSystemClock() / ticks;
 }
 
 void hactarStartup(void)

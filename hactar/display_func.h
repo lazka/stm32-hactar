@@ -5,8 +5,8 @@
 // published by the Free Software Foundation.
 //
 
-#ifndef DISPLAY_FUNC_H_
-#define DISPLAY_FUNC_H_
+#ifndef HACTAR_DISPLAY_FUNC_H__
+#define HACTAR_DISPLAY_FUNC_H__
 
 #include "display.h"
 #include "framebuffer.h"

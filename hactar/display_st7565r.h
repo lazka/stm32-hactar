@@ -5,8 +5,8 @@
 // published by the Free Software Foundation.
 //
 
-#ifndef DISPLAY_ST7565R_H_
-#define DISPLAY_ST7565R_H_
+#ifndef HACTER_DISPLAY_ST7565R_H__
+#define HACTER_DISPLAY_ST7565R_H__
 
 #include "display.h"
 #include "framebuffer.h"

@@ -5,16 +5,14 @@
 // published by the Free Software Foundation.
 //
 
-#ifndef HACTAR_HACTAR_H__
-#define HACTAR_HACTAR_H__
-
-#include "startup.h"
-#include "framebuffer.h"
-#include "display.h"
-#include "display_func.h"
-#include "font.h"
-#include "locks.h"
 #include "misc.h"
-#include "scheduler.h"
 
-#endif
+void interruptsDisable()
+{
+    asm volatile ("cpsid   i" : : : "memory");
+}
+
+void interruptsEnable()
+{
+    asm volatile ("cpsie   i" : : : "memory");
+}

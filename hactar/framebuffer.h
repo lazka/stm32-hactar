@@ -5,8 +5,8 @@
 // published by the Free Software Foundation.
 //
 
-#ifndef FRAMEBUFFER_H__
-#define FRAMEBUFFER_H__
+#ifndef HACTAR_FRAMEBUFFER_H__
+#define HACTAR_FRAMEBUFFER_H__
 
 #define FB_DEBUG 0
 

@@ -5,16 +5,11 @@
 // published by the Free Software Foundation.
 //
 
-#ifndef HACTAR_HACTAR_H__
-#define HACTAR_HACTAR_H__
+#ifndef HACTER_MISC_H__
+#define HACTER_MISC_H__
 
-#include "startup.h"
-#include "framebuffer.h"
-#include "display.h"
-#include "display_func.h"
-#include "font.h"
-#include "locks.h"
-#include "misc.h"
-#include "scheduler.h"
+void interruptsDisable();
+
+void interruptsEnable();
 
 #endif

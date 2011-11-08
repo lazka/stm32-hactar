@@ -5,8 +5,8 @@
 // published by the Free Software Foundation.
 //
 
-#ifndef DISPLAY_H_
-#define DISPLAY_H_
+#ifndef HACTAR_DISPLAY_H__
+#define HACTAR_DISPLAY_H__
 
 #include <stddef.h>
 #include <stdint.h>
