@@ -52,11 +52,11 @@ void hactarStartup(void)
     uint32_t sysclk = hactarGetSystemClock();
     uint32_t flash_wait_states;
     if(sysclk <= 24000000)
-        flash_wait_states = 0;
+        flash_wait_states = FLASH_ACR_LATENCY_0;
     else if(sysclk <= 48000000)
-        flash_wait_states = 1;
+        flash_wait_states = FLASH_ACR_LATENCY_1;
     else
-        flash_wait_states = 2;
+        flash_wait_states = FLASH_ACR_LATENCY_2;
 
     // Prefetch buffer enable
     FLASH->ACR |= FLASH_ACR_PRFTBE;
@@ -188,7 +188,13 @@ void hactarStartup(void)
     int32_t i;
     for(i = 0; i < 9; i++) {
         if(HACTAR_CLK_SCALE_AHB == (1 << i)) {
-            RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE) | ((0x8 + (i - 1)) << 4);
+            // bug in STM code.. they expect it to be zeros *grr*
+            // see APBAHBPrescTable in stm32f10x_rcc
+            if (i == 0)
+                RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE);
+            else
+                RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE) | \
+                            ((0x8 + (i - 1)) << 4);
             break;
         }
     }

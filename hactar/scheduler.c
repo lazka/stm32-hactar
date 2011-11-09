@@ -10,6 +10,8 @@
 #include "startup.h"
 #include "platform.h"
 
+#include <stdio.h>
+
 #include "stm32_eval.h"
 
 /*

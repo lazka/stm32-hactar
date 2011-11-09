@@ -1,3 +1,10 @@
+// Copyright 2011 Christoph Reiter
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License version 2 as
+// published by the Free Software Foundation.
+//
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,14 +17,26 @@
 
 #include "hactar/hactar.h"
 
-void SysTick_Handler(void)
-{
-  STM_EVAL_LEDToggle(LED2);
-}
+//#include "hactar/display_st7565r.h"
 
+void hactarInitUSART(void)
+{
+    USART_InitTypeDef USART_InitStructure;
+    USART_InitStructure.USART_BaudRate = 115200;
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+
+    STM_EVAL_COMInit(COM1, &USART_InitStructure);
+}
 
 int main(void)
 {
+  //DisplayInfo *display = (DisplayInfo*)&st7565r;
+  //displayInit(display, 64, 64);
+
   spinlock_t lock;
 
   hactarSpinInit(&lock);
@@ -37,9 +56,12 @@ int main(void)
   STM_EVAL_LEDOn(LED4);
   STM_EVAL_LEDOff(LED3);
 
-  STM3210C_LCD_Init();
+  hactarInitUSART();
+  hactarInitScheduler(1);
 
-  assert(hactarConfigureSystickTimer(1) >= 0);
+  printf("Hello World\n");
+
+  STM3210C_LCD_Init();
 
   LCD_Clear(LCD_COLOR_BLUE);
   LCD_SetBackColor(LCD_COLOR_BLUE);
@@ -60,35 +82,8 @@ int main(void)
   for(l=0; l < 6; l++)
       LCD_DisplayStringLine(LINE(l), (uint8_t *)buffer[l]);
 
-  assert_param(0);
+  assert(0);
 
-  while(1);
-}
-
-void assert_failed(uint8_t* file, uint32_t line)
-{
-    char line_buffer[20];
-    char *assert = "ASSERT";
-
-    LCD_SetBackColor(LCD_COLOR_BLACK);
-    LCD_SetTextColor(LCD_COLOR_RED);
-
-    sprintf(line_buffer, "Line %u", (unsigned int)line);
-    LCD_ClearLine(LINE(7));
-    LCD_ClearLine(LINE(8));
-    LCD_ClearLine(LINE(9));
-    LCD_DisplayStringLine(LINE(7), (uint8_t *)assert);
-    LCD_DisplayStringLine(LINE(8), (uint8_t *)file);
-    LCD_DisplayStringLine(LINE(9), (uint8_t *)line_buffer);
-
-    int32_t x=0, y=0;
-
-    LCD_SetTextColor(LCD_COLOR_GREY);
-    LCD_DrawUniLine(x + 10, y + 40, x + 80, y + 70);
-    LCD_DrawUniLine(x + 80, y + 70, x + 50, y + 20);
-    LCD_DrawUniLine(x + 50, y + 20, x + 120, y + 60);
-    LCD_DrawUniLine(x + 120, y + 60, x + 118, y + 48);
-    LCD_DrawUniLine(x + 120, y + 60, x + 110, y + 65);
-
-    while (1);
+  while (1)
+      __WFI();
 }

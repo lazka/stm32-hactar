@@ -17,4 +17,6 @@ void interruptsEnable();
 void GPIO_GetPinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,
         GPIO_InitTypeDef* GPIO_InitStruct);
 
+void assert_failed(uint8_t* file, uint32_t line);
+
 #endif

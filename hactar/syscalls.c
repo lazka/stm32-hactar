@@ -10,8 +10,12 @@
 #include <stdlib.h> /* abort */
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include "stm32f10x.h" /* for _get_PSP() from core_cm3.h*/
+#include "stm32_eval.h"
+
+#include "misc.h"
 
 #undef errno
 extern int errno;
@@ -100,6 +104,17 @@ int _read(int file, char *ptr, int len)
 
 int _write(int file, char *ptr, int len)
 {
-    file = file; /* avoid warning */
+    size_t n;
+    if(file == STDOUT_FILENO)
+    {
+        for (n = 0; n < len; n++)
+        {
+            USART_SendData(EVAL_COM1, (uint8_t) *ptr++);
+            while (USART_GetFlagStatus(EVAL_COM1, USART_FLAG_TC) == RESET);
+        }
+    }
+    else
+        assert(0);
+
     return len;
 }

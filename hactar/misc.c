@@ -5,6 +5,8 @@
 // published by the Free Software Foundation.
 //
 
+#include <stdio.h>
+
 #include "misc.h"
 
 void interruptsDisable()
@@ -15,6 +17,14 @@ void interruptsDisable()
 void interruptsEnable()
 {
     asm volatile ("cpsie   i" : : : "memory");
+}
+
+void assert_failed(uint8_t* file, uint32_t line)
+{
+    printf("ASSERT: [%u] %s\n", (unsigned int)line, file);
+
+    while(1)
+        __WFI();
 }
 
 /*
