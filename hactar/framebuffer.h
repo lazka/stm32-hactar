@@ -77,7 +77,7 @@ void fbDebugPrint(FbInfo *fb);
 void fbDrawCharacter(FbInfo *fb, const FontInfo *font, unsigned char c,
     size_t x, size_t y, uint32_t flags);
 
-void fbDrawString(FbInfo *fb, const FontInfo *font, char *s,
+void fbDrawString(FbInfo *fb, const FontInfo *font, char *s, size_t length,
     size_t x, size_t y, int spacing, uint32_t flags);
 
 #endif

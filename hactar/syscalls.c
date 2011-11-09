@@ -13,9 +13,8 @@
 #include <unistd.h>
 
 #include "stm32f10x.h" /* for _get_PSP() from core_cm3.h*/
-#include "stm32_eval.h"
 
-#include "misc.h"
+#include "stdout.h"
 
 #undef errno
 extern int errno;
@@ -104,15 +103,8 @@ int _read(int file, char *ptr, int len)
 
 int _write(int file, char *ptr, int len)
 {
-    size_t n;
     if(file == STDOUT_FILENO)
-    {
-        for (n = 0; n < len; n++)
-        {
-            USART_SendData(EVAL_COM1, (uint8_t) *ptr++);
-            while (USART_GetFlagStatus(EVAL_COM1, USART_FLAG_TC) == RESET);
-        }
-    }
+        stdout_device.write_func_(ptr, len);
     else
         assert(0);
 

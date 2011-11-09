@@ -19,19 +19,6 @@
 
 //#include "hactar/display_st7565r.h"
 
-void hactarInitUSART(void)
-{
-    USART_InitTypeDef USART_InitStructure;
-    USART_InitStructure.USART_BaudRate = 115200;
-    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-    USART_InitStructure.USART_StopBits = USART_StopBits_1;
-    USART_InitStructure.USART_Parity = USART_Parity_No;
-    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-
-    STM_EVAL_COMInit(COM1, &USART_InitStructure);
-}
-
 int main(void)
 {
   //DisplayInfo *display = (DisplayInfo*)&st7565r;
@@ -56,7 +43,8 @@ int main(void)
   STM_EVAL_LEDOn(LED4);
   STM_EVAL_LEDOff(LED3);
 
-  hactarInitUSART();
+  initUSARTStdoutDevice();
+
   hactarInitScheduler(1);
 
   printf("Hello World\n");

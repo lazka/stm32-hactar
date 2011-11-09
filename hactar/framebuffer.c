@@ -276,7 +276,8 @@ void fbDrawCharacter(FbInfo *fb, const FontInfo *font, uint8_t c,
 // Draws a string usign the given font info. x, y specify the
 // top left corner of the string. Spacing is the space between
 // two characters. A negative number means characters overlap.
-void fbDrawString(FbInfo *fb, const FontInfo *font, char *s,
+// length=0 means draw until EOL
+void fbDrawString(FbInfo *fb, const FontInfo *font, char *s, size_t length,
     size_t x, size_t y, int spacing, uint32_t flags)
 {
     size_t i, dx = 0, dy = 0;
@@ -286,10 +287,11 @@ void fbDrawString(FbInfo *fb, const FontInfo *font, char *s,
     else
         dx = font->width_ + spacing;
 
-    for(i = 0; s[i] != '\0'; ++i)
+    for(i = 0; (i < length || !length) && s[i] != '\0'; ++i)
     {
         fbDrawCharacter(fb, font, s[i], x, y, flags);
         x += dx;
         y += dy;
     }
 }
+

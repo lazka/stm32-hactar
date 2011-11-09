@@ -5,17 +5,19 @@
 // published by the Free Software Foundation.
 //
 
-#ifndef HACTAR_HACTAR_H__
-#define HACTAR_HACTAR_H__
+#ifndef HACTAR_FBCONSOLE_H__
+#define HACTAR_FBCONSOLE_H__
 
-#include "startup.h"
 #include "framebuffer.h"
-#include "display.h"
-#include "display_func.h"
-#include "font.h"
-#include "locks.h"
-#include "misc.h"
-#include "scheduler.h"
-#include "stdout.h"
+
+typedef struct
+{
+    FbInfo *fb_info;
+    FontInfo *font_info;
+} FBConsoleInfo;
+
+FBConsoleInfo fbconsole_info;
+
+void initFramebufferStdoutDevice(FbInfo *fb_info, FontInfo *font_info);
 
 #endif
