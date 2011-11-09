@@ -11,7 +11,7 @@ $(NAME).pdf: $(NAME).rst
 	rst2pdf -b1 $(NAME).rst
 
 clean:
-	rm $(NAME).html $(NAME).pdf
+	rm -f $(NAME).html $(NAME).pdf
 
 show:
 	xdg-open $(NAME).html
