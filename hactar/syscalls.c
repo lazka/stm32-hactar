@@ -104,7 +104,7 @@ int _read(int file, char *ptr, int len)
 int _write(int file, char *ptr, int len)
 {
     if(file == STDOUT_FILENO)
-        stdout_device.write_func_(ptr, len);
+        return stdout_device.write_func_(ptr, len);
     else
         assert(0);
 

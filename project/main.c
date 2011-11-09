@@ -21,57 +21,45 @@
 
 int main(void)
 {
-  //DisplayInfo *display = (DisplayInfo*)&st7565r;
-  //displayInit(display, 64, 64);
+    //DisplayInfo *display = (DisplayInfo*)&st7565r;
+    //displayInit(display, 64, 64);
 
-  spinlock_t lock;
+    spinlock_t lock;
 
-  hactarSpinInit(&lock);
-  hactarSpinLock(&lock);
-  hactarSpinTrylock(&lock);
-  hactarSpinUnlock(&lock);
-  hactarSpinLock(&lock);
+    hactarSpinInit(&lock);
+    hactarSpinLock(&lock);
+    hactarSpinTrylock(&lock);
+    hactarSpinUnlock(&lock);
+    hactarSpinLock(&lock);
 
-  STM_EVAL_LEDInit(LED1);
-  STM_EVAL_LEDInit(LED2);
-  STM_EVAL_LEDInit(LED3);
-  STM_EVAL_LEDInit(LED4);
+    STM_EVAL_LEDInit(LED1);
+    STM_EVAL_LEDInit(LED2);
+    STM_EVAL_LEDInit(LED3);
+    STM_EVAL_LEDInit(LED4);
 
-  STM_EVAL_LEDOn(LED1);
-  STM_EVAL_LEDOn(LED2);
-  STM_EVAL_LEDOn(LED3);
-  STM_EVAL_LEDOn(LED4);
-  STM_EVAL_LEDOff(LED3);
+    STM_EVAL_LEDOn(LED1);
+    STM_EVAL_LEDOn(LED2);
+    STM_EVAL_LEDOn(LED3);
+    STM_EVAL_LEDOn(LED4);
+    STM_EVAL_LEDOff(LED3);
 
-  initUSARTStdoutDevice();
+    hactarInitScheduler(1);
 
-  hactarInitScheduler(1);
+    //initUSARTStdoutDevice();
+    initEvalLCDStdoutDevice();
 
-  printf("Hello World\n");
+    RCC_ClocksTypeDef test;
+    RCC_GetClocksFreq(&test);
 
-  STM3210C_LCD_Init();
+    printf("ADC   %u\n", (unsigned int)test.ADCCLK_Frequency);
+    printf("HCLK  %u\n", (unsigned int)test.HCLK_Frequency);
+    printf("PCLK1 %u\n", (unsigned int)test.PCLK1_Frequency);
+    printf("PCLK2 %u\n", (unsigned int)test.PCLK2_Frequency);
+    printf("SYS   %u\n", (unsigned int)test.SYSCLK_Frequency);
+    printf("SYS2  %u\n", (unsigned int)hactarGetSystemClock());
 
-  LCD_Clear(LCD_COLOR_BLUE);
-  LCD_SetBackColor(LCD_COLOR_BLUE);
-  LCD_SetTextColor(LCD_COLOR_WHITE);
+    assert(0);
 
-  RCC_ClocksTypeDef test;
-  RCC_GetClocksFreq(&test);
-  char buffer[5][20];
-
-  sprintf(buffer[0], "ADC %u ", (unsigned int)test.ADCCLK_Frequency);
-  sprintf(buffer[1], "H %u ", (unsigned int)test.HCLK_Frequency);
-  sprintf(buffer[2], "P1 %u ", (unsigned int)test.PCLK1_Frequency);
-  sprintf(buffer[3], "P2 %u ", (unsigned int)test.PCLK2_Frequency);
-  sprintf(buffer[4], "SYS %u ", (unsigned int)test.SYSCLK_Frequency);
-  sprintf(buffer[5], "SYS2 %u ", (unsigned int)hactarGetSystemClock());
-
-  int l;
-  for(l=0; l < 6; l++)
-      LCD_DisplayStringLine(LINE(l), (uint8_t *)buffer[l]);
-
-  assert(0);
-
-  while (1)
+    while (1)
       __WFI();
 }
