@@ -40,7 +40,7 @@ void hactarInitScheduler(uint32_t frequency)
 // Frequency in HZ
 // Returns the actual frequency that was set (If the clock is low,
 // there is a rounding error) or < 0 if setting failed.
-static int configureSystickTimer(uint32_t frequency)
+int configureSystickTimer(uint32_t frequency)
 {
     uint32_t ticks;
 

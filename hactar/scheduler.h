@@ -19,6 +19,6 @@
 #define SYSTCK_PRIO (MINIMUM_PRIO - 1)
 
 void hactarInitScheduler(uint32_t frequency);
-static int configureSystickTimer(uint32_t frequency);
+int configureSystickTimer(uint32_t frequency);
 
 #endif

@@ -8,8 +8,13 @@
 #ifndef HACTER_MISC_H__
 #define HACTER_MISC_H__
 
+#include "stm32f10x_gpio.h"
+
 void interruptsDisable();
 
 void interruptsEnable();
+
+void GPIO_GetPinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,
+        GPIO_InitTypeDef* GPIO_InitStruct);
 
 #endif
