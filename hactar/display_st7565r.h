@@ -11,6 +11,11 @@
 #include "display.h"
 #include "framebuffer.h"
 
+#define ST765R_GPIO_CS   GPIO_Pin_4
+#define ST765R_GPIO_CLK  GPIO_Pin_5
+#define ST765R_GPIO_A0   GPIO_Pin_6
+#define ST765R_GPIO_MOSI GPIO_Pin_7
+
 // http://www.sitronix.com.tw/sitronix/product.nsf/Doc/ST7565R
 
 #define ST7565R_SET_LINE_START(line) (0x40|line)

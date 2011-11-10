@@ -17,11 +17,11 @@ static void SPIWriteCommand(uint8_t writedat)
     /* Loop while SPI1 is busy */
     while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET);
     /* Send byte through the SPI1 peripheral */
-    GPIO_ResetBits(GPIOA, GPIO_Pin_4 | GPIO_Pin_6);  //set A0 = !CS = 0
+    GPIO_ResetBits(GPIOA, ST765R_GPIO_CS | ST765R_GPIO_A0);  //set A0 = !CS = 0
     SPI_I2S_SendData(SPI1, writedat);
     while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
     //while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET);
-    GPIO_SetBits(GPIOA, GPIO_Pin_4);  //set !CS = 1
+    GPIO_SetBits(GPIOA, ST765R_GPIO_CS);  //set !CS = 1
 }
 
 static void SPIInit(void)
@@ -34,7 +34,7 @@ static void SPIInit(void)
 
     /* Configure SPI1 pins: NSS, SCK and MOSI */
     GPIO_InitTypeDef GPIO_InitStructure = {
-            .GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_7,
+            .GPIO_Pin = ST765R_GPIO_CLK | ST765R_GPIO_MOSI,
             .GPIO_Speed = GPIO_Speed_50MHz,
             .GPIO_Mode = GPIO_Mode_AF_PP
     };
@@ -42,14 +42,14 @@ static void SPIInit(void)
 
     /* The MISO is used for A0 for the display */
     GPIO_InitTypeDef GPIO_InitStructure2 = {
-            .GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_6,
+            .GPIO_Pin = ST765R_GPIO_CS | ST765R_GPIO_A0,
             .GPIO_Speed = GPIO_Speed_50MHz,
             .GPIO_Mode = GPIO_Mode_Out_PP
     };
     GPIO_Init(GPIOA, &GPIO_InitStructure2);
 
-    GPIO_ResetBits(GPIOA,GPIO_Pin_6); //set A0 = 0
-    GPIO_SetBits(GPIOA, GPIO_Pin_4);  //set !CS = 1
+    GPIO_ResetBits(GPIOA, ST765R_GPIO_A0); //set A0 = 0
+    GPIO_SetBits(GPIOA, ST765R_GPIO_CS);  //set !CS = 1
 
     /* SPI1 configuration */
     SPI_Cmd(SPI1, DISABLE);
@@ -61,7 +61,7 @@ static void SPIInit(void)
         .SPI_CPOL = SPI_CPOL_High,
         .SPI_CPHA = SPI_CPHA_2Edge,
         .SPI_NSS = SPI_NSS_Soft,
-        .SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4,
+        .SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128,
         .SPI_FirstBit = SPI_FirstBit_MSB,
         .SPI_CRCPolynomial = 7
     };
@@ -96,7 +96,7 @@ void st7565rInit(DisplayInfoST7565R *display, size_t width, size_t height)
     SPIWriteCommand(ST7565R_DISPLAY_ON); //Display on
 
     SPIWriteCommand(ST7565R_DISPLAY_ALL_ON); //All Points on
-    SPIWriteCommand(ST7565R_DISPLAY_ALL_OFF); //All Points off
+    //SPIWriteCommand(ST7565R_DISPLAY_ALL_OFF); //All Points off
 }
 
 void st7565rUpdate(DisplayInfoST7565R *display, FbInfo *fb)
