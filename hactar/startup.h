@@ -9,8 +9,6 @@
 #define HACTAR_STARTUP_H__
 
 uint32_t hactarGetSystemClock(void);
-void hactarStartup(void);
 void SystemInit(void);
-void SetSysClockTo72(void);
 
 #endif

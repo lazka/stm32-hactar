@@ -11,13 +11,34 @@
 #include "platform.h"
 #include "startup.h"
 
+static void hactarStartup(void);
+static void hactarStartupPeriph(void);
+
 // This gets called from the startup asm
 void SystemInit(void)
 {
     hactarStartup();
+    hactarStartupPeriph();
 }
 
-void hactarStartup(void)
+static void hactarStartupPeriph(void)
+{
+    uint32_t ppre_lt[] = {0, 0, 4, 0, 5, 0, 0, 0, 6, 0,
+                          0, 0, 0, 0, 0, 0, 7};
+    // ADC Prescaler
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_ADCPRE) | \
+                ((HACTAR_CLK_SCALE_ADC - 2) / 2) << 14;
+
+    // Prescaler for PCLK1
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PPRE1) | \
+                (ppre_lt[HACTAR_CLK_SCALE_APB1] << 8);
+
+    // Prescaler for PCLK2
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PPRE2) | \
+                (ppre_lt[HACTAR_CLK_SCALE_APB2] << 11);
+}
+
+static void hactarStartup(void)
 {
     // disable all clock interrupts and clear pending bits
     RCC->CIR = (RCC->CIR & ~0xFFFF) | 0xFF0000;
