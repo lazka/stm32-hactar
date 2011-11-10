@@ -7,8 +7,8 @@
 
 #include "stm32f10x.h"
 
-#include "stdout.h"
 #include "platform.h"
+#include "stdout.h"
 
 static int writeUSARTStdout(char *ptr, int len)
 {
@@ -82,7 +82,8 @@ void initUSARTStdoutDevice(void)
     /* Enable USART */
     USART_Cmd(HACTAR_STDOUT_USART, ENABLE);
 
-    stdout_device.write_func_ = &writeUSARTStdout;
+    usart_stdout_device.write_func_ = &writeUSARTStdout;
+    stdout_device = &usart_stdout_device;
 
     // enabled interrupts
     /*USART_ITConfig(HACTAR_STDOUT_USART, USART_IT_RXNE, ENABLE);

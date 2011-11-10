@@ -104,7 +104,10 @@ int _read(int file, char *ptr, int len)
 int _write(int file, char *ptr, int len)
 {
     if(file == STDOUT_FILENO)
-        return stdout_device.write_func_(ptr, len);
+    {
+        if(stdout_device != NULL)
+            return stdout_device->write_func_(ptr, len);
+    }
     else
         assert(0);
 

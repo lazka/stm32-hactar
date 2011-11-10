@@ -8,7 +8,6 @@
 #include "stm3210c_eval_lcd.h"
 
 #include "evalconsole.h"
-#include "stdout.h"
 
 static int writeEvalLCDStdout(char *ptr, int len)
 {
@@ -49,9 +48,9 @@ void initEvalLCDStdoutDevice(void)
     LCD_SetBackColor(LCD_COLOR_BLUE);
     LCD_SetTextColor(LCD_COLOR_WHITE);
 
+    evallcdconsole_info.device_.write_func_ = &writeEvalLCDStdout;
     evallcdconsole_info.column_ = LCD_PIXEL_WIDTH - 1;
     evallcdconsole_info.line_ = 0;
 
-    stdout_device.write_func_ = &writeEvalLCDStdout;
-    stdout_device.data_ = &evallcdconsole_info;
+    stdout_device = (StdoutDevice*)&evallcdconsole_info;
 }

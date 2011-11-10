@@ -26,9 +26,6 @@ static void SPIWriteCommand(uint8_t writedat)
 
 static void SPIInit(void)
 {
-    SPI_InitTypeDef  SPI_InitStructure;
-    GPIO_InitTypeDef GPIO_InitStructure;
-
     /* Enable SPI1 and GPIOA clocks */
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB |
                            RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD |
@@ -36,32 +33,40 @@ static void SPIInit(void)
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 
     /* Configure SPI1 pins: NSS, SCK and MOSI */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_7;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitTypeDef GPIO_InitStructure = {
+            .GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_7,
+            .GPIO_Speed = GPIO_Speed_50MHz,
+            .GPIO_Mode = GPIO_Mode_AF_PP
+    };
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     /* The MISO is used for A0 for the display */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_6;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_InitTypeDef GPIO_InitStructure2 = {
+            .GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_6,
+            .GPIO_Speed = GPIO_Speed_50MHz,
+            .GPIO_Mode = GPIO_Mode_Out_PP
+    };
+    GPIO_Init(GPIOA, &GPIO_InitStructure2);
 
     GPIO_ResetBits(GPIOA,GPIO_Pin_6); //set A0 = 0
     GPIO_SetBits(GPIOA, GPIO_Pin_4);  //set !CS = 1
 
     /* SPI1 configuration */
     SPI_Cmd(SPI1, DISABLE);
-    SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx;
-    SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
-    SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
-    SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
-    SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
-    SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-    SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
-    SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
-    SPI_InitStructure.SPI_CRCPolynomial = 7;
+
+    SPI_InitTypeDef SPI_InitStructure = {
+        .SPI_Direction = SPI_Direction_1Line_Tx,
+        .SPI_Mode = SPI_Mode_Master,
+        .SPI_DataSize = SPI_DataSize_8b,
+        .SPI_CPOL = SPI_CPOL_High,
+        .SPI_CPHA = SPI_CPHA_2Edge,
+        .SPI_NSS = SPI_NSS_Soft,
+        .SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4,
+        .SPI_FirstBit = SPI_FirstBit_MSB,
+        .SPI_CRCPolynomial = 7
+    };
     SPI_Init(SPI1, &SPI_InitStructure);
+
     SPI_CalculateCRC(SPI1, DISABLE);
 
     /* Enable SPI1  */

@@ -9,9 +9,11 @@
 #define HACTAR_EVALCONSOLE_H__
 
 #include "stddef.h"
+#include "stdout.h"
 
 typedef struct
 {
+    StdoutDevice device_;
     size_t line_;
     size_t column_;
 } EvalLCDConsoleInfo;

@@ -12,17 +12,16 @@
 #include "stm32f10x.h"
 
 #include "stm32_eval.h"
-#include "stm3210c_eval_lcd.h"
-#include "stm32_eval_i2c_ee.h"
 
 #include "hactar/hactar.h"
 
-//#include "hactar/display_st7565r.h"
+#include "hactar/evalconsole.h"
+#include "hactar/display_st7565r.h"
 
 int main(void)
 {
-    //DisplayInfo *display = (DisplayInfo*)&st7565r;
-    //displayInit(display, 64, 64);
+    DisplayInfo *display = (DisplayInfo*)&st7565r;
+    displayInit(display, 64, 64);
 
     spinlock_t lock;
 

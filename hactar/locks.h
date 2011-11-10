@@ -8,12 +8,12 @@ typedef struct {
     volatile unsigned int lock;
 } spinlock_t;
 
-inline void hactarSpinInit(spinlock_t *lock)
+void hactarSpinInit(spinlock_t *lock)
 {
     lock->lock = 0;
 }
 
-inline void hactarSpinLock(spinlock_t *lock)
+void hactarSpinLock(spinlock_t *lock)
 {
     unsigned long tmp;
 
@@ -31,7 +31,7 @@ inline void hactarSpinLock(spinlock_t *lock)
     __asm__ ("": : :"memory");
 }
 
-static inline void hactarSpinUnlock(spinlock_t *lock)
+void hactarSpinUnlock(spinlock_t *lock)
 {
     __asm__ ("": : :"memory");
 
@@ -42,7 +42,7 @@ static inline void hactarSpinUnlock(spinlock_t *lock)
     : "cc");
 }
 
-inline int hactarSpinTrylock(spinlock_t *lock)
+int hactarSpinTrylock(spinlock_t *lock)
 {
     unsigned long tmp;
 

@@ -13,10 +13,11 @@
 typedef struct
 {
     int (*write_func_)(char *ptr, int len);
-    void *data_;
 } StdoutDevice;
 
-StdoutDevice stdout_device;
+StdoutDevice *stdout_device;
+
+StdoutDevice usart_stdout_device;
 
 void initUSARTStdoutDevice(void);
 

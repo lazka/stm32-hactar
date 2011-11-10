@@ -9,11 +9,13 @@
 #define HACTAR_FBCONSOLE_H__
 
 #include "framebuffer.h"
+#include "stdout.h"
 
 typedef struct
 {
-    FbInfo *fb_info;
-    FontInfo *font_info;
+    StdoutDevice device_;
+    FbInfo *fb_info_;
+    FontInfo *font_info_;
 } FBConsoleInfo;
 
 FBConsoleInfo fbconsole_info;
