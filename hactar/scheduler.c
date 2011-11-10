@@ -8,7 +8,7 @@
 #include "scheduler.h"
 #include "misc.h"
 #include "startup.h"
-#include "platform.h"
+#include "platform_check.h"
 
 #include <stdio.h>
 

@@ -47,6 +47,40 @@
 #error HACTAR_CLK_SCALE_PLL3MUL: invalid value
 #endif
 
+// check hclk/ahb scale value
+#if (HACTAR_CLK_SCALE_AHB != 1) && (HACTAR_CLK_SCALE_AHB != 2) && \
+    (HACTAR_CLK_SCALE_AHB != 4) && (HACTAR_CLK_SCALE_AHB != 8) && \
+    (HACTAR_CLK_SCALE_AHB != 16) && (HACTAR_CLK_SCALE_AHB != 64) && \
+    (HACTAR_CLK_SCALE_AHB != 128) && (HACTAR_CLK_SCALE_AHB != 256) && \
+    (HACTAR_CLK_SCALE_AHB != 512)
+#error HACTAR_CLK_SCALE_AHB: invalid value
+#endif
+
+// check adc scale value
+#if (HACTAR_CLK_SCALE_ADC != 2) && (HACTAR_CLK_SCALE_ADC != 4) && \
+    (HACTAR_CLK_SCALE_ADC != 6) && (HACTAR_CLK_SCALE_ADC != 8)
+#error HACTAR_CLK_SCALE_ADC: invalid value
+#endif
+
+// check apb1 scale value
+#if (HACTAR_CLK_SCALE_APB1 != 1) && (HACTAR_CLK_SCALE_APB1 != 2) && \
+    (HACTAR_CLK_SCALE_APB1 != 4) && (HACTAR_CLK_SCALE_APB1 != 8) && \
+    (HACTAR_CLK_SCALE_APB1 != 16)
+#error HACTAR_CLK_SCALE_APB1: invalid value
+#endif
+
+// check apb1 scale value
+#if (HACTAR_CLK_SCALE_APB2 != 1) && (HACTAR_CLK_SCALE_APB2 != 2) && \
+    (HACTAR_CLK_SCALE_APB2 != 4) && (HACTAR_CLK_SCALE_APB2 != 8) && \
+    (HACTAR_CLK_SCALE_APB2 != 16)
+#error HACTAR_CLK_SCALE_APB2: invalid value
+#endif
+
+// check apb1 scale value
+#if (HACTAR_CLK_SCALE_USB != 2) && (HACTAR_CLK_SCALE_USB != 3)
+#error HACTAR_CLK_SCALE_USB: invalid value
+#endif
+
 #endif
 
 #endif

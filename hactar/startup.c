@@ -8,8 +8,8 @@
 #include "stm32f10x.h"
 #include "stm32f10x_rcc.h"
 
-#include "platform.h"
 #include "startup.h"
+#include "platform_check.h"
 
 static void hactarStartup(void);
 static void hactarStartupPeriph(void);

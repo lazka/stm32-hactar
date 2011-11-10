@@ -8,8 +8,6 @@
 #ifndef HACTAR_PLATFORM_DEF_H__
 #define HACTAR_PLATFORM_DEF_H__
 
-#include "platform.h"
-
 #ifdef STM32F10X_CL
 
 #define HACTAR_CLK_MUX_RTC_SRC_LSE         (1 << 0)

@@ -7,8 +7,8 @@
 
 #include "stm32f10x.h"
 
-#include "platform.h"
 #include "stdout.h"
+#include "platform_check.h"
 
 static int writeUSARTStdout(char *ptr, int len)
 {
