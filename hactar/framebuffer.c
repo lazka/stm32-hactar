@@ -6,7 +6,6 @@
 //
 
 #include "framebuffer.h"
-#include "font.h"
 
 #ifdef FB_DEBUG
     #include <stdio.h>

@@ -9,16 +9,19 @@
 #define HACTAR_STDOUT_H__
 
 #include "stddef.h"
+#include "stdint.h"
 
 typedef struct
 {
-    int (*write_func_)(char *ptr, int len);
+    int (*write_func_)(char *ptr, int len, uint8_t err);
 } StdoutDevice;
 
+typedef struct
+{
+    int (*read_func_)(char *ptr, int len);
+} StdinDevice;
+
 StdoutDevice *stdout_device;
-
-StdoutDevice usart_stdout_device;
-
-void initUSARTStdoutDevice(void);
+StdinDevice *stdin_device;
 
 #endif

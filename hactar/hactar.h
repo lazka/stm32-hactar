@@ -16,6 +16,6 @@
 #include "locks.h"
 #include "misc.h"
 #include "scheduler.h"
-#include "stdout.h"
+#include "stdio_dev.h"
 
 #endif

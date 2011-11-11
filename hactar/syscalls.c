@@ -14,7 +14,7 @@
 
 #include "stm32f10x.h" /* for _get_PSP() from core_cm3.h*/
 
-#include "stdout.h"
+#include "stdio_dev.h"
 
 #undef errno
 extern int errno;
@@ -95,6 +95,7 @@ int _lseek(int file, int ptr, int dir) {
 
 int _read(int file, char *ptr, int len)
 {
+    //if(file == STDIN_FILENO)
     file = file; /* avoid warning */
     ptr = ptr; /* avoid warning */
     len = len; /* avoid warning */
@@ -103,13 +104,11 @@ int _read(int file, char *ptr, int len)
 
 int _write(int file, char *ptr, int len)
 {
-    if(file == STDOUT_FILENO)
+    if(file == STDOUT_FILENO || file == STDERR_FILENO)
     {
         if(stdout_device != NULL)
-            return stdout_device->write_func_(ptr, len);
+            return stdout_device->write_func_(ptr, len, file == STDERR_FILENO);
     }
-    else
-        assert(0);
 
     return len;
 }

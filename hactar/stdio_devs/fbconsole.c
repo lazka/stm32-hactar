@@ -6,9 +6,8 @@
 //
 
 #include "fbconsole.h"
-#include "stdout.h"
 
-static int writeFramebufferStdout(char *ptr, int len)
+static int writeFramebufferStdout(char *ptr, int len, uint8_t err)
 {
     // TODO: implement scrolling and line breaks.
 

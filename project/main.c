@@ -15,8 +15,8 @@
 
 #include "hactar/hactar.h"
 
-#include "hactar/evalconsole.h"
-#include "hactar/display_st7565r.h"
+#include "hactar/stdio_devs/eval_lcd.h"
+#include "hactar/displays/st7565r.h"
 
 int main(void)
 {

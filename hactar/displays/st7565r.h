@@ -5,11 +5,11 @@
 // published by the Free Software Foundation.
 //
 
-#ifndef HACTER_DISPLAY_ST7565R_H__
-#define HACTER_DISPLAY_ST7565R_H__
+#ifndef HACTER_DISPLAYS_ST7565R_H__
+#define HACTER_DISPLAYS_ST7565R_H__
 
-#include "display.h"
-#include "framebuffer.h"
+#include "../display.h"
+#include "../framebuffer.h"
 
 #define ST765R_GPIO_CS   GPIO_Pin_4
 #define ST765R_GPIO_CLK  GPIO_Pin_5

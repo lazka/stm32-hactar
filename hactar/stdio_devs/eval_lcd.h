@@ -5,11 +5,17 @@
 // published by the Free Software Foundation.
 //
 
-#ifndef HACTAR_EVALCONSOLE_H__
-#define HACTAR_EVALCONSOLE_H__
+#ifndef HACTAR_STDIO_DEVS_EVAL_LCD_H__
+#define HACTAR_STDIO_DEVS_EVAL_LCD_H__
 
 #include "stddef.h"
-#include "stdout.h"
+#include "../stdio_dev.h"
+
+#include "stm3210c_eval_lcd.h"
+
+#define EVAL_LCD_BGCOLOR            LCD_COLOR_BLACK
+#define EVAL_LCD_STDOUT_TXTCOLOR    LCD_COLOR_WHITE
+#define EVAL_LCD_STDERR_TXTCOLOR    LCD_COLOR_RED
 
 typedef struct
 {

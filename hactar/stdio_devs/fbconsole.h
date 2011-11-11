@@ -5,11 +5,11 @@
 // published by the Free Software Foundation.
 //
 
-#ifndef HACTAR_FBCONSOLE_H__
-#define HACTAR_FBCONSOLE_H__
+#ifndef HACTAR_STDIO_DEVS_FBCONSOLE_H__
+#define HACTAR_STDIO_DEVS_FBCONSOLE_H__
 
-#include "framebuffer.h"
-#include "stdout.h"
+#include "../framebuffer.h"
+#include "../stdio_dev.h"
 
 typedef struct
 {

@@ -5,7 +5,7 @@
 // published by the Free Software Foundation.
 //
 
-#include "display_st7565r.h"
+#include "st7565r.h"
 #ifdef FB_DEBUG
 #include <stdio.h>
 #endif
@@ -61,7 +61,7 @@ static void SPIInit(void)
         .SPI_CPOL = SPI_CPOL_High,
         .SPI_CPHA = SPI_CPHA_2Edge,
         .SPI_NSS = SPI_NSS_Soft,
-        .SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128,
+        .SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256,
         .SPI_FirstBit = SPI_FirstBit_MSB,
         .SPI_CRCPolynomial = 7
     };

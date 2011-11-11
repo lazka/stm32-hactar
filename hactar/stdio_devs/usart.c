@@ -7,35 +7,17 @@
 
 #include "stm32f10x.h"
 
-#include "stdout.h"
-#include "platform_check.h"
+#include "usart.h"
+#include "../platform_check.h"
 
-static int writeUSARTStdout(char *ptr, int len)
+static int writeUSARTStdout(char *ptr, int len, uint8_t err)
 {
-    size_t i, shift = 0;
-    uint32_t parity, bits9;
-    uint8_t carry = 0, c;
-
-    bits9 = !!(HACTAR_STDOUT_USART->CR1 & 0x1000);
-    parity = !!(HACTAR_STDOUT_USART->CR1 & 0x400);
+    size_t i;
 
     for(i = 0; i < len; i++)
     {
-       c = (uint8_t) *ptr++;
-       HACTAR_STDOUT_USART->DR = (c << shift) | carry;
+       HACTAR_STDOUT_USART->DR = *ptr++;
        while(!(HACTAR_STDOUT_USART->SR & USART_FLAG_TC));
-
-       if(!bits9 && parity) // FIXME: gtkterm doesn't like it yet
-       {
-           carry = (c >> (7 - shift));
-           shift++;
-           if(shift >= 8)
-           {
-               shift = 0;
-               HACTAR_STDOUT_USART->DR = carry;
-               while(!(HACTAR_STDOUT_USART->SR & USART_FLAG_TC));
-           }
-       }
     }
 
     return len;

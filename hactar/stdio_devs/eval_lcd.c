@@ -5,11 +5,9 @@
 // published by the Free Software Foundation.
 //
 
-#include "stm3210c_eval_lcd.h"
+#include "eval_lcd.h"
 
-#include "evalconsole.h"
-
-static int writeEvalLCDStdout(char *ptr, int len)
+static int writeEvalLCDStdout(char *ptr, int len, uint8_t err)
 {
     // TODO: scrolling? might be to complicated here
 
@@ -17,6 +15,11 @@ static int writeEvalLCDStdout(char *ptr, int len)
     size_t line = evallcdconsole_info.line_;
     size_t width = LCD_GetFont()->Width;
     size_t i;
+
+    if(err)
+        LCD_SetTextColor(EVAL_LCD_STDERR_TXTCOLOR);
+    else
+        LCD_SetTextColor(EVAL_LCD_STDOUT_TXTCOLOR);
 
     for(i = 0; i < len && *ptr != 0 && ((column + 1) & 0xFFFF) >= width; i++)
     {
@@ -44,9 +47,8 @@ void initEvalLCDStdoutDevice(void)
     LCD_Setup();
     LCD_SetFont(&Font12x12);
 
-    LCD_Clear(LCD_COLOR_BLUE);
-    LCD_SetBackColor(LCD_COLOR_BLUE);
-    LCD_SetTextColor(LCD_COLOR_WHITE);
+    LCD_Clear(EVAL_LCD_BGCOLOR);
+    LCD_SetBackColor(EVAL_LCD_BGCOLOR);
 
     evallcdconsole_info.device_.write_func_ = &writeEvalLCDStdout;
     evallcdconsole_info.column_ = LCD_PIXEL_WIDTH - 1;
