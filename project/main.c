@@ -17,6 +17,7 @@
 
 #include "hactar/stdio_devs/eval_lcd.h"
 #include "hactar/displays/st7565r.h"
+#include "hactar/stdio_devs/usart.h"
 
 int main(void)
 {
@@ -44,7 +45,7 @@ int main(void)
 
     hactarInitScheduler(1);
 
-    //initUSARTStdoutDevice();
+    initUSARTStdioDevice(HACTAR_USART_STDIO_STDIN | HACTAR_USART_STDIO_STDIN_ECHO);
     initEvalLCDStdoutDevice();
 
     RCC_ClocksTypeDef test;
@@ -56,6 +57,11 @@ int main(void)
     printf("PCLK2 %u\n", (unsigned int)test.PCLK2_Frequency);
     printf("SYS   %u\n", (unsigned int)test.SYSCLK_Frequency);
     printf("SYS2  %u\n", (unsigned int)hactarGetSystemClock());
+
+    char temp[100];
+    printf("Name: ");
+    scanf("%s", temp);
+    printf("Hallo %s!\n", temp);
 
     assert(0);
 

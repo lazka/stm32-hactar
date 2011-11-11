@@ -13,12 +13,6 @@
 
 #ifdef STM32F10X_CL
 
-// STDOUT USART CONFIG
-#define HACTAR_STDOUT_USART         USART2
-#define HACTAR_STDOUT_USART_PORT    GPIOD
-#define HACTAR_STDOUT_USART_RX_PIN  GPIO_Pin_6
-#define HACTAR_STDOUT_USART_TX_PIN  GPIO_Pin_5
-
 // It's a bit hard to check if HSE needs to be enabled so define here
 #define HACTAR_CLK_HSE
 

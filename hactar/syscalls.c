@@ -95,11 +95,15 @@ int _lseek(int file, int ptr, int dir) {
 
 int _read(int file, char *ptr, int len)
 {
-    //if(file == STDIN_FILENO)
-    file = file; /* avoid warning */
-    ptr = ptr; /* avoid warning */
-    len = len; /* avoid warning */
-    return 0;
+    if(file == STDIN_FILENO)
+    {
+        if(stdin_device != NULL)
+            return stdin_device->read_func_(ptr, len);
+    }
+    else
+        assert(0);
+
+    return len;
 }
 
 int _write(int file, char *ptr, int len)
@@ -109,6 +113,8 @@ int _write(int file, char *ptr, int len)
         if(stdout_device != NULL)
             return stdout_device->write_func_(ptr, len, file == STDERR_FILENO);
     }
+    else
+        assert(0);
 
     return len;
 }

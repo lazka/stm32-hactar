@@ -23,7 +23,7 @@ static int writeEvalLCDStdout(char *ptr, int len, uint8_t err)
 
     for(i = 0; i < len && *ptr != 0 && ((column + 1) & 0xFFFF) >= width; i++)
     {
-        if(*ptr == '\n')
+        if(*ptr == '\n' || *ptr == '\r')
         {
             line++;
             column = LCD_PIXEL_WIDTH - 1;

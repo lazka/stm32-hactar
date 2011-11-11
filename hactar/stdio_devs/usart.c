@@ -7,6 +7,7 @@
 
 #include "stm32f10x.h"
 
+#include "stdio.h"
 #include "usart.h"
 #include "../platform_check.h"
 
@@ -17,14 +18,39 @@ static int writeUSARTStdout(char *ptr, int len, uint8_t err)
     for(i = 0; i < len; i++)
     {
        HACTAR_STDOUT_USART->DR = *ptr++;
-       while(!(HACTAR_STDOUT_USART->SR & USART_FLAG_TC));
+       while(!(HACTAR_STDOUT_USART->SR & USART_FLAG_TXE));
     }
 
     return len;
 }
 
-void initUSARTStdoutDevice(void)
+static int readUSARTStdin(char *ptr, int len)
 {
+    size_t i;
+
+retry:
+
+    for(i = 0; (HACTAR_STDOUT_USART->SR & USART_FLAG_RXNE) && (i < len); i++)
+    {
+        ptr[i] = HACTAR_STDOUT_USART->DR;
+        if(usart_stdin_device.echo_)
+            putchar(ptr[i]);
+    }
+
+    if(i == 0)
+    {
+        __WFI();
+        goto retry;
+    }
+
+    return i;
+}
+
+
+void initUSARTStdioDevice(uint32_t flags)
+{
+    assert(flags);
+
     // FIXME based on config
 
     /* Enable GPIO clock */
@@ -64,8 +90,18 @@ void initUSARTStdoutDevice(void)
     /* Enable USART */
     USART_Cmd(HACTAR_STDOUT_USART, ENABLE);
 
-    usart_stdout_device.write_func_ = &writeUSARTStdout;
-    stdout_device = &usart_stdout_device;
+    if(flags & HACTAR_USART_STDIO_STDOUT)
+    {
+        usart_stdout_device.write_func_ = &writeUSARTStdout;
+        stdout_device = &usart_stdout_device;
+    }
+
+    if(flags & HACTAR_USART_STDIO_STDIN)
+    {
+        usart_stdin_device.device_.read_func_ = &readUSARTStdin;
+        stdin_device = (StdinDevice*)&usart_stdin_device;
+        usart_stdin_device.echo_ = !!(flags & HACTAR_USART_STDIO_STDIN_ECHO);
+    }
 
     // enabled interrupts
     /*USART_ITConfig(HACTAR_STDOUT_USART, USART_IT_RXNE, ENABLE);

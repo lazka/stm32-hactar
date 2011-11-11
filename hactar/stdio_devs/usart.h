@@ -10,8 +10,25 @@
 
 #include "../stdio_dev.h"
 
-StdoutDevice usart_stdout_device;
+// STDOUT USART CONFIG
+#define HACTAR_STDOUT_USART         USART2
+#define HACTAR_STDOUT_USART_PORT    GPIOD
+#define HACTAR_STDOUT_USART_RX_PIN  GPIO_Pin_6
+#define HACTAR_STDOUT_USART_TX_PIN  GPIO_Pin_5
 
-void initUSARTStdoutDevice(void);
+#define HACTAR_USART_STDIO_STDIN        (1 << 0)
+#define HACTAR_USART_STDIO_STDOUT       (1 << 1)
+#define HACTAR_USART_STDIO_STDIN_ECHO   (1 << 2)
+
+typedef struct
+{
+    StdinDevice device_;
+    uint32_t echo_;
+} USARTStdinDevice;
+
+StdoutDevice usart_stdout_device;
+USARTStdinDevice usart_stdin_device;
+
+void initUSARTStdioDevice(uint32_t flag);
 
 #endif
