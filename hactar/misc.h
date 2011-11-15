@@ -9,7 +9,6 @@
 #define HACTER_MISC_H__
 
 #include "stm32f10x.h"
-#include "stm32f10x_gpio.h"
 
 void NMI_Handler(void);
 void HardFault_Handler(void);

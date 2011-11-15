@@ -17,5 +17,6 @@
 #include "misc.h"
 #include "scheduler.h"
 #include "stdio_dev.h"
+#include "term.h"
 
 #endif

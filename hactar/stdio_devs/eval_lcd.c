@@ -28,6 +28,11 @@ static int writeEvalLCDStdout(char *ptr, int len, uint8_t err)
             line++;
             column = LCD_PIXEL_WIDTH - 1;
         }
+        else if(*ptr == '\b')
+        {
+            column += width;
+            LCD_DisplayChar(LINE(line), column, ' ');
+        }
         else
         {
             LCD_DisplayChar(LINE(line), column, *ptr);

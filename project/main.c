@@ -9,8 +9,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "stm32f10x.h"
-
 #include "stm32_eval.h"
 
 #include "hactar/hactar.h"
@@ -48,23 +46,12 @@ int main(void)
     initUSARTStdioDevice(HACTAR_USART_STDIO_STDIN | HACTAR_USART_STDIO_STDIN_ECHO);
     initEvalLCDStdoutDevice();
 
-    RCC_ClocksTypeDef test;
-    RCC_GetClocksFreq(&test);
-
-    printf("ADC   %u\n", (unsigned int)test.ADCCLK_Frequency);
-    printf("HCLK  %u\n", (unsigned int)test.HCLK_Frequency);
-    printf("PCLK1 %u\n", (unsigned int)test.PCLK1_Frequency);
-    printf("PCLK2 %u\n", (unsigned int)test.PCLK2_Frequency);
-    printf("SYS   %u\n", (unsigned int)test.SYSCLK_Frequency);
-    printf("SYS2  %u\n", (unsigned int)hactarGetSystemClock());
-
-    char temp[100];
-    printf("Name: ");
-    scanf("%s", temp);
-    printf("Hallo %s!\n", temp);
+    startTerminal();
 
     assert(0);
 
     while (1)
       __WFI();
+
+    return 0;
 }
