@@ -18,6 +18,6 @@ typedef struct
     void (*function_)(char**);
 } TermCommand;
 
-void startTerminal(void);
+void startTerminal(TermCommand* user_cmds, size_t num_user_cmds);
 
 #endif

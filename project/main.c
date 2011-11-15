@@ -17,6 +17,25 @@
 #include "hactar/displays/st7565r.h"
 #include "hactar/stdio_devs/usart.h"
 
+static void printArgs(char **args)
+{
+    size_t i = 0;
+
+    while(args[i] != NULL)
+    {
+        iprintf("%u) '%s'\n", i + 1, args[i]);
+        i++;
+    }
+}
+
+TermCommand term_cmds[] = {
+        {
+                .command_ = "args",
+                .description_ = "Print arguments",
+                .function_ = &printArgs,
+        },
+};
+
 int main(void)
 {
     DisplayInfo *display = (DisplayInfo*)&st7565r;
@@ -46,7 +65,7 @@ int main(void)
     initUSARTStdioDevice(HACTAR_USART_STDIO_STDIN | HACTAR_USART_STDIO_STDIN_ECHO);
     initEvalLCDStdoutDevice();
 
-    startTerminal();
+    startTerminal(term_cmds, 1);
 
     assert(0);
 

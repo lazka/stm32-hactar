@@ -24,17 +24,6 @@ static void printClockStatus(char **args)
     iprintf("SYS   %u\n", (unsigned int)test.SYSCLK_Frequency);
 }
 
-static void printArgs(char **args)
-{
-    size_t i = 0;
-
-    while(args[i] != NULL)
-    {
-        iprintf("%u) '%s'\n", i + 1, args[i]);
-        i++;
-    }
-}
-
 static void getCommand(char *dest, char **args, size_t count, size_t arg_count)
 {
     char* start_arg = dest;
@@ -70,18 +59,13 @@ static void getCommand(char *dest, char **args, size_t count, size_t arg_count)
     }
 }
 
-void startTerminal(void)
+void startTerminal(TermCommand* user_cmds, size_t num_user_cmds)
 {
-    const TermCommand cmds[] = {
+    static const TermCommand cmds[] = {
             {
                     .command_ = "clk",
                     .description_ = "Clock information",
                     .function_ = &printClockStatus,
-            },
-            {
-                    .command_ = "args",
-                    .description_ = "Print arguments",
-                    .function_ = &printArgs,
             },
             {
                     .command_ = "help",
@@ -97,7 +81,7 @@ void startTerminal(void)
 
     char input[HACTAR_TERM_INPUT_BUFFER_SIZE];
     char *args[HACTAR_TERM_INPUT_ARG_COUNT];
-    size_t i, size = sizeof(cmds) / sizeof(cmds[0]);
+    size_t i, num_cmds = sizeof(cmds) / sizeof(cmds[0]);
 
     while(1)
     {
@@ -114,27 +98,57 @@ void startTerminal(void)
 
         if(strcmp(args[0], "help") == 0)
         {
-            for(i = 0; i < size; i++)
+            char *help_format = "%-5s: %s\n";
+            for(i = 0; i < num_cmds; i++)
             {
-                iprintf("%-5s: %s\n", cmds[i].command_, cmds[i].description_);
+                iprintf(help_format, cmds[i].command_, cmds[i].description_);
             }
+
+            if(user_cmds == NULL)
+                continue;
+
+            iprintf("--------------------------\n");
+
+            for(i = 0; i < num_user_cmds; i++)
+            {
+                iprintf(help_format, user_cmds[i].command_,
+                        user_cmds[i].description_);
+            }
+
             continue;
         }
 
-        for(i = 0; i < size; i++)
+        uint32_t found = 0;
+
+        // User commands first so new std commands don't override them
+        for(i = 0; i < num_user_cmds; i++)
+        {
+            if(strcmp(user_cmds[i].command_, args[0]) == 0)
+            {
+                user_cmds[i].function_(&args[1]);
+                found = 1;
+                break;
+            }
+        }
+
+        if(found)
+            continue;
+
+        // Now the builtin ones
+        for(i = 0; i < num_cmds; i++)
         {
             if(strcmp(cmds[i].command_, args[0]) == 0)
             {
                 cmds[i].function_(&args[1]);
+                found = 1;
                 break;
             }
+        }
 
-            if(i == size - 1)
-            {
-                fflush(stdout);
-                fiprintf(stderr, "Unknown command\n");
-            }
-
+        if(!found)
+        {
+            fflush(stdout);
+            fiprintf(stderr, "Unknown command\n");
         }
     }
 }
