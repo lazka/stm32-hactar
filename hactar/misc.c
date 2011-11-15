@@ -9,6 +9,80 @@
 
 #include "misc.h"
 
+void NMI_Handler(void)
+{
+}
+
+void HardFault_Handler(void)
+{
+    // Fault occurs because of vector table read on exception processing
+    if(SCB->HFSR & SCB_HFSR_VECTTBL) while(1);
+
+    // Hard Fault activated when a configurable
+    // Fault was received and cannot activate
+    if(SCB->HFSR & SCB_HFSR_DEBUGEVT) while(1);
+
+    // Fault related to debug
+    if(SCB->HFSR & SCB_HFSR_DEBUGEVT) while(1);
+}
+
+void BusFault_Handler(void)
+{
+    // Instruction bus error flag
+    if(SCB->CFSR & SCB_CFSR_IBUSERR) while(1);
+
+    // Precise data bus error
+    if(SCB->CFSR & SCB_CFSR_PRECISERR) while(1);
+
+    // Imprecise data bus error
+    if(SCB->CFSR & SCB_CFSR_IMPRECISERR) while(1);
+
+    // Unstacking error
+    if(SCB->CFSR & SCB_CFSR_UNSTKERR) while(1);
+
+    // Stacking error
+    if(SCB->CFSR & SCB_CFSR_STKERR) while(1);
+}
+
+void UsageFault_Handler(void)
+{
+    // The processor attempt to execute an undefined instruction
+    if(SCB->CFSR & SCB_CFSR_UNDEFINSTR) while(1);
+
+    // Invalid combination of EPSR and instruction
+    if(SCB->CFSR & SCB_CFSR_INVSTATE) while(1);
+
+    // Attempt to load EXC_RETURN into pc illegally
+    if(SCB->CFSR & SCB_CFSR_INVPC) while(1);
+
+    // Attempt to use a coprocessor instruction
+    if(SCB->CFSR & SCB_CFSR_NOCP) while(1);
+
+    // Fault occurs when there is an attempt to make an unaligned memory access
+    if(SCB->CFSR & SCB_CFSR_UNALIGNED) while(1);
+
+    // Fault occurs when SDIV or DIV instruction is used with a divisor of 0
+    if(SCB->CFSR & SCB_CFSR_DIVBYZERO) while(1);
+}
+
+void MemManage_Handler(void)
+{
+    // Instruction access violation
+    if(SCB->CFSR & SCB_CFSR_IACCVIOL) while(1);
+
+    // Data access violation
+    if(SCB->CFSR & SCB_CFSR_DACCVIOL) while(1);
+
+    // Unstacking error
+    if(SCB->CFSR & SCB_CFSR_MUNSTKERR) while(1);
+
+    // Stacking error
+    if(SCB->CFSR & SCB_CFSR_MSTKERR) while(1);
+
+    // Memory Manage Address Register address valid flag
+    if(SCB->CFSR & SCB_CFSR_MMARVALID) while(1);
+}
+
 void interruptsDisable()
 {
     asm volatile ("cpsid   i" : : : "memory");
