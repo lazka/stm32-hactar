@@ -121,7 +121,7 @@ void startTerminal(TermCommand* user_cmds, size_t num_user_cmds)
         uint32_t found = 0;
 
         // User commands first so new std commands don't override them
-        for(i = 0; i < num_user_cmds; i++)
+        for(i = 0; i < num_user_cmds && user_cmds != NULL; i++)
         {
             if(strcmp(user_cmds[i].command_, args[0]) == 0)
             {
