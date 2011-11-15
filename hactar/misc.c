@@ -91,7 +91,8 @@ void interruptsEnable()
 
 void assert_failed(uint8_t* file, uint32_t line)
 {
-    fprintf(stderr, "ASSERT: [%u] %s\n", (unsigned int)line, file);
+    fflush(stdout);
+    fiprintf(stderr, "ASSERT: [%u] %s\n", (unsigned int)line, file);
 
     while(1)
         __WFI();

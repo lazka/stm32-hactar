@@ -8,7 +8,7 @@
 #ifndef HACTAR_FRAMEBUFFER_H__
 #define HACTAR_FRAMEBUFFER_H__
 
-#define FB_DEBUG 0
+//#define FB_DEBUG
 
 #include <stddef.h>
 #include <stdint.h>

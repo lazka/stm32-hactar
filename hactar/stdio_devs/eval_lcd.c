@@ -5,6 +5,8 @@
 // published by the Free Software Foundation.
 //
 
+#include <stdio.h>
+
 #include "eval_lcd.h"
 
 static int writeEvalLCDStdout(char *ptr, int len, uint8_t err)
@@ -21,19 +23,25 @@ static int writeEvalLCDStdout(char *ptr, int len, uint8_t err)
     else
         LCD_SetTextColor(EVAL_LCD_STDOUT_TXTCOLOR);
 
-    for(i = 0; i < len && *ptr != 0 && ((column + 1) & 0xFFFF) >= width; i++)
+    for(i = 0; i < len && *ptr != 0; i++)
     {
-        if(*ptr == '\n' || *ptr == '\r')
+        if(*ptr == '\n' || *ptr == '\r' || *ptr == EOF)
         {
             line++;
+            if(LINE(line) > LCD_PIXEL_HEIGHT)
+            {
+                LCD_Clear(EVAL_LCD_BGCOLOR);
+                line = 0;
+            }
             column = LCD_PIXEL_WIDTH - 1;
         }
         else if(*ptr == '\b')
         {
-            column += width;
+            if(column < LCD_PIXEL_WIDTH - 1 - width)
+                column += width;
             LCD_DisplayChar(LINE(line), column, ' ');
         }
-        else
+        else if(column >= width)
         {
             LCD_DisplayChar(LINE(line), column, *ptr);
             column -= width;

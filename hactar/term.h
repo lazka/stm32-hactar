@@ -8,11 +8,14 @@
 #ifndef HACTER_TERM_H__
 #define HACTER_TERM_H__
 
+#define HACTAR_TERM_INPUT_BUFFER_SIZE   50
+#define HACTAR_TERM_INPUT_ARG_COUNT     10
+
 typedef struct
 {
-    const char *command_;
-    const char *description_;
-    void (*function_)(void);
+    char *command_;
+    char *description_;
+    void (*function_)(char**);
 } TermCommand;
 
 void startTerminal(void);
