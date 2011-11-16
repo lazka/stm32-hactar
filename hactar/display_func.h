@@ -8,8 +8,8 @@
 #ifndef HACTAR_DISPLAY_FUNC_H__
 #define HACTAR_DISPLAY_FUNC_H__
 
-#include "display.h"
-#include "framebuffer.h"
+#include <hactar/display.h>
+#include <hactar/framebuffer.h>
 
 // Initializes the driver and driver data
 void displayInit(DisplayInfo *display, size_t width,

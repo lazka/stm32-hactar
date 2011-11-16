@@ -6,16 +6,15 @@
 //
 
 #include <stddef.h>
-#include <stdlib.h>
 #include <stdio.h>
 
 #include "stm32_eval.h"
 
-#include "hactar/hactar.h"
+#include <hactar/hactar.h>
 
-#include "hactar/stdio_devs/eval_lcd.h"
-#include "hactar/displays/st7565r.h"
-#include "hactar/stdio_devs/usart.h"
+#include <hactar/stdio_devs/eval_lcd.h>
+#include <hactar/displays/st7565r.h>
+#include <hactar/stdio_devs/usart.h>
 
 static void printArgs(char **args)
 {

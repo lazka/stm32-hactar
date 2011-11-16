@@ -8,7 +8,7 @@
 #ifndef HACTAR_STDIO_DEVS_USART_H__
 #define HACTAR_STDIO_DEVS_USART_H__
 
-#include "../stdio_dev.h"
+#include <hactar/stdio_dev.h>
 
 // STDOUT USART CONFIG
 #define HACTAR_STDOUT_USART         USART2

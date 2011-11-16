@@ -5,7 +5,7 @@
 // published by the Free Software Foundation.
 //
 
-#include "fbconsole.h"
+#include <hactar/stdio_devs/fbconsole.h>
 
 static int writeFramebufferStdout(char *ptr, int len, uint8_t err)
 {

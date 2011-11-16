@@ -5,12 +5,13 @@
 // published by the Free Software Foundation.
 //
 
-#include "st7565r.h"
 #ifdef FB_DEBUG
 #include <stdio.h>
 #endif
 
-#include "stm32f10x.h"
+#include "stm32f10x_rcc.h"
+
+#include <hactar/displays/st7565r.h>
 
 static void SPIWriteCommand(uint8_t writedat)
 {

@@ -5,7 +5,7 @@
 // published by the Free Software Foundation.
 //
 
-#include "display_func.h"
+#include <hactar/display_func.h>
 
 void displayInit(DisplayInfo *display, size_t width, size_t height)
 {

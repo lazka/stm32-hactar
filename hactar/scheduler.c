@@ -5,12 +5,12 @@
 // published by the Free Software Foundation.
 //
 
-#include "scheduler.h"
-#include "misc.h"
-#include "startup.h"
-#include "platform_check.h"
-
 #include <stdio.h>
+
+#include <hactar/scheduler.h>
+#include <hactar/misc.h>
+#include <hactar/startup.h>
+#include <hactar/platform_check.h>
 
 #include "stm32_eval.h"
 

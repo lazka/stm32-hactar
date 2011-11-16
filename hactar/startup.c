@@ -5,11 +5,10 @@
 // published by the Free Software Foundation.
 //
 
-#include "stm32f10x.h"
 #include "stm32f10x_rcc.h"
 
-#include "startup.h"
-#include "platform_check.h"
+#include <hactar/startup.h>
+#include <hactar/platform_check.h>
 
 static void hactarStartup(void);
 static void hactarStartupPeriph(void);

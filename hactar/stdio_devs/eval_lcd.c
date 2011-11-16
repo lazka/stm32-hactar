@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-#include "eval_lcd.h"
+#include <hactar/stdio_devs/eval_lcd.h>
 
 static int writeEvalLCDStdout(char *ptr, int len, uint8_t err)
 {

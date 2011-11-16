@@ -1,20 +1,18 @@
-/*
- * syscalls.c
- *
- *  Created on: 03.12.2009
- *      Author: Martin Thomas, 3BSD license
- */
+// Copyright 2011 Christoph Reiter
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License version 2 as
+// published by the Free Software Foundation.
+//
 
 #include <reent.h>
 #include <errno.h>
-#include <stdlib.h> /* abort */
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "stm32f10x.h" /* for _get_PSP() from core_cm3.h*/
-
-#include "stdio_dev.h"
+#include <hactar/misc.h>
+#include <hactar/stdio_dev.h>
 
 #undef errno
 extern int errno;

@@ -8,8 +8,10 @@
 #ifndef HACTER_MISC_H__
 #define HACTER_MISC_H__
 
-#include "stm32f10x.h"
+#include <stdint.h>
 #include <stddef.h>
+
+#include "stm32f10x_gpio.h"
 
 void NMI_Handler(void);
 void HardFault_Handler(void);
@@ -24,7 +26,13 @@ void interruptsEnable();
 void GPIO_GetPinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,
         GPIO_InitTypeDef* GPIO_InitStruct);
 
-void assert_failed(uint8_t* file, uint32_t line);
+#ifdef NDEBUG
+#define assert(expr) ((void)0)
+#else
+#define assert(expr) ((expr) ? (void)0 : __hactar_assert(__FILE__, __LINE__, __func__, #expr))
+#endif
+
+void __hactar_assert(const char* file, int line, const char* func, const char* expr);
 
 typedef struct
 {

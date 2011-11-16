@@ -9,7 +9,7 @@
 #include <malloc.h>
 #include <unistd.h>
 
-#include "misc.h"
+#include <hactar/misc.h>
 
 void HardFault_Handler(void)
 {
@@ -91,13 +91,11 @@ void interruptsEnable()
     asm volatile ("cpsie   i" : : : "memory");
 }
 
-void assert_failed(uint8_t* file, uint32_t line)
+void __hactar_assert(const char* file, int line, const char* func,
+        const char* expr)
 {
     fflush(stdout);
-    fiprintf(stderr, "ASSERT: [%u] %s\n", (unsigned int)line, file);
-
-    while(1)
-        __WFI();
+    fiprintf(stderr, "ASSERT: %s[%i]\n%s (%s)\n", file, line, func, expr);
 }
 
 /*

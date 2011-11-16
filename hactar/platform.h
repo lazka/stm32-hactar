@@ -8,8 +8,9 @@
 #ifndef HACTAR_PLATFORM_H__
 #define HACTAR_PLATFORM_H__
 
-#include "stm32f10x.h"
-#include "platform_def.h"
+#include "stm32f10x_rcc.h"
+
+#include <hactar/platform_def.h>
 
 #ifdef STM32F10X_CL
 

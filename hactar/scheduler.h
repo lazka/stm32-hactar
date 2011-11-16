@@ -8,6 +8,8 @@
 #ifndef HACTAR_SCHEDULER_H__
 #define HACTAR_SCHEDULER_H__
 
+#include <stdint.h>
+
 #include "stm32f10x.h"
 
 #define PRIO_LEVELS (1 << __NVIC_PRIO_BITS)

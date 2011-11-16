@@ -8,8 +8,8 @@
 #ifndef HACTAR_STDIO_DEVS_FBCONSOLE_H__
 #define HACTAR_STDIO_DEVS_FBCONSOLE_H__
 
-#include "../framebuffer.h"
-#include "../stdio_dev.h"
+#include <hactar/framebuffer.h>
+#include <hactar/stdio_dev.h>
 
 typedef struct
 {

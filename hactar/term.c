@@ -7,14 +7,11 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
-#include <stdint.h>
-#include <malloc.h>
 
-#include "stm32f10x.h"
+#include "stm32f10x_rcc.h"
 
-#include "term.h"
-#include "misc.h"
+#include <hactar/term.h>
+#include <hactar/misc.h>
 
 static void printClockStatus(char **args)
 {

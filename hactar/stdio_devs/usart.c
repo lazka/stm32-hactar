@@ -5,11 +5,13 @@
 // published by the Free Software Foundation.
 //
 
-#include "stm32f10x.h"
+#include <stdio.h>
 
-#include "stdio.h"
-#include "usart.h"
-#include "../platform_check.h"
+#include "stm32f10x_rcc.h"
+
+#include <hactar/stdio_devs/usart.h>
+#include <hactar/misc.h>
+#include <hactar/platform_check.h>
 
 static int writeUSARTStdout(char *ptr, int len, uint8_t err)
 {

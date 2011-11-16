@@ -8,8 +8,7 @@
 #ifndef HACTAR_STDOUT_H__
 #define HACTAR_STDOUT_H__
 
-#include "stddef.h"
-#include "stdint.h"
+#include <stdint.h>
 
 typedef struct
 {

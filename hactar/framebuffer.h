@@ -13,8 +13,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "font.h"
-#include "display.h"
+#include <hactar/font.h>
+#include <hactar/display.h>
 
 #define FB_DEFAULT 0
 #define FB_BLACK FB_DEFAULT

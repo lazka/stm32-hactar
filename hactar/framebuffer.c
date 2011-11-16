@@ -5,7 +5,7 @@
 // published by the Free Software Foundation.
 //
 
-#include "framebuffer.h"
+#include <hactar/framebuffer.h>
 
 #ifdef FB_DEBUG
     #include <stdio.h>

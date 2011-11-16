@@ -8,10 +8,11 @@
 #ifndef HACTAR_STDIO_DEVS_EVAL_LCD_H__
 #define HACTAR_STDIO_DEVS_EVAL_LCD_H__
 
-#include "stddef.h"
-#include "../stdio_dev.h"
+#include <stddef.h>
 
 #include "stm3210c_eval_lcd.h"
+
+#include <hactar/stdio_dev.h>
 
 #define EVAL_LCD_BGCOLOR            LCD_COLOR_BLACK
 #define EVAL_LCD_STDOUT_TXTCOLOR    LCD_COLOR_WHITE
