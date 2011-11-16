@@ -9,6 +9,7 @@
 #define HACTER_MISC_H__
 
 #include "stm32f10x.h"
+#include <stddef.h>
 
 void NMI_Handler(void);
 void HardFault_Handler(void);
@@ -25,6 +26,18 @@ void GPIO_GetPinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,
 
 void assert_failed(uint8_t* file, uint32_t line);
 
+typedef struct
+{
+    size_t flash_free_;   // free flash space in percent
+    size_t text_;         // code
+    size_t ro_data_;      // constants, strings
+    size_t ram_free_;     // free space in RAM in percent
+    size_t data_;         // data size
+    size_t bss_;          // global variables (zeroed)
+    size_t heap_;         // size of heap
+    size_t malloc_;       // malloced space (in heap)
+} MemoryInfo;
 
+MemoryInfo getMemoryInfo();
 
 #endif

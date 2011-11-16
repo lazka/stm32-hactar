@@ -9,10 +9,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <malloc.h>
 
 #include "stm32f10x.h"
 
 #include "term.h"
+#include "misc.h"
 
 static void printClockStatus(char **args)
 {
@@ -28,20 +30,17 @@ static void printClockStatus(char **args)
 
 static void printMemoryStatus(char **args)
 {
-    extern char _spretext, _epretext;
-    extern char _srodata, _erodata, _etext;
-    extern char _sdata, _edata;
-    extern char _sbss, _ebss;
-    extern char _end;
+    MemoryInfo info = getMemoryInfo();
 
-    iprintf("Flash:\n");
-    iprintf(" Text   %5u Bytes\n", (size_t)&_epretext - (size_t)&_spretext);
-    iprintf(" ROData %5u Bytes\n", (size_t)&_erodata - (size_t)&_srodata);
+    iprintf("\nFlash:  %5u %% free\n", info.flash_free_);
+    iprintf(" Text   %5u Bytes\n", info.text_);
+    iprintf(" ROData %5u Bytes\n", info.ro_data_);
 
-    iprintf("RAM:\n");
-    iprintf(" Data   %5u Bytes\n", (size_t)&_edata - (size_t)&_sdata);
-    iprintf(" BSS    %5u Bytes\n", (size_t)&_ebss - (size_t)&_sbss);
-    iprintf(" Heap   %5u Bytes\n", (size_t)sbrk(0) - (size_t)&_end);
+    iprintf("\nRAM:    %5u %% free\n", info.ram_free_);
+    iprintf(" Data   %5u Bytes\n", info.data_);
+    iprintf(" BSS    %5u Bytes\n", info.bss_);
+    iprintf(" Heap   %5u Bytes\n", info.heap_);
+    iprintf(" Malloc %5u Bytes\n", info.malloc_);
 }
 
 static void getCommand(char *dest, char **args, size_t count, size_t arg_count)

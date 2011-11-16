@@ -6,6 +6,8 @@
 //
 
 #include <stdio.h>
+#include <malloc.h>
+#include <unistd.h>
 
 #include "misc.h"
 
@@ -132,4 +134,29 @@ void GPIO_GetPinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,
         GPIO_InitStruct->GPIO_Mode = (cnf << 2) | 0x10;
 
     GPIO_InitStruct->GPIO_Pin = GPIO_Pin;
+}
+
+MemoryInfo getMemoryInfo(void)
+{
+    extern char _spretext, _epretext;
+    extern char _srodata, _erodata;
+    extern char _sdata, _edata;
+    extern char _sbss, _ebss;
+    extern char _end;
+    extern char _estack, _eflash, _etext, _sflash;
+
+    MemoryInfo info;
+
+    info.flash_free_ = ((size_t)&_eflash - (size_t)&_etext) * 100u /
+                       ((size_t)&_eflash - (size_t)&_sflash);
+    info.text_ = (size_t)&_epretext - (size_t)&_spretext;
+    info.ro_data_ = (size_t)&_erodata - (size_t)&_srodata;
+    info.ram_free_ = ((size_t)&_estack - (size_t)sbrk(0)) * 100u /
+                     ((size_t)&_estack - (size_t)&_sdata);
+    info.data_ = (size_t)&_edata - (size_t)&_sdata;
+    info.bss_ = (size_t)&_ebss - (size_t)&_sbss;
+    info.heap_ = (size_t)sbrk(0) - (size_t)&_end;
+    info.malloc_ = mallinfo().uordblks;
+
+    return info;
 }
