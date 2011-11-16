@@ -7,6 +7,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <stdint.h>
 
 #include "stm32f10x.h"
 
@@ -22,6 +24,24 @@ static void printClockStatus(char **args)
     iprintf("PCLK1 %u\n", (unsigned int)test.PCLK1_Frequency);
     iprintf("PCLK2 %u\n", (unsigned int)test.PCLK2_Frequency);
     iprintf("SYS   %u\n", (unsigned int)test.SYSCLK_Frequency);
+}
+
+static void printMemoryStatus(char **args)
+{
+    extern char _spretext, _epretext;
+    extern char _srodata, _erodata, _etext;
+    extern char _sdata, _edata;
+    extern char _sbss, _ebss;
+    extern char _end;
+
+    iprintf("Flash:\n");
+    iprintf(" Text   %5u Bytes\n", (size_t)&_epretext - (size_t)&_spretext);
+    iprintf(" ROData %5u Bytes\n", (size_t)&_erodata - (size_t)&_srodata);
+
+    iprintf("RAM:\n");
+    iprintf(" Data   %5u Bytes\n", (size_t)&_edata - (size_t)&_sdata);
+    iprintf(" BSS    %5u Bytes\n", (size_t)&_ebss - (size_t)&_sbss);
+    iprintf(" Heap   %5u Bytes\n", (size_t)sbrk(0) - (size_t)&_end);
 }
 
 static void getCommand(char *dest, char **args, size_t count, size_t arg_count)
@@ -66,6 +86,11 @@ void startTerminal(TermCommand* user_cmds, size_t num_user_cmds)
                     .command_ = "clk",
                     .description_ = "Clock information",
                     .function_ = &printClockStatus,
+            },
+            {
+                    .command_ = "mem",
+                    .description_ = "Memory status",
+                    .function_ = &printMemoryStatus,
             },
             {
                     .command_ = "help",

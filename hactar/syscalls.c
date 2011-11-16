@@ -36,33 +36,17 @@ int _getpid(void)
     return 1;
 }
 
-
-extern char _end; /* Defined by the linker */
-static char *heap_end;
-
-char* get_heap_end(void)
-{
-    return (char*) heap_end;
-}
-
-char* get_stack_top(void)
-{
-    return (char*) __get_MSP();
-    // return (char*) __get_PSP();
-}
-
 caddr_t _sbrk(int incr)
 {
+    extern char _end;
+    static char *heap_end;
+
     char *prev_heap_end;
     if (heap_end == 0) {
         heap_end = &_end;
     }
     prev_heap_end = heap_end;
-#if 1
-    if (heap_end + incr > get_stack_top()) {
-        abort();
-    }
-#endif
+
     heap_end += incr;
     return (caddr_t) prev_heap_end;
 }
