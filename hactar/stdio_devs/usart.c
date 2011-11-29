@@ -19,10 +19,6 @@ static int writeUSARTStdout(char *ptr, int len, uint8_t err)
 
     for(i = 0; i < len; i++)
     {
-        u = 10000;
-        while(u-- > 0)
-            u = u;
-
        HACTAR_STDOUT_USART->DR = *ptr++;
        while(!(HACTAR_STDOUT_USART->SR & USART_FLAG_TXE));
     }
