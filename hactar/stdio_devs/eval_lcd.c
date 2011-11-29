@@ -11,8 +11,6 @@
 
 static int writeEvalLCDStdout(char *ptr, int len, uint8_t err)
 {
-    // TODO: scrolling? might be to complicated here
-
     size_t column = evallcdconsole_info.column_;
     size_t line = evallcdconsole_info.line_;
     size_t width = LCD_GetFont()->Width;
@@ -55,17 +53,25 @@ static int writeEvalLCDStdout(char *ptr, int len, uint8_t err)
     return len;
 }
 
+static void clearEvalLCDStdout(void)
+{
+    LCD_Clear(EVAL_LCD_BGCOLOR);
+
+    evallcdconsole_info.column_ = LCD_PIXEL_WIDTH - 1;
+    evallcdconsole_info.line_ = 0;
+}
+
 void initEvalLCDStdoutDevice(void)
 {
     LCD_Setup();
     LCD_SetFont(&Font12x12);
 
-    LCD_Clear(EVAL_LCD_BGCOLOR);
     LCD_SetBackColor(EVAL_LCD_BGCOLOR);
 
     evallcdconsole_info.device_.write_func_ = &writeEvalLCDStdout;
-    evallcdconsole_info.column_ = LCD_PIXEL_WIDTH - 1;
-    evallcdconsole_info.line_ = 0;
+    evallcdconsole_info.device_.clear_func_ = &clearEvalLCDStdout;
+
+    clearEvalLCDStdout();
 
     stdout_device = (StdoutDevice*)&evallcdconsole_info;
 }

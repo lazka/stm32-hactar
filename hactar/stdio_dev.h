@@ -13,6 +13,7 @@
 typedef struct
 {
     int (*write_func_)(char *ptr, int len, uint8_t err);
+    void (*clear_func_)(void);
 } StdoutDevice;
 
 typedef struct

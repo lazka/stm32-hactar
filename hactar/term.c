@@ -7,11 +7,100 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "stm32f10x_rcc.h"
 
 #include <hactar/term.h>
 #include <hactar/misc.h>
+#include <hactar/stdio_dev.h>
+#include <hactar/misc.h>
+
+static void clearDisplay(void)
+{
+    if(stdout_device != NULL && stdout_device->clear_func_ != NULL)
+        stdout_device->clear_func_();
+}
+
+static void printPortStatus(char **args)
+{
+    uint32_t pin, state;
+    GPIO_TypeDef *port;
+    GPIO_InitTypeDef gpio_struct;
+
+    if(args[0] == NULL || args[0][0] < 65 || args[0][0] > 71)
+    {
+        fiprintf(stderr, "port [PORT] (A-G)\n");
+        return;
+    }
+
+    clearDisplay();
+
+    switch(args[0][0])
+    {
+        case 'A':
+            port = GPIOA; break;
+        case 'B':
+            port = GPIOB; break;
+        case 'C':
+            port = GPIOC; break;
+        case 'D':
+            port = GPIOD; break;
+        case 'E':
+            port = GPIOE; break;
+        case 'F':
+            port = GPIOF; break;
+        case 'G':
+            port = GPIOG; break;
+    }
+
+    iprintf("PORT %c\n-------------------------------------\n", args[0][0]);
+
+    for(pin = 0; pin < 16; pin++) {
+        GPIO_GetPinConfig(port, (1 << pin), &gpio_struct);
+        state = GPIO_ReadInputDataBit(port, (1 << pin));
+
+        iprintf("%2" PRIu32 "|%" PRIu32 "|", pin, state);
+
+        switch(gpio_struct.GPIO_Mode)
+        {
+            case GPIO_Mode_AIN:
+                iprintf("IN A       "); break;
+            case GPIO_Mode_IN_FLOATING:
+                iprintf("IN FLOATING"); break;
+            case GPIO_Mode_IPD:
+                iprintf("IN PD      "); break;
+            case GPIO_Mode_IPU:
+                iprintf("IN PU      "); break;
+            case GPIO_Mode_Out_OD:
+                iprintf("OUT OD     "); break;
+            case GPIO_Mode_Out_PP:
+                iprintf("OUT PP     "); break;
+            case GPIO_Mode_AF_OD:
+                iprintf("AF OD      "); break;
+            case GPIO_Mode_AF_PP:
+                iprintf("AF PP      "); break;
+            default:
+                iprintf("X          ");
+        }
+
+        iprintf("|");
+
+        switch(gpio_struct.GPIO_Speed)
+        {
+            case GPIO_Speed_2MHz:
+                iprintf(" 2 MHz"); break;
+            case GPIO_Speed_10MHz:
+                iprintf("10 MHz"); break;
+            case GPIO_Speed_50MHz:
+                iprintf("50 MHz"); break;
+            default:
+                iprintf("X");
+        }
+
+        iprintf("\n");
+    }
+}
 
 static void printClockStatus(char **args)
 {
@@ -84,9 +173,19 @@ void startTerminal(TermCommand* user_cmds, size_t num_user_cmds)
                     .function_ = &printClockStatus,
             },
             {
+                    .command_ = "port",
+                    .description_ = "Port status",
+                    .function_ = &printPortStatus,
+            },
+            {
                     .command_ = "mem",
                     .description_ = "Memory status",
                     .function_ = &printMemoryStatus,
+            },
+            {
+                    .command_ = "clear",
+                    .description_ = "Clear display",
+                    .function_ = NULL,
             },
             {
                     .command_ = "help",
@@ -116,6 +215,12 @@ void startTerminal(TermCommand* user_cmds, size_t num_user_cmds)
 
         if(strcmp(args[0], "exit") == 0)
             break;
+
+        if(strcmp(args[0], "clear") == 0)
+        {
+            clearDisplay();
+            continue;
+        }
 
         if(strcmp(args[0], "help") == 0)
         {

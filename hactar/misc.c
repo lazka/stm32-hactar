@@ -108,7 +108,7 @@ void GPIO_GetPinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,
 {
     uint32_t port = 0, cnf = 0, port_config = 0;
 
-    for(port = 0; port <= 16; port++) {
+    for(port = 0; port < 16; port++) {
         if(GPIO_Pin == (1 << port))
             break;
     }

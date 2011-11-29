@@ -15,10 +15,14 @@
 
 static int writeUSARTStdout(char *ptr, int len, uint8_t err)
 {
-    size_t i;
+    size_t i, u;
 
     for(i = 0; i < len; i++)
     {
+        u = 10000;
+        while(u-- > 0)
+            u = u;
+
        HACTAR_STDOUT_USART->DR = *ptr++;
        while(!(HACTAR_STDOUT_USART->SR & USART_FLAG_TXE));
     }
@@ -95,6 +99,7 @@ void initUSARTStdioDevice(uint32_t flags)
     if(flags & HACTAR_USART_STDIO_STDOUT)
     {
         usart_stdout_device.write_func_ = &writeUSARTStdout;
+        usart_stdout_device.clear_func_ = NULL;
         stdout_device = &usart_stdout_device;
     }
 

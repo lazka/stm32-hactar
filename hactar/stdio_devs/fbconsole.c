@@ -18,9 +18,15 @@ static int writeFramebufferStdout(char *ptr, int len, uint8_t err)
     return len;
 }
 
+static void clearFramebufferStdout(void)
+{
+    fbClear(fbconsole_info.fb_info_, FB_DEFAULT);
+}
+
 void initFramebufferStdoutDevice(FbInfo *fb_info, FontInfo *font_info)
 {
     fbconsole_info.device_.write_func_ = &writeFramebufferStdout;
+    fbconsole_info.device_.clear_func_ = &clearFramebufferStdout;
     fbconsole_info.fb_info_ = fb_info;
     fbconsole_info.font_info_ = font_info;
 
