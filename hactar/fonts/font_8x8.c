@@ -3,6 +3,8 @@
 #ifndef FONT_88_H__
 #define FONT_88_H__
 
+#include <stdint.h>
+
 #include <hactar/font.h>
 
 static const uint8_t fontdata_8x8[256*8] = {
@@ -145,10 +147,10 @@ static const uint8_t fontdata_8x8[256*8] = {
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 };
 
-static const FontInfo font_8x8 = {
-    fontdata_8x8,
-    8,
-    8,
+const FontInfo font_8x8 = {
+    .data_ = fontdata_8x8,
+    .width_ = 8,
+    .height_ = 8,
 };
 
 #endif

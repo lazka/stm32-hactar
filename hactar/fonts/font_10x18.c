@@ -6,6 +6,8 @@
 #ifndef FONT_1018_H__
 #define FONT_1018_H__
 
+#include <stdint.h>
+
 #include <hactar/font.h>
 
 static const uint8_t fontdata_10x18[9216] = {
@@ -626,10 +628,10 @@ static const uint8_t fontdata_10x18[9216] = {
 0x00,0x00,0x00,0x00,0x00,0x00,
 };
 
-static const FontInfo font_10x18 = {
-    fontdata_10x18,
-    10,
-    18,
+const FontInfo font_10x18 = {
+    .data_ = fontdata_10x18,
+    .width_ = 10,
+    .height_ = 18,
 };
 
 #endif

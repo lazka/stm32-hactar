@@ -15,11 +15,13 @@ typedef struct
 {
     StdoutDevice device_;
     FbInfo *fb_info_;
-    FontInfo *font_info_;
+    const FontInfo *font_info_;
+    size_t x_offset_;
+    size_t y_offset_;
 } FBConsoleInfo;
 
 FBConsoleInfo fbconsole_info;
 
-void initFramebufferStdoutDevice(FbInfo *fb_info, FontInfo *font_info);
+void initFramebufferStdoutDevice(FbInfo *fb_info, const FontInfo *font_info);
 
 #endif

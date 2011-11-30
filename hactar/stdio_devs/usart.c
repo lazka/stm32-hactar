@@ -15,7 +15,7 @@
 
 static int writeUSARTStdout(char *ptr, int len, uint8_t err)
 {
-    size_t i, u;
+    size_t i;
 
     for(i = 0; i < len; i++)
     {

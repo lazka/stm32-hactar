@@ -74,10 +74,10 @@ static void SPIInit(void)
     SPI_Cmd(SPI1, ENABLE);
 }
 
-void st7565rInit(DisplayInfoST7565R *display, size_t width, size_t height)
+static void init(DisplayInfo *display, size_t width, size_t height)
 {
-    display->base_.width_ = width;
-    display->base_.height_ = height;
+    display->width_ = width;
+    display->height_ = height;
 
     SPIInit();
 
@@ -100,7 +100,7 @@ void st7565rInit(DisplayInfoST7565R *display, size_t width, size_t height)
     //SPIWriteCommand(ST7565R_DISPLAY_ALL_OFF); //All Points off
 }
 
-void st7565rUpdate(DisplayInfoST7565R *display, FbInfo *fb)
+static void update(DisplayInfo *display, FbInfo *fb)
 {
     #ifdef FB_DEBUG
     size_t i;
@@ -115,14 +115,15 @@ void st7565rUpdate(DisplayInfoST7565R *display, FbInfo *fb)
     }
     #endif
 
-    display->dirty_pages_ = 0;
+    DisplayInfoST7565R *ext_info = (DisplayInfoST7565R*)display;
+    ext_info->dirty_pages_ = 0;
 }
 
 // Is used to get the byte and bit offset for a specific pixel and thus
 // specifies the fb data layout. Because of this we can transmit straight
 // from the fb data.
 // Returns 0 on success (the position is in the fb)
-void st7565rGetPosition(FbInfo *fb, size_t x, size_t y,
+static void getPosition(FbInfo *fb, size_t x, size_t y,
     size_t *index, uint8_t *offset)
 {
     *index = (y / 8) * fb->width_ + x;
@@ -131,35 +132,53 @@ void st7565rGetPosition(FbInfo *fb, size_t x, size_t y,
 
 // Gets called whenever a byte in the framebuffer changes.
 // Can be used to mark certain areas dirty, so an update is faster.
-void st7565rInval(DisplayInfoST7565R *display, size_t x, size_t y)
+static void inval(DisplayInfo *display, size_t x, size_t y)
 {
     uint8_t page;
+    DisplayInfoST7565R *ext_info = (DisplayInfoST7565R*)display;
 
-    if(x >= display->base_.width_ || x >= display->base_.height_)
+    if(x >= display->width_ || x >= display->height_)
         return;
 
     page = y / 8;
 
-    if((display->dirty_pages_ & (1 << page)))
+    if((ext_info->dirty_pages_ & (1 << page)))
     {
-        if(x < display->dirty_start_[page])
-            display->dirty_start_[page] = x;
-        if(x > display->dirty_end_[page])
-            display->dirty_end_[page] = x;
+        if(x < ext_info->dirty_start_[page])
+            ext_info->dirty_start_[page] = x;
+        if(x > ext_info->dirty_end_[page])
+            ext_info->dirty_end_[page] = x;
     }
     else
     {
-        display->dirty_pages_ |= (1 << page);
-        display->dirty_start_[page] = x;
-        display->dirty_end_[page] = x;
+        ext_info->dirty_pages_ |= (1 << page);
+        ext_info->dirty_start_[page] = x;
+        ext_info->dirty_end_[page] = x;
     }
 }
 
 // Switch it off, but don't clear the controller memory
-void st7565rOff(DisplayInfoST7565R *display)
+static void off(DisplayInfo *display)
 {
 }
 
-void st7565rOn(DisplayInfoST7565R *display)
+static void on(DisplayInfo *display)
 {
 }
+
+DisplayInfoST7565R st7565r =
+{
+    .base_ = {
+        .init_ = &init,
+        .get_pos_ = &getPosition,
+        .update_ = &update,
+        .inval_ = &inval,
+        .off_ = &off,
+        .on_ = &on,
+        .width_ = 0,
+        .height_ = 0,
+    },
+    .dirty_pages_ = 0,
+    .dirty_start_ = {0},
+    .dirty_end_ = {0},
+};

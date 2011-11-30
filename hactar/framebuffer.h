@@ -14,7 +14,7 @@
 #include <stdint.h>
 
 #include <hactar/font.h>
-#include <hactar/display.h>
+#include <hactar/fb_types.h>
 
 #define FB_DEFAULT 0
 #define FB_BLACK FB_DEFAULT
@@ -22,24 +22,6 @@
 #define FB_WHITE (1<<0)
 #define FB_FILL (1<<1)
 #define FB_VERT (1<<2)
-
-typedef struct
-{
-    size_t x1_;
-    size_t y1_;
-    size_t x2_;
-    size_t y2_;
-} FbRect;
-
-typedef struct
-{
-    uint8_t *data_;
-    size_t height_;
-    size_t width_;
-    uint8_t clip_;
-    FbRect clip_rect_;
-    DisplayInfo *display_;
-} FbInfo;
 
 void fbInit(FbInfo *fb, DisplayInfo *display, uint8_t *data,
     size_t width, size_t height);

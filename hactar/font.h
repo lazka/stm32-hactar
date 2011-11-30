@@ -15,4 +15,6 @@ typedef struct
     uint8_t height_;
 } FontInfo;
 
+extern const FontInfo font_10x18, font_4x6, font_6x11, font_8x16, font_8x8;
+
 #endif

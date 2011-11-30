@@ -3,6 +3,8 @@
 #ifndef FONT_611_H__
 #define FONT_611_H__
 
+#include <stdint.h>
+
 #include <hactar/font.h>
 
 static const uint8_t fontdata_6x11[11*256] = {
@@ -196,10 +198,10 @@ static const uint8_t fontdata_6x11[11*256] = {
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 };
 
-static const FontInfo font_6x11 = {
-    fontdata_6x11,
-    6,
-    11,
+const FontInfo font_6x11 = {
+    .data_ = fontdata_6x11,
+    .width_ = 6,
+    .height_ = 11,
 };
 
 #endif

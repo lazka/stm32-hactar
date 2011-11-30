@@ -90,36 +90,6 @@ typedef struct
     uint8_t dirty_end_[ST7565R_PAGES]; // end of dirty area
 } DisplayInfoST7565R;
 
-void st7565rInit(DisplayInfoST7565R *display, size_t width, size_t height);
-
-void st7565rUpdate(DisplayInfoST7565R *display, FbInfo *fb);
-
-void st7565rGetPosition(FbInfo *fb, size_t x, size_t y,
-    size_t *index, uint8_t *offset);
-
-void st7565rInval(DisplayInfoST7565R *display, size_t x, size_t y);
-
-void st7565rOff(DisplayInfoST7565R *display);
-
-void st7565rOn(DisplayInfoST7565R *display);
-
-__attribute__((unused)) // to hide the bogus unused warning
-static DisplayInfoST7565R st7565r =
-{
-    {
-        (void (*)(void *, size_t width, size_t height))st7565rInit,
-        (void (*)(void *fb, size_t x, size_t y,
-            size_t *index, uint8_t *offset))st7565rGetPosition,
-        (void (*)(void *, void *))st7565rUpdate,
-        (void (*)(void *, size_t x, size_t y))st7565rInval,
-        (void (*)(void *))st7565rOff,
-        (void (*)(void *))st7565rOn,
-        0,
-        0
-    },
-    0,
-    {0},
-    {0}
-};
+extern DisplayInfoST7565R st7565r;
 
 #endif

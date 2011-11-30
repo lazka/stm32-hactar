@@ -6,6 +6,8 @@
 #ifndef FONT_46_H__
 #define FONT_46_H__
 
+#include <stdint.h>
+
 #include <hactar/font.h>
 
 static const uint8_t fontdata_4x6[1536] = {
@@ -114,10 +116,10 @@ static const uint8_t fontdata_4x6[1536] = {
 0xee,0xee,0xee,0xee,0xee,0x00,
 };
 
-static const FontInfo font_4x6 = {
-    fontdata_4x6,
-    4,
-    6,
+const FontInfo font_4x6 = {
+    .data_ = fontdata_4x6,
+    .width_ = 4,
+    .height_ = 6,
 };
 
 #endif

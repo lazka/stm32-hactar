@@ -85,7 +85,7 @@ int _read(int file, char *ptr, int len)
     else
         assert(0);
 
-    return len;
+    return 0;
 }
 
 int _write(int file, char *ptr, int len)

@@ -12,9 +12,12 @@
 
 #include <hactar/hactar.h>
 
-#include <hactar/stdio_devs/eval_lcd.h>
-#include <hactar/displays/st7565r.h>
+//#include <hactar/stdio_devs/eval_lcd.h>
 #include <hactar/stdio_devs/usart.h>
+#include <hactar/stdio_devs/fbconsole.h>
+
+//#include <hactar/displays/st7565r.h>
+#include <hactar/displays/stm3210c_eval.h>
 
 static void printArgs(char **args)
 {
@@ -35,10 +38,19 @@ TermCommand term_cmds[] = {
         },
 };
 
+// Must be a multiple of 8
+#define WIDTH 256
+#define HEIGHT 128
+uint8_t fb_data[(WIDTH * HEIGHT) / 8];
+
 int main(void)
 {
-    DisplayInfo *display = (DisplayInfo*)&st7565r;
+    DisplayInfo *display = &stm32c_eval_display;
+    //DisplayInfo *display = (DisplayInfo*)&st7565r;
     displayInit(display, 64, 64);
+
+    FbInfo fb;
+    fbInit(&fb, display, fb_data, WIDTH, HEIGHT);
 
     spinlock_t lock;
 
@@ -61,8 +73,9 @@ int main(void)
 
     hactarInitScheduler(1);
 
-    initUSARTStdioDevice(HACTAR_USART_STDIO_STDIN | HACTAR_USART_STDIO_STDIN_ECHO);
-    initEvalLCDStdoutDevice();
+    initUSARTStdioDevice(HACTAR_USART_STDIO_STDIN | HACTAR_USART_STDIO_STDIN_ECHO | HACTAR_USART_STDIO_STDOUT);
+    //initEvalLCDStdoutDevice();
+    initFramebufferStdoutDevice(&fb, &font_4x6);
 
     startTerminal(term_cmds, 1);
 

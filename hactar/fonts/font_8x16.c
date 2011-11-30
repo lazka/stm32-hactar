@@ -3,6 +3,8 @@
 #ifndef FONT_816_H__
 #define FONT_816_H__
 
+#include <stdint.h>
+
 #include <hactar/font.h>
 
 static const uint8_t fontdata_8x16[4096] = {
@@ -282,10 +284,10 @@ static const uint8_t fontdata_8x16[4096] = {
 0x00,
 };
 
-static const FontInfo font_8x16 = {
-    fontdata_8x16,
-    8,
-    16,
+const FontInfo font_8x16 = {
+    .data_ = fontdata_8x16,
+    .width_ = 8,
+    .height_ = 16,
 };
 
 #endif

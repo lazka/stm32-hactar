@@ -8,20 +8,19 @@
 #ifndef HACTAR_DISPLAY_H__
 #define HACTAR_DISPLAY_H__
 
-#include <stddef.h>
-#include <stdint.h>
+#include <hactar/fb_types.h>
 
-typedef struct
-{
-    void (*init_)(void *, size_t width, size_t height);
-    void (*get_pos_)(void *fb, size_t x, size_t y,
-        size_t *index, uint8_t *offset);
-    void (*update_)(void *, void *);
-    void (*inval_)(void *, size_t x, size_t y);
-    void (*off_)(void *);
-    void (*on_)(void *);
-    size_t width_;
-    size_t height_;
-} DisplayInfo;
+// Initializes the driver and driver data
+void displayInit(DisplayInfo *display, size_t width,
+    size_t height);
+
+// Transmits all parts
+void displayUpdate(DisplayInfo *display, FbInfo *fb);
+
+// Switch the display on
+void displayOn(DisplayInfo *display);
+
+// Switch the display off
+void displayOff(DisplayInfo *display);
 
 #endif

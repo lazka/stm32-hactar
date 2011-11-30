@@ -10,7 +10,7 @@
 
 #include <hactar/startup.h>
 #include <hactar/framebuffer.h>
-#include <hactar/display_func.h>
+#include <hactar/display.h>
 #include <hactar/locks.h>
 #include <hactar/misc.h>
 #include <hactar/scheduler.h>
