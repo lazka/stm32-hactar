@@ -45,7 +45,7 @@ uint8_t fb_data[(WIDTH * HEIGHT) / 8];
 
 int main(void)
 {
-    DisplayInfo *display = &stm32c_eval_display;
+    DisplayInfo *display = (DisplayInfo*)&stm32c_eval_display;
     //DisplayInfo *display = (DisplayInfo*)&st7565r;
     displayInit(display, 64, 64);
 

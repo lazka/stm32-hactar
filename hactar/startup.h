@@ -8,6 +8,8 @@
 #ifndef HACTAR_STARTUP_H__
 #define HACTAR_STARTUP_H__
 
+#include <stdint.h>
+
 uint32_t hactarGetSystemClock(void);
 void SystemInit(void);
 
