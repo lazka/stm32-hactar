@@ -6,6 +6,7 @@
 //
 
 #include <hactar/hactar.h>
+#include <hactar/sdcard.h>
 #include <stdio.h>
 #include <stddef.h>
 
@@ -220,10 +221,52 @@ static uint32_t getOCRBitMask(uint32_t voltage)
     return mask;
 }
 
-SDInitState hactarSDInit(void)
+static uint8_t receiveData(uint8_t *dest, size_t size)
 {
-    uint8_t response[SD_MAX_RESPONSE_LENGTH] = {0};
-    SDInitState init_state = SD_NOCARD;
+    uint8_t data;
+    assert(size);
+
+    while(1)
+    {
+        data = sendByte(0xFF);
+        // Wait for the start block token
+        if(SD_IS_STD_START_BLOCK(data))
+            break;
+        if(SD_IS_ERROR_BLOCK(data))
+            return data;
+    }
+
+    // We get the MSB first so save it backwards
+    for(; size; size--)
+        *(dest + size - 1) = sendByte(0xFF);
+
+    return 0;
+}
+
+static int32_t setBlockSize(CardInfo *info, uint32_t block_size)
+{
+    uint8_t response[SD_MAX_RESPONSE_LENGTH];
+    int32_t status = 0;
+
+    if(info->max_block_size_ < block_size)
+        return -1;
+
+    select();
+
+    sendCommand(SD_CMD16, block_size, response, SD_R1_LENGTH);
+    if(SD_R1_IS_ERROR(response))
+        status = -1;
+
+    deselect();
+
+    info->block_size_ = block_size;
+
+    return status;
+}
+
+int32_t hactarSDInit(CardInfo *info, uint32_t block_size)
+{
+    uint8_t response[SD_MAX_RESPONSE_LENGTH];
     uint32_t cmd8_count = 10;
 
     // Set up CS, MOSI, MISO
@@ -231,7 +274,7 @@ SDInitState hactarSDInit(void)
 
     // Check if there is a card
     if(!getCardDetected())
-        return init_state;
+        return -1;
 
     // Init SPI
     SPIInit();
@@ -267,7 +310,7 @@ SDInitState hactarSDInit(void)
             goto error;
 
         // Ver1.X SD Memory Card / or Not SD Memory Card
-        init_state = SD_VER_1;
+        info->type_ = SD_VER_1;
     }
     else
     {
@@ -284,7 +327,7 @@ SDInitState hactarSDInit(void)
         }
 
         // Ver2.00 or later SD Memory Cards
-        init_state = SD_VER_2;
+        info->type_ = SD_VER_2;
     }
 
     // Check the supported voltage range and fail if or voltage doesn't work
@@ -295,7 +338,7 @@ SDInitState hactarSDInit(void)
 
     // Send with ACMD41 if we support HC cards it's a Ver 2 card
     uint32_t acmd41_args = SD_ACMD41_HCS_NO;
-    if(SD_HAS_HC_SUPPORT && init_state == SD_VER_2)
+    if(SD_HAS_HC_SUPPORT && info->type_ == SD_VER_2)
         acmd41_args = SD_ACMD41_HCS_YES;
 
     retry_ACMD41:
@@ -314,8 +357,8 @@ SDInitState hactarSDInit(void)
         goto retry_ACMD41;
 
     // In case of a ver. 1 card, we are done here
-    if(init_state == SD_VER_1)
-        goto done;
+    if(info->type_ == SD_VER_1)
+        goto skip_ver2;
 
     // Check the CSS bit of OCR to see if it's HC card
     // Fail in case OCR is busy, since this means that OCR and CSS are invalid
@@ -324,16 +367,84 @@ SDInitState hactarSDInit(void)
         goto error;
 
     if(SD_OCR_CCS(SD_R3_OCR(response)))
-        init_state = SD_VER_2_HC;
+        info->type_ = SD_VER_2_HC;
 
-    goto done;
+    skip_ver2:
+
+    // Read the CSD register
+    sendCommand(SD_CMD9, 0, response, SD_R1_LENGTH);
+    if(SD_R1_IS_ERROR(response))
+        goto error;
+
+    uint8_t csd_data[SD_CSD_LENGTH];
+    if(receiveData(csd_data, SD_CSD_LENGTH) != 0)
+        goto error;
+
+    // We don't support HC, so this shouldn't happen
+    if(SD_CSD_STRUCTURE(csd_data) != SD_CSD_STRUCTURE_1)
+        goto error;
+
+    // Block size is 2^READ_BL_LEN
+    info->max_block_size_ = (uint32_t)1 << SD_CSD_READ_BL_LEN(csd_data);
+
+
+    // Capacity is READ_BL_LEN * (C_SIZE + 1) * 2 ^ (C_SIZE_MULT + 2)
+    info->capacity_ = info->max_block_size_ * \
+                      (SD_CSD_C_SIZE(csd_data) + 1) * \
+                      ((uint32_t)1 << (SD_CSD_C_SIZE_MULT(csd_data) + 2));
+
+    // Force a block size
+    if(setBlockSize(info, block_size) != 0)
+        goto error;
+
+    // ... and the block count
+    info->block_count_ = info->capacity_ / block_size;
+
+    // The size of an erasable sector
+    info->erase_sectors_count_ = SD_CSD_SECTOR_SIZE(csd_data) + 1;
+
+    deselect();
+    return 0;
+
     error:
+        deselect();
+        return -1;
+}
 
-    init_state = SD_ERROR;
+int32_t hactarSDReadBlocks(CardInfo *info, uint32_t block_number,
+        size_t block_count, uint8_t *dest)
+{
+    uint8_t response[SD_MAX_RESPONSE_LENGTH];
+    uint8_t status;
+    size_t block;
 
-    done:
+    select();
+
+    if(block_count == 1)
+        sendCommand(SD_CMD17, block_number * info->block_size_,
+                    response, SD_R1_LENGTH);
+    else
+        sendCommand(SD_CMD18, block_number * info->block_size_,
+                    response, SD_R1_LENGTH);
+
+    if(SD_R1_IS_ERROR(response))
+    {
+        deselect();
+        return -1;
+    }
+
+    for(block = 0; block < block_count; block++)
+    {
+        status = receiveData(dest, info->block_size_);
+        if(status != 0)
+        {
+            status = -1;
+            break;
+        }
+        dest += info->block_size_;
+    }
 
     deselect();
 
-    return init_state;
+    return status;
 }

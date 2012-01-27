@@ -25,6 +25,8 @@
 //#include "stm32f10x_wwdg.h"
 #include "misc.h"
 
+#define NDEBUG
+
 #ifdef NDEBUG
 #define assert_param(expr) ((void)0)
 #else

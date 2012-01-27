@@ -19,8 +19,6 @@
 //#include <hactar/displays/st7565r.h>
 #include <hactar/displays/stm3210c_eval.h>
 
-#include <hactar/sdcard.h>
-
 static void printArgs(char **args)
 {
     size_t i = 0;
@@ -80,7 +78,9 @@ int main(void)
     //initFramebufferStdoutDevice(&fb, &font_4x6);
 
     GPIO_PinRemapConfig(GPIO_Remap_SPI3, ENABLE);
-    hactarSDInit();
+
+    CardInfo info;
+    hactarSDInit(&info, 512);
 
     //startTerminal(term_cmds, 1);
 

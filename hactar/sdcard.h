@@ -48,32 +48,64 @@
 #define SD_OCRV_TO_BIT(value)           ((value - 2700) / 100 + 15)
 
 // Card Types
-typedef enum x{SD_NOCARD, SD_ERROR,
-               SD_VER_1,
-               SD_VER_2, SD_VER_2_HC} SDInitState;
+typedef enum x{SD_VER_1, SD_VER_2, SD_VER_2_HC} SDCardType;
+
+typedef struct CardInfo CardInfo;
+
+struct CardInfo{
+    SDCardType  type_;                  // Which card type
+    uint32_t    max_block_size_;        // Maximal possible block size (r/w)
+    uint32_t    block_size_;            // Currently used block size
+    uint32_t    block_count_;           // Number of blocks
+    uint32_t    capacity_;              // Card capacity in bytes
+    uint32_t    erase_sectors_count_;   // The size of an erasable sector
+};
 
 // Commands and arguments
-#define SD_CMD0                 (0)
+#define SD_CMD0                 (0)     // GO_IDLE_STATE
 
-#define SD_CMD8                 (8)
+#define SD_CMD8                 (8)     // SEND_IF_COND
 #define SD_CMD8_CHECK_PATTER    (0xAA)  // recommended pattern
 #define SD_CMD8_VOLTAGE_27_36   (0x1)   // only one voltage range in 2.0
+
+#define SD_CMD9                 (9)     // SEND_CSD
+
+#define SD_CMD16                (16)    // SET_BLOCKLEN
+#define SD_CMD17                (17)    // READ_SINGLE_BLOCK
+#define SD_CMD18                (18)    // READ_MULTIPLE_BLOCK
 
 #define SD_ACMD41               (41)
 #define SD_ACMD41_HCS_YES       (0x1)   // Host Capacity Support
 #define SD_ACMD41_HCS_NO        (0x0)
-#define SD_CMD55                (55)
-#define SD_CMD58                (58)
+#define SD_CMD55                (55)    // APP_CMD
+#define SD_CMD58                (58)    // READ_OCR
 
-// OCR register
+// OCR Register
 
 #define SD_OCR_CCS(ocr)         ((ocr >> 30) & 0x1)
 #define SD_OCR_BUSY(ocr)        (!((ocr >> 31) & 0x1))
 
-// Responses
-#define SD_MAX_RESPONSE_LENGTH          5
+// CSD Register (received LSB first)
 
-#define SD_R1_LENGTH                    1
+#define SD_CSD_LENGTH               (16)
+#define SD_CSD_REV(pos)             (SD_CSD_LENGTH - 1 - pos)
+
+#define SD_CSD_STRUCTURE(resp)      (resp[SD_CSD_REV(0)] >> 6)
+#define SD_CSD_STRUCTURE_1          (0x0)
+#define SD_CSD_READ_BL_LEN(resp)    (resp[SD_CSD_REV(5)] & 0xF)
+#define SD_CSD_C_SIZE(resp)         ((((uint32_t)resp[SD_CSD_REV(6)] & 0x3) << 10) | \
+                                      ((uint32_t)resp[SD_CSD_REV(7)] << 2) | \
+                                      ((uint32_t)resp[SD_CSD_REV(8)] >> 6))
+#define SD_CSD_C_SIZE_MULT(resp)    ((((uint32_t)resp[SD_CSD_REV(10)] & 0x3) << 1) | \
+                                      ((uint32_t)resp[SD_CSD_REV(11)] >> 7))
+
+#define SD_CSD_SECTOR_SIZE(resp)    ((((uint32_t)resp[SD_CSD_REV(11)] & 0x3F) << 1) | \
+                                      ((uint32_t)resp[SD_CSD_REV(12)] >> 7))
+
+// Responses (received MSB first)
+#define SD_MAX_RESPONSE_LENGTH          (5)
+
+#define SD_R1_LENGTH                    (1)
 #define SD_R1_IDLE_STATE(resp)          SD_GET_BIT(resp[0], 0)
 #define SD_R1_ERASE_RESET(resp)         SD_GET_BIT(resp[0], 1)
 #define SD_R1_ILLEGAL_COMMAND(resp)     SD_GET_BIT(resp[0], 2)
@@ -83,18 +115,28 @@ typedef enum x{SD_NOCARD, SD_ERROR,
 #define SD_R1_PARAMETER_ERROR(resp)     SD_GET_BIT(resp[0], 6)
 #define SD_R1_IS_ERROR(resp)            (resp[0] >> 1)
 
-#define SD_R3_LENGTH                    5
-#define SD_R3_OCR(resp)                 (((uint32_t)resp[1] << 24) | (resp[2] << 16) | (resp[3] << 8) | resp[4])
+#define SD_R3_LENGTH                    (5)
+#define SD_R3_OCR(resp)                 (((uint32_t)resp[1] << 24) | \
+                                         ((uint32_t)resp[2] << 16) | \
+                                         ((uint32_t)resp[3] << 8) | \
+                                         ((uint32_t)resp[4] << 0))
 
-#define SD_R7_LENGTH                    5
+#define SD_R7_LENGTH                    (5)
 #define SD_R7_COMMAND_VERSION(resp)     (resp[1] >> 4)
 #define SD_R7_VOLTAGE_ACCEPTED(resp)    (resp[3] & 0x7)
 #define SD_R7_CHECK_PATTERN(resp)       (resp[4])
 
 #define SD_IS_RESPONSE_START(byte)      (!SD_GET_BIT(byte, 7))
 
+// Data response tokens
+
+#define SD_IS_STD_START_BLOCK(byte)     (byte == 0xFE)
+#define SD_IS_ERROR_BLOCK(byte)         (byte && !(byte >> 4))
+
 // Public interface
 
-SDInitState hactarSDInit(void);
+int32_t hactarSDInit(CardInfo *info, uint32_t block_size);
+int32_t hactarSDReadBlocks(CardInfo *info, uint32_t block_number,
+                           size_t block_count, uint8_t *dest);
 
 #endif
