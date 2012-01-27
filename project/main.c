@@ -12,12 +12,14 @@
 
 #include <hactar/hactar.h>
 
-//#include <hactar/stdio_devs/eval_lcd.h>
+#include <hactar/stdio_devs/eval_lcd.h>
 #include <hactar/stdio_devs/usart.h>
 #include <hactar/stdio_devs/fbconsole.h>
 
 //#include <hactar/displays/st7565r.h>
 #include <hactar/displays/stm3210c_eval.h>
+
+#include <hactar/sdcard.h>
 
 static void printArgs(char **args)
 {
@@ -73,16 +75,19 @@ int main(void)
 
     hactarInitScheduler(1);
 
-    initUSARTStdioDevice(HACTAR_USART_STDIO_STDIN | HACTAR_USART_STDIO_STDIN_ECHO | HACTAR_USART_STDIO_STDOUT);
+    //initUSARTStdioDevice(HACTAR_USART_STDIO_STDIN | HACTAR_USART_STDIO_STDIN_ECHO | HACTAR_USART_STDIO_STDOUT);
     //initEvalLCDStdoutDevice();
-    initFramebufferStdoutDevice(&fb, &font_4x6);
+    //initFramebufferStdoutDevice(&fb, &font_4x6);
 
-    startTerminal(term_cmds, 1);
+    GPIO_PinRemapConfig(GPIO_Remap_SPI3, ENABLE);
+    hactarSDInit();
+
+    //startTerminal(term_cmds, 1);
 
     assert(0);
 
-    while (1)
-      __WFI();
+    while (1);
+    //__WFI();
 
     return 0;
 }

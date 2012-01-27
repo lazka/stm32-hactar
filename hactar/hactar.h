@@ -16,5 +16,6 @@
 #include <hactar/scheduler.h>
 #include <hactar/stdio_dev.h>
 #include <hactar/term.h>
+#include <hactar/sdcard.h>
 
 #endif

@@ -8,15 +8,27 @@
 #include <hactar/hactar.h>
 #include <diskio.h>
 
-static volatile DSTATUS status = STA_NOINIT; // STA_NOINIT, STA_NODISK, STA_PROTECTED
+static volatile DSTATUS status = STA_NOINIT | STA_NODISK;
 
 DSTATUS disk_initialize(BYTE drive)
 {
+    assert(!drive);
+
+    SDInitState state = hactarSDInit();
+
+    if(state != SD_NOCARD && state != SD_ERROR)
+    {
+        status &= ~STA_NOINIT;
+        status &= ~STA_NODISK;
+    }
+
     return status;
 }
 
 DSTATUS disk_status(BYTE drive)
 {
+    assert(!drive);
+
     return status;
 }
 
