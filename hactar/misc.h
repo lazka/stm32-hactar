@@ -13,6 +13,8 @@
 
 #include "stm32f10x_gpio.h"
 
+#define COUNT_OF(array) (sizeof(array) / sizeof(array[0]))
+
 void NMI_Handler(void);
 void HardFault_Handler(void);
 void BusFault_Handler(void);
