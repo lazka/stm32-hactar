@@ -18,6 +18,7 @@
 #define SD_SPI              SPI3
 #define SD_SPI_CLK          RCC_APB1Periph_SPI3
 #define SD_SPI_CLK_CMD      RCC_APB1PeriphClockCmd
+#define SD_SPI_REMAP        GPIO_Remap_SPI3
 
 #define SD_GPIO_Port        GPIOC
 #define SD_GPIO_SCK_Pin     GPIO_Pin_10
@@ -44,6 +45,10 @@
 // Implementation config
 
 #define SD_HAS_HC_SUPPORT   0
+
+#ifndef SD_SPI_REMAP
+#define SD_SPI_REMAP        0
+#endif
 
 // Helpers
 #define SD_GET_BIT(value, bit)          (!!(value & (1 << bit)))

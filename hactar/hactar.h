@@ -17,5 +17,6 @@
 #include <hactar/stdio_dev.h>
 #include <hactar/term.h>
 #include <hactar/sdcard.h>
+#include <hactar/crc.h>
 
 #endif
