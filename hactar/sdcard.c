@@ -56,6 +56,7 @@ static uint8_t crc7(uint8_t crc, uint8_t *buffer, size_t len)
     return crc;
 }
 
+// Returns if a card is in the slot, or 1 of not supported
 static int32_t getCardDetected(void)
 {
 #if SD_HAS_CARD_DETECT
@@ -65,16 +66,19 @@ static int32_t getCardDetected(void)
 #endif
 }
 
+// Set CS low
 static void select()
 {
     GPIO_ResetBits(SD_GPIO_CS_Port, SD_GPIO_CS_Pin);
 }
 
+// Set CS high
 static void deselect()
 {
     GPIO_SetBits(SD_GPIO_CS_Port, SD_GPIO_CS_Pin);
 }
 
+// Configure the SPI controller
 static void SPIInit(void)
 {
     SD_SPI_CLK_CMD(SD_SPI_CLK, ENABLE);
@@ -96,6 +100,7 @@ static void SPIInit(void)
     SPI_Cmd(SD_SPI, ENABLE);
 }
 
+// Configure the needed GPIO ports
 static void portsInit(void)
 {
     // Chip Select
@@ -145,6 +150,7 @@ static void portsInit(void)
     GPIO_Init(SD_GPIO_Port, &sd_gpio_mosi);
 }
 
+// Send a byte and receive a byte
 static uint8_t sendByte(uint8_t data)
 {
     while(SPI_I2S_GetFlagStatus(SD_SPI, SPI_I2S_FLAG_TXE) != SET);
@@ -154,6 +160,7 @@ static uint8_t sendByte(uint8_t data)
     return SPI_I2S_ReceiveData(SD_SPI);
 }
 
+// Send an command, and puts the response, MSB first into response
 static int32_t sendCommandNoWait(uint8_t command, uint32_t args,
         uint8_t *response, size_t response_size)
 {
@@ -197,12 +204,14 @@ static int32_t sendCommandNoWait(uint8_t command, uint32_t args,
     return -1;
 }
 
+// Set DO high and waits until an all high byte is received
 static void waitReady(void)
 {
     // Wait for the card to be ready again
     while(sendByte(0xFF) != 0xFF);
 }
 
+// Send a command and wait for the client to be ready first
 static int32_t sendCommand(uint8_t command, uint32_t args, uint8_t *response,
         size_t response_size)
 {
@@ -210,11 +219,13 @@ static int32_t sendCommand(uint8_t command, uint32_t args, uint8_t *response,
     return sendCommandNoWait(command, args, response, response_size);
 }
 
+// Returns a argument token for CMD8
 static uint32_t buildCMD8Args(uint32_t voltage_range, uint32_t check_pattern)
 {
     return (voltage_range << 8) | check_pattern;
 }
 
+// Returns a OCR voltage bit mask given the voltage in mV
 static uint32_t getOCRBitMask(uint32_t voltage)
 {
     uint32_t mask = 0;
@@ -227,6 +238,7 @@ static uint32_t getOCRBitMask(uint32_t voltage)
     return mask;
 }
 
+// Waits for data start tokens after a read command has been send
 static uint8_t waitForData(void)
 {
     uint8_t data;
@@ -244,6 +256,7 @@ static uint8_t waitForData(void)
     return 0;
 }
 
+// Copies data to dest, LSB first
 static uint8_t receiveData(uint8_t *dest, size_t size)
 {
     uint8_t data;
@@ -262,6 +275,7 @@ static uint8_t receiveData(uint8_t *dest, size_t size)
     return 0;
 }
 
+// Copies data to dest, MSB first
 static uint8_t receiveDataMSBFirst(uint8_t *dest, size_t size)
 {
     uint8_t data;
@@ -280,21 +294,20 @@ static uint8_t receiveDataMSBFirst(uint8_t *dest, size_t size)
     return 0;
 }
 
+// Returns 0 on success, -1 on error, and -2 on invalid block size
 static int32_t setBlockSize(CardInfo *info, uint32_t block_size)
 {
     uint8_t response[SD_MAX_RESPONSE_LENGTH];
     int32_t status = 0;
 
     if(info->max_block_size_ < block_size)
-        return -1;
+        return -2;
 
-    select();
-
-    sendCommand(SD_CMD16, block_size, response, SD_R1_LENGTH);
-    if(SD_R1_IS_ERROR(response))
+    sendCommand(SD_CMD16, 10, response, SD_R1_LENGTH);
+    if(SD_R1_PARAMETER_ERROR(response))
+        status = -2;
+    else if(SD_R1_IS_ERROR(response))
         status = -1;
-
-    deselect();
 
     info->block_size_ = block_size;
 
@@ -305,6 +318,7 @@ int32_t hactarSDInit(CardInfo *info, uint32_t block_size)
 {
     uint8_t response[SD_MAX_RESPONSE_LENGTH];
     uint32_t cmd8_count = 10;
+    int32_t status = 0;
 
     // Set up CS, MOSI, MISO
     portsInit();
@@ -431,7 +445,8 @@ int32_t hactarSDInit(CardInfo *info, uint32_t block_size)
                       ((uint32_t)1 << (SD_CSD_C_SIZE_MULT(csd_data) + 2));
 
     // Force a block size
-    if(setBlockSize(info, block_size) != 0)
+    status = setBlockSize(info, block_size);
+    if(status != 0)
         goto error;
 
     // ... and the block count

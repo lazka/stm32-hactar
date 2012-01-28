@@ -74,6 +74,7 @@ struct CardInfo {
 #define SD_CMD10                (10)    // SEND_CID
 
 #define SD_CMD12                (12)    // STOP_TRANSMISSION
+#define SD_CMD13                (13)    // SEND_STATUS
 
 #define SD_CMD16                (16)    // SET_BLOCKLEN
 #define SD_CMD17                (17)    // READ_SINGLE_BLOCK
@@ -149,6 +150,17 @@ struct CardID {
 #define SD_R1_PARAMETER_ERROR(resp)     SD_GET_BIT(resp[0], 6)
 #define SD_R1_IS_ERROR(resp)            (resp[0] >> 1)
 
+#define SD_R2_LENGTH                    (2)
+#define SD_R2_CARD_LOCKED(resp)         SD_GET_BIT(resp[1], 0)
+#define SD_R2_WP_ERASE_SKIP(resp)       SD_GET_BIT(resp[1], 1)
+#define SD_R2_ERROR(resp)               SD_GET_BIT(resp[1], 2)
+#define SD_R2_CC_ERROR(resp)            SD_GET_BIT(resp[1], 3)
+#define SD_R2_ECC_FAILED(resp)          SD_GET_BIT(resp[1], 4)
+#define SD_R2_WP_VIOLATION(resp)        SD_GET_BIT(resp[1], 5)
+#define SD_R2_ERASE_PARAM(resp)         SD_GET_BIT(resp[1], 6)
+#define SD_R2_OUT_OF_RANGE(resp)        SD_GET_BIT(resp[1], 7)
+#define SD_R2_IS_ERROR(resp)            (!!(resp[1] & 0xFE))
+
 #define SD_R3_LENGTH                    (5)
 #define SD_R3_OCR(resp)                 (((uint32_t)resp[1] << 24) | \
                                          ((uint32_t)resp[2] << 16) | \
@@ -177,10 +189,38 @@ struct CardID {
 
 // Public interface
 
+/*
+ * Initializes GPIO/SPI and the card and forces a block size.
+ *
+ * Will return 0 on success and a negative value on error.
+ * Invalid block size: -2
+ * Other errors: -1
+ */
 int32_t hactarSDInit(CardInfo *info, uint32_t block_size);
+
+/*
+ * Fills the CardID structure.
+ * Only works on an initialized card.
+ *
+ * Returns 0 on success.
+ */
 int32_t hactarGetSDCardID(CardInfo *info, CardID *id);
+
+/*
+ * Reads one or more blocks starting from block_number to the
+ * destination address.
+ *
+ * Returns 0 on success.
+ */
 int32_t hactarSDReadBlocks(CardInfo *info, uint32_t block_number,
                            size_t block_count, uint8_t *dest);
+
+/*
+ * Writes data from the source address to one or more blocks starting
+ * from block_number.
+ *
+ * Returns 0 on success.
+ */
 int32_t hactarSDWriteBlocks(CardInfo *info, uint32_t block_number,
                             size_t block_count, const uint8_t *src);
 #endif
