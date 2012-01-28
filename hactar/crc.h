@@ -12,6 +12,9 @@
 #include <stddef.h>
 
 uint8_t crc7(uint8_t crc, uint8_t *buffer, size_t len);
+
+uint16_t crc16(uint16_t crc, uint8_t *buffer, size_t len);
+
 uint32_t crc32(uint32_t crc, uint8_t *buffer, size_t len);
 
 #endif
