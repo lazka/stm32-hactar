@@ -80,7 +80,9 @@ int main(void)
     GPIO_PinRemapConfig(GPIO_Remap_SPI3, ENABLE);
 
     CardInfo info;
+    CardID id;
     hactarSDInit(&info, 512);
+    hactarGetSDCardID(&info, &id);
 
     //startTerminal(term_cmds, 1);
 

@@ -14,6 +14,10 @@ static CardInfo info;
 
 DSTATUS disk_initialize(BYTE drive)
 {
+    // Already initialized
+    if(!(status & STA_NOINIT) && !(status & STA_NODISK))
+        return status;
+
     status = STA_NOINIT | STA_NODISK;
 
     if(hactarSDInit(&info, _MAX_SS) != 0)
@@ -28,7 +32,8 @@ DSTATUS disk_initialize(BYTE drive)
 
 DSTATUS disk_status(BYTE drive)
 {
-    assert(!drive);
+    if(drive)
+        return STA_NOINIT | STA_NODISK;
 
     return status;
 }
@@ -51,12 +56,21 @@ DRESULT disk_read(BYTE drive, BYTE* buffer,
 DRESULT disk_write(BYTE drive, const BYTE* buffer,
         DWORD sector_number, BYTE sector_count)
 {
-    return RES_ERROR;
+    if(drive)
+        return RES_PARERR;
+
+    if(status & STA_NOINIT)
+        return RES_NOTRDY;
+
+    if(hactarSDWriteBlocks(&info, sector_number, sector_count, buffer) != 0)
+        return RES_ERROR;
+
+    return RES_OK;
 }
 
 DRESULT disk_ioctl(BYTE drive, BYTE command, void* buffer)
 {
-    if(status & STA_NOINIT)
+    if(drive || (status & STA_NOINIT))
         return RES_NOTRDY;
 
     if(command == CTRL_SYNC)

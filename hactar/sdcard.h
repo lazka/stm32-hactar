@@ -8,7 +8,9 @@
 #ifndef HACTAR_SDCARD_H__
 #define HACTAR_SDCARD_H__
 
+#include <stddef.h>
 #include <stdint.h>
+
 #include "stm32f10x.h"
 
 // Public config
@@ -52,7 +54,7 @@ typedef enum x{SD_VER_1, SD_VER_2, SD_VER_2_HC} SDCardType;
 
 typedef struct CardInfo CardInfo;
 
-struct CardInfo{
+struct CardInfo {
     SDCardType  type_;                  // Which card type
     uint32_t    max_block_size_;        // Maximal possible block size (r/w)
     uint32_t    block_size_;            // Currently used block size
@@ -69,10 +71,15 @@ struct CardInfo{
 #define SD_CMD8_VOLTAGE_27_36   (0x1)   // only one voltage range in 2.0
 
 #define SD_CMD9                 (9)     // SEND_CSD
+#define SD_CMD10                (10)    // SEND_CID
+
+#define SD_CMD12                (12)    // STOP_TRANSMISSION
 
 #define SD_CMD16                (16)    // SET_BLOCKLEN
 #define SD_CMD17                (17)    // READ_SINGLE_BLOCK
 #define SD_CMD18                (18)    // READ_MULTIPLE_BLOCK
+#define SD_CMD24                (18)    // WRITE_BLOCK
+#define SD_CMD25                (18)    // WRITE_MULTIPLE_BLOCK
 
 #define SD_ACMD41               (41)
 #define SD_ACMD41_HCS_YES       (0x1)   // Host Capacity Support
@@ -85,24 +92,51 @@ struct CardInfo{
 #define SD_OCR_CCS(ocr)         ((ocr >> 30) & 0x1)
 #define SD_OCR_BUSY(ocr)        (!((ocr >> 31) & 0x1))
 
-// CSD Register (received LSB first)
+// CID Register
+
+typedef struct CardID CardID;
+
+struct CardID {
+    uint8_t     manufacturer_id_;
+    uint8_t     application_id_[2];
+    uint8_t     product_name_[5];
+    uint8_t     product_revision_major_;
+    uint8_t     product_revision_minor_;
+    uint32_t    product_serial_number_;
+    uint16_t    manufacturing_year_;
+    uint8_t     manufacturing_month_;
+};
+
+#define SD_CID_LENGTH               (16)
+
+#define SD_CID_MID(resp)            (resp[0])
+#define SD_CID_OID(resp)            (resp + 1)
+#define SD_CID_PNM(resp)            (resp + 3)
+#define SD_CID_PRV(resp)            (resp[8])
+#define SD_CID_PSN(resp)            (((uint32_t)resp[9] << 24) | \
+                                     ((uint32_t)resp[10] << 16) | \
+                                     ((uint32_t)resp[11] << 8) | \
+                                     ((uint32_t)resp[12]))
+#define SD_CID_MDT(resp)            ((((uint16_t)resp[13] & 0xF) << 8) | \
+                                       (uint16_t)resp[14])
+
+// CSD Register
 
 #define SD_CSD_LENGTH               (16)
-#define SD_CSD_REV(pos)             (SD_CSD_LENGTH - 1 - pos)
 
-#define SD_CSD_STRUCTURE(resp)      (resp[SD_CSD_REV(0)] >> 6)
+#define SD_CSD_STRUCTURE(resp)      (resp[0] >> 6)
 #define SD_CSD_STRUCTURE_1          (0x0)
-#define SD_CSD_READ_BL_LEN(resp)    (resp[SD_CSD_REV(5)] & 0xF)
-#define SD_CSD_C_SIZE(resp)         ((((uint32_t)resp[SD_CSD_REV(6)] & 0x3) << 10) | \
-                                      ((uint32_t)resp[SD_CSD_REV(7)] << 2) | \
-                                      ((uint32_t)resp[SD_CSD_REV(8)] >> 6))
-#define SD_CSD_C_SIZE_MULT(resp)    ((((uint32_t)resp[SD_CSD_REV(10)] & 0x3) << 1) | \
-                                      ((uint32_t)resp[SD_CSD_REV(11)] >> 7))
+#define SD_CSD_READ_BL_LEN(resp)    (resp[5] & 0xF)
+#define SD_CSD_C_SIZE(resp)         ((((uint32_t)resp[6] & 0x3) << 10) | \
+                                      ((uint32_t)resp[7] << 2) | \
+                                      ((uint32_t)resp[8] >> 6))
+#define SD_CSD_C_SIZE_MULT(resp)    ((((uint32_t)resp[10] & 0x3) << 1) | \
+                                      ((uint32_t)resp[11] >> 7))
+#define SD_CSD_SECTOR_SIZE(resp)    ((((uint32_t)resp[11] & 0x3F) << 1) | \
+                                      ((uint32_t)resp[12] >> 7))
 
-#define SD_CSD_SECTOR_SIZE(resp)    ((((uint32_t)resp[SD_CSD_REV(11)] & 0x3F) << 1) | \
-                                      ((uint32_t)resp[SD_CSD_REV(12)] >> 7))
+// Responses
 
-// Responses (received MSB first)
 #define SD_MAX_RESPONSE_LENGTH          (5)
 
 #define SD_R1_LENGTH                    (1)
@@ -130,13 +164,23 @@ struct CardInfo{
 
 // Data response tokens
 
-#define SD_IS_STD_START_BLOCK(byte)     (byte == 0xFE)
+#define SD_STD_START_BLOCK              (0xFE)
+#define SD_MULT_START_BLOCK             (0xFC)
+#define SD_MULT_STOP_BLOCK              (0xFD)
+#define SD_IS_STD_START_BLOCK(byte)     (byte == SD_STD_START_BLOCK)
 #define SD_IS_ERROR_BLOCK(byte)         (byte && !(byte >> 4))
+
+#define SD_IS_DATA_RESPONSE(byte)       ((byte & 0x11) == 0x1)
+#define SD_IS_DATA_ACCPTED(byte)        ((byte & 0xE) == 0x2 << 1)
+#define SD_IS_DATA_CRC_ERROR(byte)      ((byte & 0xE) == 0x5 << 1)
+#define SD_IS_DATA_WRITE_ERROR(byte)    ((byte & 0xE) == 0x6 << 1)
 
 // Public interface
 
 int32_t hactarSDInit(CardInfo *info, uint32_t block_size);
+int32_t hactarGetSDCardID(CardInfo *info, CardID *id);
 int32_t hactarSDReadBlocks(CardInfo *info, uint32_t block_number,
                            size_t block_count, uint8_t *dest);
-
+int32_t hactarSDWriteBlocks(CardInfo *info, uint32_t block_number,
+                            size_t block_count, const uint8_t *src);
 #endif

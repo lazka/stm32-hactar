@@ -5,10 +5,12 @@
 // published by the Free Software Foundation.
 //
 
-#include <hactar/hactar.h>
 #include <hactar/sdcard.h>
+#include <hactar/hactar.h>
+
 #include <stdio.h>
 #include <stddef.h>
+#include <string.h>
 
 /* Table for CRC-7 (polynomial x^7 + x^3 + 1) */
 const uint8_t crc7_syndrome_table[256] = {
@@ -84,7 +86,7 @@ static void SPIInit(void)
         .SPI_CPOL               = SPI_CPOL_Low,
         .SPI_CPHA               = SPI_CPHA_1Edge,
         .SPI_NSS                = SPI_NSS_Soft,
-        .SPI_BaudRatePrescaler  = SPI_BaudRatePrescaler_256,
+        .SPI_BaudRatePrescaler  = SPI_BaudRatePrescaler_2,
         .SPI_FirstBit           = SPI_FirstBit_MSB,
         .SPI_CRCPolynomial      = 7,
     };
@@ -195,12 +197,16 @@ static int32_t sendCommandNoWait(uint8_t command, uint32_t args,
     return -1;
 }
 
-static int32_t sendCommand(uint8_t command, uint32_t args, uint8_t *response,
-        size_t response_size)
+static void waitReady(void)
 {
     // Wait for the card to be ready again
     while(sendByte(0xFF) != 0xFF);
+}
 
+static int32_t sendCommand(uint8_t command, uint32_t args, uint8_t *response,
+        size_t response_size)
+{
+    waitReady();
     return sendCommandNoWait(command, args, response, response_size);
 }
 
@@ -221,10 +227,9 @@ static uint32_t getOCRBitMask(uint32_t voltage)
     return mask;
 }
 
-static uint8_t receiveData(uint8_t *dest, size_t size)
+static uint8_t waitForData(void)
 {
     uint8_t data;
-    assert(size);
 
     while(1)
     {
@@ -236,9 +241,41 @@ static uint8_t receiveData(uint8_t *dest, size_t size)
             return data;
     }
 
+    return 0;
+}
+
+static uint8_t receiveData(uint8_t *dest, size_t size)
+{
+    uint8_t data;
+
+    if(!size)
+        return 0;
+
+    data = waitForData();
+    if(data != 0)
+        return data;
+
     // We get the MSB first so save it backwards
     for(; size; size--)
         *(dest + size - 1) = sendByte(0xFF);
+
+    return 0;
+}
+
+static uint8_t receiveDataMSBFirst(uint8_t *dest, size_t size)
+{
+    uint8_t data;
+    size_t i;
+
+    if(!size)
+        return 0;
+
+    data = waitForData();
+    if(data != 0)
+        return data;
+
+    for(i = 0; i < size; i++)
+        dest[i] = sendByte(0xFF);
 
     return 0;
 }
@@ -377,7 +414,7 @@ int32_t hactarSDInit(CardInfo *info, uint32_t block_size)
         goto error;
 
     uint8_t csd_data[SD_CSD_LENGTH];
-    if(receiveData(csd_data, SD_CSD_LENGTH) != 0)
+    if(receiveDataMSBFirst(csd_data, SD_CSD_LENGTH) != 0)
         goto error;
 
     // We don't support HC, so this shouldn't happen
@@ -411,21 +448,119 @@ int32_t hactarSDInit(CardInfo *info, uint32_t block_size)
         return -1;
 }
 
-int32_t hactarSDReadBlocks(CardInfo *info, uint32_t block_number,
-        size_t block_count, uint8_t *dest)
+int32_t hactarGetSDCardID(CardInfo *info, CardID *id)
 {
     uint8_t response[SD_MAX_RESPONSE_LENGTH];
-    uint8_t status;
+
+    select();
+
+    // Read the CID register
+    sendCommand(SD_CMD10, 0, response, SD_R1_LENGTH);
+    if(SD_R1_IS_ERROR(response))
+        goto error;
+
+    // Read the response
+    uint8_t cid_data[SD_CID_LENGTH];
+    if(receiveDataMSBFirst(cid_data, SD_CID_LENGTH) != 0)
+        goto error;
+
+    id->manufacturer_id_ = SD_CID_MID(cid_data);
+    memcpy(id->application_id_, SD_CID_OID(cid_data), 2);
+    memcpy(id->product_name_, SD_CID_PNM(cid_data), 5);
+    id->product_revision_major_ = SD_CID_PRV(cid_data) >> 4;
+    id->product_revision_minor_ = SD_CID_PRV(cid_data) & 0xF;
+    id->product_serial_number_ = SD_CID_PSN(cid_data);
+    id->manufacturing_year_ = (SD_CID_MDT(cid_data) >> 4) + 2000;
+    id->manufacturing_month_ = SD_CID_MDT(cid_data) & 0xF;
+
+    deselect();
+    return 0;
+
+    error:
+    deselect();
+    return -1;
+}
+
+int32_t hactarSDWriteBlocks(CardInfo *info, uint32_t block_number,
+        size_t block_count, const uint8_t *src)
+{
+    uint8_t response[SD_MAX_RESPONSE_LENGTH], command = SD_CMD25, data;
     size_t block;
+    uint32_t offset;
+
+    if(!block_count)
+        return 0;
 
     select();
 
     if(block_count == 1)
-        sendCommand(SD_CMD17, block_number * info->block_size_,
-                    response, SD_R1_LENGTH);
-    else
-        sendCommand(SD_CMD18, block_number * info->block_size_,
-                    response, SD_R1_LENGTH);
+        command = SD_CMD24;
+
+    sendCommand(command, block_number * info->block_size_,
+                response, SD_R1_LENGTH);
+
+    if(SD_R1_IS_ERROR(response))
+    {
+        deselect();
+        return -1;
+    }
+
+    waitReady();
+
+    for(block = 0; block < block_count; block++)
+    {
+        if(command == SD_CMD24)
+            sendByte(SD_STD_START_BLOCK);
+        else
+        {
+            if(block + 1 == block_count)
+                sendByte(SD_MULT_STOP_BLOCK);
+            else
+                sendByte(SD_MULT_START_BLOCK);
+        }
+
+        offset = info->block_size_;
+        while(offset--)
+            sendByte(src[offset - 1]);
+
+        // Dummy CRC block
+        sendByte(0xFF);
+        sendByte(0xFF);
+
+        src += info->block_size_;
+    }
+
+    while(SD_IS_DATA_RESPONSE(data = sendByte(0xFF)));
+    if(!SD_IS_DATA_ACCPTED(data))
+    {
+        sendCommand(SD_CMD12, 0, response, SD_R1_LENGTH);
+        // No need to wait for busy, since sendCommand does it anyway
+
+        deselect();
+        return -1;
+    }
+
+    deselect();
+
+    return 0;
+}
+
+int32_t hactarSDReadBlocks(CardInfo *info, uint32_t block_number,
+        size_t block_count, uint8_t *dest)
+{
+    uint8_t response[SD_MAX_RESPONSE_LENGTH], command = SD_CMD18;
+    size_t block;
+
+    if(!block_count)
+        return 0;
+
+    select();
+
+    if(block_count == 1)
+        command = SD_CMD17;
+
+    sendCommand(command, block_number * info->block_size_,
+                response, SD_R1_LENGTH);
 
     if(SD_R1_IS_ERROR(response))
     {
@@ -435,16 +570,15 @@ int32_t hactarSDReadBlocks(CardInfo *info, uint32_t block_number,
 
     for(block = 0; block < block_count; block++)
     {
-        status = receiveData(dest, info->block_size_);
-        if(status != 0)
+        if(receiveData(dest, info->block_size_) != 0)
         {
-            status = -1;
-            break;
+            deselect();
+            return -1;
         }
         dest += info->block_size_;
     }
 
     deselect();
 
-    return status;
+    return 0;
 }
