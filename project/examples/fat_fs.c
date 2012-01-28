@@ -7,9 +7,12 @@
 
 #include "fat_fs.h"
 
+#include <hactar/hactar.h>
+
 #include <stdio.h>
 
 void initFATFSExample(void)
 {
-
+    CardInfo info;
+    hactarSDInit(&info, 512);
 }
