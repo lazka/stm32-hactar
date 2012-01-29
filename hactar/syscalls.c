@@ -19,7 +19,6 @@ extern int errno;
 
 int _kill(int pid, int sig)
 {
-    pid = pid; sig = sig; /* avoid warnings */
     errno = EINVAL;
     return -1;
 }
@@ -51,27 +50,21 @@ caddr_t _sbrk(int incr)
 
 int _close(int file)
 {
-    file = file; /* avoid warning */
     return -1;
 }
 
 int _fstat(int file, struct stat *st)
 {
-    file = file; /* avoid warning */
     st->st_mode = S_IFCHR;
     return 0;
 }
 
 int _isatty(int file)
 {
-    file = file; /* avoid warning */
     return 1;
 }
 
 int _lseek(int file, int ptr, int dir) {
-    file = file; /* avoid warning */
-    ptr = ptr; /* avoid warning */
-    dir = dir; /* avoid warning */
     return 0;
 }
 

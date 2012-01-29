@@ -81,7 +81,7 @@ static void printPortStatus(char **args)
             case GPIO_Mode_AF_PP:
                 iprintf("AF PP      "); break;
             default:
-                iprintf("X          ");
+                iprintf("X          "); break;
         }
 
         iprintf("|");
@@ -95,7 +95,7 @@ static void printPortStatus(char **args)
             case GPIO_Speed_50MHz:
                 iprintf("50 MHz"); break;
             default:
-                iprintf("X");
+                iprintf("X"); break;
         }
 
         iprintf("\n");

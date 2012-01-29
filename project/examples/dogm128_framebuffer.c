@@ -12,6 +12,7 @@
 
 #include <hactar/hactar.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include <hactar/displays/st7565r.h>
 #include <hactar/stdio_devs/usart.h>

@@ -11,39 +11,27 @@
 
 #include <hactar/misc.h>
 
-void HardFault_Handler(void)
+static void checkFault(void)
 {
-    // Fault occurs because of vector table read on exception processing
-    if(SCB->HFSR & SCB_HFSR_VECTTBL) while(1);
+    // --- MEMORY MANAGEMENT FAULT ---
 
-    // Hard Fault activated when a configurable
-    // Fault was received and cannot activate
-    if(SCB->HFSR & SCB_HFSR_DEBUGEVT) while(1);
+    // Instruction access violation
+    if(SCB->CFSR & SCB_CFSR_IACCVIOL) while(1);
 
-    // Fault related to debug
-    if(SCB->HFSR & SCB_HFSR_DEBUGEVT) while(1);
-}
-
-void BusFault_Handler(void)
-{
-    // Instruction bus error flag
-    if(SCB->CFSR & SCB_CFSR_IBUSERR) while(1);
-
-    // Precise data bus error
-    if(SCB->CFSR & SCB_CFSR_PRECISERR) while(1);
-
-    // Imprecise data bus error
-    if(SCB->CFSR & SCB_CFSR_IMPRECISERR) while(1);
+    // Data access violation
+    if(SCB->CFSR & SCB_CFSR_DACCVIOL) while(1);
 
     // Unstacking error
-    if(SCB->CFSR & SCB_CFSR_UNSTKERR) while(1);
+    if(SCB->CFSR & SCB_CFSR_MUNSTKERR) while(1);
 
     // Stacking error
-    if(SCB->CFSR & SCB_CFSR_STKERR) while(1);
-}
+    if(SCB->CFSR & SCB_CFSR_MSTKERR) while(1);
 
-void UsageFault_Handler(void)
-{
+    // Memory Manage Address Register address valid flag
+    if(SCB->CFSR & SCB_CFSR_MMARVALID) while(1);
+
+    // --- USAGE FAULT ---
+
     // The processor attempt to execute an undefined instruction
     if(SCB->CFSR & SCB_CFSR_UNDEFINSTR) while(1);
 
@@ -61,24 +49,57 @@ void UsageFault_Handler(void)
 
     // Fault occurs when SDIV or DIV instruction is used with a divisor of 0
     if(SCB->CFSR & SCB_CFSR_DIVBYZERO) while(1);
+
+    // --- BUS FAULT ---
+
+    // Instruction bus error flag
+    if(SCB->CFSR & SCB_CFSR_IBUSERR) while(1);
+
+    // Precise data bus error
+    if(SCB->CFSR & SCB_CFSR_PRECISERR) while(1);
+
+    // Imprecise data bus error
+    if(SCB->CFSR & SCB_CFSR_IMPRECISERR) while(1);
+
+    // Unstacking error
+    if(SCB->CFSR & SCB_CFSR_UNSTKERR) while(1);
+
+    // Stacking error
+    if(SCB->CFSR & SCB_CFSR_STKERR) while(1);
+
+    // --- HARD FAULT ---
+
+    // Fault occurs because of vector table read on exception processing
+    if(SCB->HFSR & SCB_HFSR_VECTTBL) while(1);
+
+    // Fault related to debug
+    if(SCB->HFSR & SCB_HFSR_DEBUGEVT) while(1);
+
+    // Hard Fault activated when a configurable
+    // Fault was received and cannot activate
+    if(SCB->HFSR & SCB_HFSR_FORCED) while(1);
+
+    while(1);
+}
+
+void HardFault_Handler(void)
+{
+    checkFault();
+}
+
+void BusFault_Handler(void)
+{
+    checkFault();
+}
+
+void UsageFault_Handler(void)
+{
+    checkFault();
 }
 
 void MemManage_Handler(void)
 {
-    // Instruction access violation
-    if(SCB->CFSR & SCB_CFSR_IACCVIOL) while(1);
-
-    // Data access violation
-    if(SCB->CFSR & SCB_CFSR_DACCVIOL) while(1);
-
-    // Unstacking error
-    if(SCB->CFSR & SCB_CFSR_MUNSTKERR) while(1);
-
-    // Stacking error
-    if(SCB->CFSR & SCB_CFSR_MSTKERR) while(1);
-
-    // Memory Manage Address Register address valid flag
-    if(SCB->CFSR & SCB_CFSR_MMARVALID) while(1);
+    checkFault();
 }
 
 void interruptsDisable()

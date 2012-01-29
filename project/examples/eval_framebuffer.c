@@ -10,6 +10,8 @@
 
 #include "eval_framebuffer.h"
 
+#include <stdio.h>
+
 #include <hactar/hactar.h>
 
 #include <hactar/stdio_devs/fbconsole.h>
