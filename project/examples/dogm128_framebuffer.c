@@ -26,7 +26,7 @@ uint8_t fb_data[(DOGM_FB_WIDTH * DOGM_FB_HEIGHT) / 8];
 void initDogm128FramebufferExample(void)
 {
     DisplayInfo *display = (DisplayInfo*)&st7565r;
-    displayInit(display, DOGM_FB_WIDTH, DOGM_FB_HEIGHT);
+    displayInit(display);
 
     FbInfo fb;
     fbInit(&fb, display, fb_data, DOGM_FB_WIDTH, DOGM_FB_HEIGHT);

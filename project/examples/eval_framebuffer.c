@@ -27,7 +27,7 @@ uint8_t fb_data[(EVAL_FB_WIDTH * EVAL_FB_HEIGHT) / 8];
 void initEvalFramebufferExample(void)
 {
     DisplayInfo *display = (DisplayInfo*)&stm32c_eval_display;
-    displayInit(display, EVAL_FB_WIDTH, EVAL_FB_HEIGHT);
+    displayInit(display);
 
     FbInfo fb;
     fbInit(&fb, display, fb_data, EVAL_FB_WIDTH, EVAL_FB_HEIGHT);
