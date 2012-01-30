@@ -11,8 +11,7 @@
 #include <hactar/fb_types.h>
 
 // Initializes the driver and driver data
-void displayInit(DisplayInfo *display, size_t width,
-    size_t height);
+void displayInit(DisplayInfo *display);
 
 // Transmits all parts
 void displayUpdate(DisplayInfo *display, FbInfo *fb);

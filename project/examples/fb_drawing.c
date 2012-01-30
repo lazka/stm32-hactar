@@ -24,7 +24,6 @@ void initFramebufferDrawingExample(void)
 
     displayInit(display, EVAL_FB_WIDTH, EVAL_FB_HEIGHT);
     fbInit(&fb, display, fb_data, EVAL_FB_WIDTH, EVAL_FB_HEIGHT);
-    displayUpdate(display, &fb);
 
     fbDrawPixel(&fb, 19, 1, FB_DEFAULT);
     fbDrawLine(&fb, 10, 3, 235, 216, FB_DEFAULT);
@@ -42,5 +41,11 @@ void initFramebufferDrawingExample(void)
 
     fbDrawString(&fb, &font_8x16, "QUUX - QUUX", 11, 250, 2, 2, FB_VERT);
 
+    displayUpdate(display, &fb);
+
+    fbDrawCircle(&fb, 110, 110, 90, FB_DEFAULT);
+    displayUpdate(display, &fb);
+
+    fbDrawString(&fb, &font_10x18, "foobar", 6, 100, 100, 0, FB_DEFAULT);
     displayUpdate(display, &fb);
 }

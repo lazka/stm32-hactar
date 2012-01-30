@@ -9,13 +9,16 @@
 
 #include <hactar/displays/stm3210c_eval.h>
 
-static void init(DisplayInfo *display, size_t width, size_t height)
+static void init(DisplayInfo *display)
 {
     DisplayInfoStm32cEval *eval_disp = (DisplayInfoStm32cEval*)display;
 
-    // reset dirty markers
+    // set dirty markers
     eval_disp->dirty_y_max_ = display->height_ - 1;
     eval_disp->dirty_y_min_ = 0;
+
+    eval_disp->dirty_x_max_ = display->width_ - 1;
+    eval_disp->dirty_x_min_ = 0;
 
     LCD_Setup();
 }
@@ -30,25 +33,32 @@ static void getPos(FbInfo *fb, size_t x, size_t y,
 static void update(DisplayInfo *display, FbInfo *fb)
 {
     DisplayInfoStm32cEval *eval_disp = (DisplayInfoStm32cEval*)display;
-    size_t x, y = eval_disp->dirty_y_min_;
+    uint32_t t, x, y;
 
-    for(; y <= eval_disp->dirty_y_max_ && y < fb->height_; y++)
+    for(t = 1 << 31; t; t >>= 1)
     {
-        LCD_SetCursor(y, fb->display_->width_ - 1);
-        LCD_WriteRAM_Prepare();
-        for(x = 0; x < fb->width_; x++)
+        y = eval_disp->dirty_y_min_ + t - 1;
+        for(; y <= eval_disp->dirty_y_max_; y+=t)
         {
-            if(fbGetPixel(fb, x, y) == FB_BLACK)
-                LCD_WriteRAM(LCD_COLOR_BLACK);
-            else
-                LCD_WriteRAM(LCD_COLOR_WHITE);
+            LCD_SetCursor(y, display->width_ - 1 - eval_disp->dirty_x_min_);
+            LCD_WriteRAM_Prepare();
+            for(x = eval_disp->dirty_x_min_; x <= eval_disp->dirty_x_max_; x++)
+            {
+                if(fbGetPixel(fb, x, y) == FB_BLACK)
+                    LCD_WriteRAM(LCD_COLOR_BLACK);
+                else
+                    LCD_WriteRAM(LCD_COLOR_WHITE);
+            }
+            LCD_CtrlLinesWrite(LCD_NCS_GPIO_PORT, LCD_NCS_PIN, Bit_SET);
         }
-        LCD_CtrlLinesWrite(LCD_NCS_GPIO_PORT, LCD_NCS_PIN, Bit_SET);
     }
 
     // reset dirty markers
     eval_disp->dirty_y_max_ = 0;
-    eval_disp->dirty_y_min_ = fb->height_ - 1;
+    eval_disp->dirty_y_min_ = display->height_ - 1;
+
+    eval_disp->dirty_x_max_ = 0;
+    eval_disp->dirty_x_min_ = display->width_ - 1;
 }
 
 static void inval(DisplayInfo *display, size_t x, size_t y)
@@ -60,6 +70,12 @@ static void inval(DisplayInfo *display, size_t x, size_t y)
 
     if(y < eval_disp->dirty_y_min_)
         eval_disp->dirty_y_min_ = y;
+
+    if(x < eval_disp->dirty_x_min_)
+        eval_disp->dirty_x_min_ = x;
+
+    if(x > eval_disp->dirty_x_max_)
+        eval_disp->dirty_x_max_ = x;
 }
 
 static void off(DisplayInfo *display)
@@ -72,7 +88,7 @@ static void on(DisplayInfo *display)
     LCD_DisplayOn();
 }
 
-DisplayInfoStm32cEval stm32c_eval_display = {
+const DisplayInfoStm32cEval stm32c_eval_display = {
     .base_ = {
         .init_ = &init,
         .get_pos_ = &getPos,
@@ -85,4 +101,6 @@ DisplayInfoStm32cEval stm32c_eval_display = {
     },
     .dirty_y_min_ = 0,
     .dirty_y_max_ = 0,
+    .dirty_x_min_ = 0,
+    .dirty_x_max_ = 0,
 };

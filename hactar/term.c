@@ -52,6 +52,8 @@ static void printPortStatus(char **args)
             port = GPIOF; break;
         case 'G':
             port = GPIOG; break;
+        default:
+            port = GPIOA; break;
     }
 
     iprintf("PORT %c\n-------------------------------------\n", args[0][0]);

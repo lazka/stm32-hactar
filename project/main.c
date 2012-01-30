@@ -16,8 +16,6 @@
 #include "examples/fat_fs.h"
 #include "examples/fb_drawing.h"
 
-#include <ff.h>
-
 int main(void)
 {
     hactarInitScheduler(1);

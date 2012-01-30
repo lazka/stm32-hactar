@@ -7,28 +7,6 @@
 
 #include <hactar/framebuffer.h>
 
-#ifdef FB_DEBUG
-    #include <stdio.h>
-
-    void fbDebugPrint(FbInfo *fb)
-    {
-        size_t i,j;
-
-        for(i = 0; i < fb->height_; ++i)
-        {
-            for(j = 0; j < fb->width_; ++j)
-            {
-                if(fbGetPixel(fb, j, i) & FB_WHITE)
-                    printf("\xe2\x96\xa1");
-                else
-                    printf("\xE2\x96\xa0");
-                printf(" ");
-            }
-            printf("\n");
-        }
-    }
-#endif
-
 // Initializes the fbInit struct. Has to be called before passing the struct
 // to any other function.
 void fbInit(FbInfo *fb, DisplayInfo *display, uint8_t *data,
@@ -40,7 +18,7 @@ void fbInit(FbInfo *fb, DisplayInfo *display, uint8_t *data,
     fb->clip_ = 0;
     fb->display_= display;
 
-    fbClear(fb, FB_DEFAULT);
+    fbClear(fb, FB_WHITE);
 }
 
 // Clears the whole framebuffer.
@@ -50,7 +28,7 @@ void fbClear(FbInfo *fb, uint32_t flags)
 
     for(i = 0; i < fb->height_; ++i)
         for(j = 0; j < fb->width_; ++j)
-            fbDrawPixel(fb, j, i, flags | FB_WHITE);
+            fbDrawPixel(fb, j, i, flags);
 }
 
 // Draws a pixel at a specific point.

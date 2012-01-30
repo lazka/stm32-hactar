@@ -76,9 +76,6 @@ static void SPIInit(void)
 
 static void init(DisplayInfo *display, size_t width, size_t height)
 {
-    display->width_ = width;
-    display->height_ = height;
-
     SPIInit();
 
     SPIWriteCommand(ST7565R_LCD_BIAS_1_7); //Set bias 1/7
@@ -175,8 +172,8 @@ DisplayInfoST7565R st7565r =
         .inval_ = &inval,
         .off_ = &off,
         .on_ = &on,
-        .width_ = 0,
-        .height_ = 0,
+        .width_ = ST7565R_WIDTH_MAX,
+        .height_ = ST7565R_HEIGHT_MAX,
     },
     .dirty_pages_ = 0,
     .dirty_start_ = {0},

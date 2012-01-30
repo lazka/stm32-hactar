@@ -7,9 +7,9 @@
 
 #include <hactar/display.h>
 
-void displayInit(DisplayInfo *display, size_t width, size_t height)
+void displayInit(DisplayInfo *display)
 {
-    display->init_(display, width, height);
+    display->init_(display);
 }
 
 void displayUpdate(DisplayInfo *display, FbInfo *fb)
