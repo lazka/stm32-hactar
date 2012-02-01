@@ -5,11 +5,7 @@
 // published by the Free Software Foundation.
 //
 
-#ifdef FB_DEBUG
-#include <stdio.h>
-#endif
-
-#include "stm32f10x_rcc.h"
+#include "stm32f10x.h"
 
 #include <hactar/displays/st7565r.h>
 
@@ -74,7 +70,7 @@ static void SPIInit(void)
     SPI_Cmd(SPI1, ENABLE);
 }
 
-static void init(DisplayInfo *display, size_t width, size_t height)
+static void init(DisplayInfo *display)
 {
     SPIInit();
 
@@ -99,19 +95,6 @@ static void init(DisplayInfo *display, size_t width, size_t height)
 
 static void update(DisplayInfo *display, FbInfo *fb)
 {
-    #ifdef FB_DEBUG
-    size_t i;
-    printf("Update summary ------------------------------------------\n");
-    for(i = 0; i < ST7565R_PAGES; ++i)
-    {
-        if(display->dirty_pages_ & (1 << i))
-        {
-            printf("Page %d needs an update from %d -> %d\n", i,
-            display->dirty_start_[i],  display->dirty_end_[i]);
-        }
-    }
-    #endif
-
     DisplayInfoST7565R *ext_info = (DisplayInfoST7565R*)display;
     ext_info->dirty_pages_ = 0;
 }

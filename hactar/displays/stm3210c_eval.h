@@ -13,13 +13,13 @@
 
 typedef struct
 {
-    const DisplayInfo base_;
+    DisplayInfo base_;
     size_t dirty_y_min_; // the first modified y line
     size_t dirty_y_max_; // the last modified y line
     size_t dirty_x_min_; // the first modified y line
     size_t dirty_x_max_; // the last modified y line
 } DisplayInfoStm32cEval;
 
-extern const DisplayInfoStm32cEval stm32c_eval_display;
+extern DisplayInfoStm32cEval stm32c_eval_display;
 
 #endif

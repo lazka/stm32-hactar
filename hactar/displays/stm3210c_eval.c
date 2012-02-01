@@ -88,7 +88,7 @@ static void on(DisplayInfo *display)
     LCD_DisplayOn();
 }
 
-const DisplayInfoStm32cEval stm32c_eval_display = {
+DisplayInfoStm32cEval stm32c_eval_display = {
     .base_ = {
         .init_ = &init,
         .get_pos_ = &getPos,

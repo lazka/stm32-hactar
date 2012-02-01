@@ -24,8 +24,8 @@ struct DisplayInfo
     void (*inval_)(DisplayInfo *display, size_t x, size_t y);
     void (*off_)(DisplayInfo *display);
     void (*on_)(DisplayInfo *display);
-    const size_t width_;
-    const size_t height_;
+    size_t width_;
+    size_t height_;
 };
 
 struct FbRect

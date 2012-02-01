@@ -9,7 +9,7 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include "stm32f10x_rcc.h"
+#include "stm32f10x.h"
 
 #include <hactar/term.h>
 #include <hactar/misc.h>

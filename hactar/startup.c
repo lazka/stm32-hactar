@@ -5,7 +5,7 @@
 // published by the Free Software Foundation.
 //
 
-#include "stm32f10x_rcc.h"
+#include "stm32f10x.h"
 
 #include <hactar/startup.h>
 #include <hactar/platform_check.h>
