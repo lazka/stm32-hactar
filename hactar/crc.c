@@ -102,7 +102,7 @@ uint16_t crc16(uint16_t crc, uint8_t *buffer, size_t len)
 // RCC_AHBPeriphClockCmd(RCC_AHBENR_CRCEN, ENABLE);
 uint32_t crc32(uint32_t crc, uint8_t *buffer, size_t len)
 {
-    assert(RCC->AHBENR | RCC_AHBPeriph);
+    assert(RCC->AHBENR | RCC_AHBENR_CRCEN);
     assert(!(len % 4));
 
     CRC->CR = CRC_CR_RESET;
