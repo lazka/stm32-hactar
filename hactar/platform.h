@@ -12,6 +12,15 @@
 
 #include <hactar/platform_def.h>
 
+// General config -------------------------------------------------------------
+
+// If defined, you need the fat driver included
+// Copy ffconf.h and integer.h to your project and renamve or remove them
+// in the fat driver
+//#define HACTAR_USE_FATFS
+
+// Clock config ---------------------------------------------------------------
+
 #ifdef STM32F10X_CL
 
 // It's a bit hard to check if HSE needs to be enabled so define here
@@ -64,32 +73,6 @@
 #define HACTAR_CLK_SCALE_APB2
 #define HACTAR_CLK_SCALE_ADC
 #define HACTAR_CLK_SCALE_USB
-
-#endif
-
-#ifdef STM32F10X_CL
-
-// get the bit mask for SW_SRC
-#if HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_HSE
-#define HACTAR_CLK_MUX_SW_SRC_MASK RCC_SYSCLKSource_HSE
-#elif HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_HSI
-#define HACTAR_CLK_MUX_SW_SRC_MASK RCC_SYSCLKSource_HSI
-#elif HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_PLLMUL
-#define HACTAR_CLK_MUX_SW_SRC_MASK RCC_SYSCLKSource_PLLCLK
-#else
-#error HACTAR_CLK_MUX_SW_SRC_MASK: invalid value
-#endif
-
-// get the bit mask for RTC_SRC
-#if HACTAR_CLK_MUX_RTC == HACTAR_CLK_MUX_RTC_SRC_LSE
-#define HACTAR_CLK_MUX_RTC_SRC_MASK RCC_RTCCLKSource_LSE
-#elif HACTAR_CLK_MUX_RTC == HACTAR_CLK_MUX_RTC_SRC_LSI
-#define HACTAR_CLK_MUX_RTC_SRC_MASK RCC_RTCCLKSource_LSI
-#elif HACTAR_CLK_MUX_RTC == HACTAR_CLK_MUX_RTC_SRC_HSE
-#define HACTAR_CLK_MUX_RTC_SRC_MASK RCC_RTCCLKSource_HSE_Div128
-#else
-#error HACTAR_CLK_MUX_RTC: invalid value
-#endif
 
 #endif
 

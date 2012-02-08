@@ -5,6 +5,10 @@
 // published by the Free Software Foundation.
 //
 
+#include <hactar/platform_check.h>
+
+#ifdef HACTAR_USE_FATFS
+
 #include <hactar/hactar.h>
 #include "ffconf.h"
 #include <diskio.h>
@@ -100,3 +104,5 @@ DWORD get_fattime(void)
 {
     return 0;
 }
+
+#endif
