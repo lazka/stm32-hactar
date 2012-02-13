@@ -18,10 +18,12 @@ from os.path import basename
 import sys
 
 FLASH_ORIGIN = 0x08000000
-FLASH_LENGTH = 128 * 1024
+FLASH_LENGTH = 256 * 1024
+#FLASH_LENGTH = 128 * 104
 
 RAM_ORIGIN = 0x20000000
-RAM_LENGTH = 20 * 1024
+RAM_LENGTH = 64 * 1024
+#RAM_LENGTH = 20 * 1024
 
 NM_COMMANDS = ["nm", "arm-none-eabi-nm.exe"]
 
@@ -44,8 +46,8 @@ else:
     raise SystemExit
 
 for line in output.splitlines():
-    s = line.split()
-
+    line = line.replace("\t", " ")
+    s = line.split(" ", 4)
     # some have no file
     if len(s) != 5:
         s.append("")
@@ -63,6 +65,8 @@ for name, info in symbols.iteritems():
         sections["FLASH"][name] = info
     if RAM_ORIGIN + RAM_LENGTH >= info["position"] >= RAM_ORIGIN:
         sections["RAM"][name] = info
+        if info["type"].lower() == "b":
+            info["extra"] = "BSS"
 
 ###############################################################################
 
@@ -104,6 +108,8 @@ for section, symbols in sections.iteritems():
 
     for name, info in symbols.iteritems():
         print "cfl=%(source)s" % info
+        if "extra" in info:
+            name = "%s (%s)" % (name, info["extra"])
         print "cfn=%s" % name
         print "calls=1 0" # called one time, line 0
         print "0 %(size)d" % info
