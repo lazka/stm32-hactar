@@ -5,11 +5,16 @@
 // published by the Free Software Foundation.
 //
 
+#ifdef USE_STM3210C_EVAL
+
 #ifndef HACTER_DISPLAYS_STM32C_EVAL_H__
 #define HACTER_DISPLAYS_STM32C_EVAL_H__
 
 #include <hactar/display.h>
 #include <hactar/framebuffer.h>
+
+#include "stm32f10x.h"
+#include "STM3210C_EVAL/stm3210c_eval_lcd.h"
 
 typedef struct
 {
@@ -23,3 +28,5 @@ typedef struct
 extern DisplayInfoStm32cEval stm32c_eval_display;
 
 #endif
+
+#endif // USE_STM3210C_EVAL

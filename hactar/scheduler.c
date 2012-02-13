@@ -12,8 +12,6 @@
 #include <hactar/startup.h>
 #include <hactar/platform_check.h>
 
-#include "stm32_eval.h"
-
 /*
  * Notes:
  *  - An ISR does not pre-emt itself.
@@ -75,7 +73,7 @@ int configureSystickTimer(uint32_t frequency)
 
 void SysTick_Handler(void)
 {
-    STM_EVAL_LEDToggle(LED2);
+    //STM_EVAL_LEDToggle(LED2);
 
     // Trigger a PendSV IRQ
     SCB->ICSR = SCB_ICSR_PENDSVSET;
@@ -83,5 +81,5 @@ void SysTick_Handler(void)
 
 void PendSV_Handler(void)
 {
-    STM_EVAL_LEDToggle(LED1);
+    //STM_EVAL_LEDToggle(LED1);
 }

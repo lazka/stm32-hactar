@@ -30,18 +30,4 @@ void GPIO_GetPinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,
 
 void __hactar_assert(const char* file, int line, const char* func, const char* expr);
 
-typedef struct
-{
-    size_t flash_free_;   // free flash space in percent
-    size_t text_;         // code
-    size_t ro_data_;      // constants, strings
-    size_t ram_free_;     // free space in RAM in percent
-    size_t data_;         // data size
-    size_t bss_;          // global variables (zeroed)
-    size_t heap_;         // size of heap
-    size_t malloc_;       // malloced space (in heap)
-} MemoryInfo;
-
-MemoryInfo getMemoryInfo();
-
 #endif

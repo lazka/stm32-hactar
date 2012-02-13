@@ -5,7 +5,7 @@
 // published by the Free Software Foundation.
 //
 
-#include "stm3210c_eval_lcd.h"
+#ifdef USE_STM3210C_EVAL
 
 #include <hactar/displays/stm3210c_eval.h>
 
@@ -104,3 +104,5 @@ DisplayInfoStm32cEval stm32c_eval_display = {
     .dirty_x_min_ = 0,
     .dirty_x_max_ = 0,
 };
+
+#endif //USE_STM3210C_EVAL

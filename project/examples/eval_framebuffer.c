@@ -5,6 +5,8 @@
 // published by the Free Software Foundation.
 //
 
+#ifdef USE_STM3210C_EVAL
+
 #ifndef EX_EVAL_FRAMEBUFFER_H__
 #define EX_EVAL_FRAMEBUFFER_H__
 
@@ -45,3 +47,5 @@ void initEvalFramebufferExample(void)
 }
 
 #endif
+
+#endif // USE_STM3210C_EVAL

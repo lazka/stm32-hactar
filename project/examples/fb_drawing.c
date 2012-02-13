@@ -5,6 +5,8 @@
 // published by the Free Software Foundation.
 //
 
+#ifdef USE_STM3210C_EVAL
+
 #include "fb_drawing.h"
 #include <string.h>
 
@@ -72,3 +74,5 @@ void initFramebufferDrawingExample(void)
     drawShadowText(&fb, &font_8x16, "quux", 100, 150, FB_VERT);
     displayUpdate(display, &fb);
 }
+
+#endif // USE_STM3210C_EVAL

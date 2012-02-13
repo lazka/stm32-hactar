@@ -5,6 +5,8 @@
 // published by the Free Software Foundation.
 //
 
+#ifdef USE_STM3210C_EVAL
+
 #include <stdio.h>
 
 #include <hactar/stdio_devs/eval_lcd.h>
@@ -75,3 +77,5 @@ void initEvalLCDStdoutDevice(void)
 
     stdout_device = (StdoutDevice*)&evallcdconsole_info;
 }
+
+#endif

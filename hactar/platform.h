@@ -8,14 +8,12 @@
 #ifndef HACTAR_PLATFORM_H__
 #define HACTAR_PLATFORM_H__
 
-#include "stm32f10x.h"
-
 #include <hactar/platform_def.h>
 
 // General config -------------------------------------------------------------
 
 // If defined, you need the fat driver included
-// Copy ffconf.h and integer.h to your project and renamve or remove them
+// Copy ffconf.h and integer.h to your project and rename or remove them
 // in the fat driver
 //#define HACTAR_USE_FATFS
 
@@ -23,17 +21,6 @@
 
 #ifdef STM32F10X_CL
 
-// It's a bit hard to check if HSE needs to be enabled so define here
-#define HACTAR_CLK_HSE
-
-// If the device/periph is used
-//#define HACTAR_CLK_DEV_WATCHDOG
-//#define HACTAR_CLK_DEV_RTC
-//#define HACTAR_CLK_DEV_USB
-//#define HACTAR_CLK_DEV_I2S2
-//#define HACTAR_CLK_DEV_I2S3
-
-// Muxers
 #define HACTAR_CLK_MUX_RTC     HACTAR_CLK_MUX_RTC_SRC_HSE
 #define HACTAR_CLK_MUX_PREDIV1 HACTAR_CLK_MUX_PREDIV1_SRC_PLL2MUL
 #define HACTAR_CLK_MUX_PLL     HACTAR_CLK_MUX_PLL_SRC_PREDIV1
@@ -42,7 +29,6 @@
 #define HACTAR_CLK_MUX_I2S2    HACTAR_CLK_MUX_I2S2_SRC_SYSCLK
 #define HACTAR_CLK_MUX_I2S3    HACTAR_CLK_MUX_I2S3_SRC_SYSCLK
 
-// Frequency multipliers / dividers
 #define HACTAR_CLK_SCALE_PREDIV2 5  // 1..16
 #define HACTAR_CLK_SCALE_PREDIV1 5  // 1..16
 #define HACTAR_CLK_SCALE_PLLMUL  90 // 4,5,6,7,8,9 and 6.5 (x10)

@@ -10,20 +10,33 @@
 #include <hactar/startup.h>
 #include <hactar/platform_check.h>
 
-static void hactarStartup(void);
-static void hactarStartupPeriph(void);
-
-// This gets called from the startup asm
-void SystemInit(void)
-{
-    hactarStartup();
-    hactarStartupPeriph();
-}
-
-static void hactarStartupPeriph(void)
+static void hactarStartupPeriphCL(void)
 {
     uint32_t ppre_lt[] = {0, 0, 4, 0, 5, 0, 0, 0, 6, 0,
                           0, 0, 0, 0, 0, 0, 7};
+
+    // set AHB prescaler
+    int32_t i;
+    for(i = 0; i < 9; i++) {
+        if(HACTAR_CLK_SCALE_AHB == (1 << i)) {
+            // bug in STM code.. they expect it to be zeros *grr*
+            // see APBAHBPrescTable in stm32f10x_rcc
+            if (i == 0)
+                RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE);
+            else
+                RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE) | \
+                            ((0x8 + (i - 1)) << 4);
+            break;
+        }
+    }
+
+    // Set systick source
+#if HACTAR_CLK_MUX_STK == HACTAR_CLK_MUX_STK_SRC_AHBPRE
+    SysTick->CTRL |= SysTick_CLKSource_HCLK;
+#else
+    SysTick->CTRL &= SysTick_CLKSource_HCLK_Div8;
+#endif
+
     // ADC Prescaler
     RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_ADCPRE) | \
                 ((HACTAR_CLK_SCALE_ADC - 2) / 2) << 14;
@@ -37,30 +50,25 @@ static void hactarStartupPeriph(void)
                 (ppre_lt[HACTAR_CLK_SCALE_APB2] << 11);
 }
 
-static void hactarStartup(void)
+static void hactarStartupCL(void)
 {
     // disable all clock interrupts and clear pending bits
     RCC->CIR = (RCC->CIR & ~0xFFFF) | 0xFF0000;
 
-#if (HACTAR_CLK_MUX_RTC == HACTAR_CLK_MUX_RTC_SRC_LSE) && \
-    (defined HACTAR_CLK_DEV_RTC)
+#if (HACTAR_CLK_MUX_RTC == HACTAR_CLK_MUX_RTC_SRC_LSE)
 
-    // enable LSE and wait
+    // enable LSE and wait if it gets used by the RTC
     RCC->BDCR |= RCC_BDCR_LSEON
     while(!(RCC->BDCR & RCC_BDCR_LSERDY));
 
 #endif
 
-#ifdef HACTAR_CLK_DEV_RTC
-
     // set RTC src
     RCC->BDCR = (RCC->BDCR & ~RCC_BDCR_RTCSEL) | HACTAR_CLK_MUX_RTC_SRC_MASK;
-    // enable clock
-    RCC->BDRC |= RCC_BDCR_RTCEN;
 
-#endif
-
-#ifdef HACTAR_CLK_HSE
+#if (HACTAR_CLK_MUX_RTC == HACTAR_CLK_MUX_RTC_SRC_HSE) || \
+	(HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_HSE) || \
+	(HACTAR_CLK_MUX_PLL == HACTAR_CLK_MUX_PLL_SRC_PREDIV1)
 
     // switch on HSE and wait for ready
     RCC->CR |= RCC_CR_HSEON;
@@ -91,16 +99,13 @@ static void hactarStartup(void)
     RCC->CR &= ~RCC_CR_PLL2ON;
     RCC->CR &= ~RCC_CR_PLL3ON;
 
-    // set prediv2 scale (set it always, checking would be too complicated)
-    // needs PLL2/3 disabled
+    // set prediv2 scale; needs PLL2/3 disabled
     RCC->CFGR2 = (RCC->CFGR2 & ~RCC_CFGR2_PREDIV2) | \
                  (((uint32_t)HACTAR_CLK_SCALE_PREDIV2 - 1) << 4);
 
 // check if we need PLL3
-#if ((defined HACTAR_CLK_DEV_I2S2) && \
-    (HACTAR_CLK_MUX_I2S2 == HACTAR_CLK_MUX_I2S2_SRC_PLL3MUL)) || \
-    ((defined HACTAR_CLK_DEV_I2S3) && \
-    (HACTAR_CLK_MUX_I2S3 == HACTAR_CLK_MUX_I2S3_SRC_MUL2))
+#if (HACTAR_CLK_MUX_I2S2 == HACTAR_CLK_MUX_I2S2_SRC_PLL3MUL) || \
+    (HACTAR_CLK_MUX_I2S3 == HACTAR_CLK_MUX_I2S3_SRC_MUL2)
 
     // set multiplier (PLL3 disabled!)
     if(HACTAR_CLK_SCALE_PLL3MUL == 20)
@@ -116,10 +121,6 @@ static void hactarStartup(void)
 
 #endif
 
-// We don't need PLL if SW has a different source and USB is disabled
-#if (HACTAR_CLK_MUX_SW != HACTAR_CLK_MUX_SW_SRC_HSE) || \
-    (defined HACTAR_CLK_DEV_USB)
-
     // set PLL MUL
     if(HACTAR_CLK_SCALE_PLLMUL == 65)
         RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PLLMULL) | RCC_CFGR_PLLMULL6_5;
@@ -128,14 +129,10 @@ static void hactarStartup(void)
                     (((uint32_t)(HACTAR_CLK_SCALE_PLLMUL / 10) - 2) << 18);
 
     // set the USB prescaler
-#if (defined HACTAR_CLK_DEV_USB) && HACTAR_CLK_SCALE_USB == 2
-
-    RCC->CFGR |= RCC_CFGR_USBPRE;
-
-#elif (defined HACTAR_CLK_DEV_USB) && HACTAR_CLK_SCALE_USB == 3
-
-    RCC->CFGR &= ~RCC_CFGR_USBPRE;
-
+#if HACTAR_CLK_SCALE_USB == 2
+    RCC->CFGR |= RCC_CFGR_OTGFSPRE;
+#elif HACTAR_CLK_SCALE_USB == 3
+    RCC->CFGR &= ~RCC_CFGR_OTGFSPRE;
 #endif
 
 #if HACTAR_CLK_MUX_PLL == HACTAR_CLK_MUX_PLL_SRC_PREDIV1
@@ -183,18 +180,8 @@ static void hactarStartup(void)
     RCC->CR |= RCC_CR_PLLON;
     while(!(RCC->CR & RCC_CR_PLLRDY));
 
-#endif
-
     // SW source: clear last two bits and set right source
     RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_SW) | HACTAR_CLK_MUX_SW_SRC_MASK;
-
-#if (HACTAR_CLK_MUX_RTC != HACTAR_CLK_MUX_RTC_SRC_LSI) && \
-    !(defined HACTAR_CLK_DEV_WATCHDOG) && !(defined HACTAR_CLK_DEV_RTC)
-
-    // LSI (we can disable if we don't use it and after switching away from it)
-    RCC->CSR &= ~RCC_CSR_LSION;
-
-#endif
 
 #if (HACTAR_CLK_MUX_PLL != HACTAR_CLK_MUX_PLL_SRC_DIV2) && \
     (HACTAR_CLK_MUX_SW != HACTAR_CLK_MUX_SW_SRC_HSI)
@@ -203,29 +190,15 @@ static void hactarStartup(void)
     RCC->CR &= ~RCC_CR_HSION;
 
 #endif
+}
 
-    // set AHB prescaler
-    int32_t i;
-    for(i = 0; i < 9; i++) {
-        if(HACTAR_CLK_SCALE_AHB == (1 << i)) {
-            // bug in STM code.. they expect it to be zeros *grr*
-            // see APBAHBPrescTable in stm32f10x_rcc
-            if (i == 0)
-                RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE);
-            else
-                RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE) | \
-                            ((0x8 + (i - 1)) << 4);
-            break;
-        }
-    }
-
-    // Set systick source
-#if HACTAR_CLK_MUX_STK == HACTAR_CLK_MUX_STK_SRC_AHBPRE
-    SysTick->CTRL |= SysTick_CLKSource_HCLK;
-#else
-    SysTick->CTRL &= SysTick_CLKSource_HCLK_Div8;
+// This gets called from the reset handler
+void SystemInit(void)
+{
+#ifdef STM32F10X_CL
+    hactarStartupCL();
+    hactarStartupPeriphCL();
 #endif
-
 }
 
 // Returns the system clock based on the configuration given in platform.h

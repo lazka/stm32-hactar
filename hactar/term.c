@@ -116,21 +116,6 @@ static void printClockStatus(char **args)
     iprintf("SYS   %u\n", (unsigned int)test.SYSCLK_Frequency);
 }
 
-static void printMemoryStatus(char **args)
-{
-    MemoryInfo info = getMemoryInfo();
-
-    iprintf("\nFlash:  %5u %% free\n", info.flash_free_);
-    iprintf(" Text   %5u Bytes\n", info.text_);
-    iprintf(" ROData %5u Bytes\n", info.ro_data_);
-
-    iprintf("\nRAM:    %5u %% free\n", info.ram_free_);
-    iprintf(" Data   %5u Bytes\n", info.data_);
-    iprintf(" BSS    %5u Bytes\n", info.bss_);
-    iprintf(" Heap   %5u Bytes\n", info.heap_);
-    iprintf(" Malloc %5u Bytes\n", info.malloc_);
-}
-
 static void getCommand(char *dest, char **args, size_t count, size_t arg_count)
 {
     char* start_arg = dest;
@@ -178,11 +163,6 @@ void startTerminal(TermCommand* user_cmds, size_t num_user_cmds)
                     .command_ = "port",
                     .description_ = "Port status",
                     .function_ = &printPortStatus,
-            },
-            {
-                    .command_ = "mem",
-                    .description_ = "Memory status",
-                    .function_ = &printMemoryStatus,
             },
             {
                     .command_ = "clear",

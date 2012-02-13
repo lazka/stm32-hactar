@@ -5,12 +5,17 @@
 // published by the Free Software Foundation.
 //
 
+#ifdef USE_STM3210C_EVAL
+
 #ifndef HACTAR_STDIO_DEVS_EVAL_LCD_H__
 #define HACTAR_STDIO_DEVS_EVAL_LCD_H__
 
 #include <stddef.h>
 
-#include "stm3210c_eval_lcd.h"
+#include "stm32_eval.h"
+
+#include "stm32f10x.h"
+#include "STM3210C_EVAL/stm3210c_eval_lcd.h"
 
 #include <hactar/stdio_dev.h>
 
@@ -30,3 +35,5 @@ EvalLCDConsoleInfo evallcdconsole_info;
 void initEvalLCDStdoutDevice(void);
 
 #endif
+
+#endif // USE_STM3210C_EVAL
