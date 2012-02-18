@@ -42,7 +42,7 @@ Workarround: Add the needed commands manually under `C/C++ Build -> Settings
 
 Hold down the STM32 reset button while starting the GDB server.
 
-** I get "Error: registers may not be the same -- `strexb r0,r0,[r1]'" while compiling **
+** I get "Error: registers may not be the same -- `strexb r0,r0,[r1]`" while compiling **
 
 You are hitting a bug in the CMSIS library (probably while using -Os).
 Change "=r" to "=&r" in the functions __STREXB and __STREXH which you

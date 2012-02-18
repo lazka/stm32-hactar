@@ -255,7 +255,7 @@ static void startupNonCL(void)
 
     // set PLL multiplier
     RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PLLMULL) | \
-                ((HACTAR_CLK_SCALE_PLLMULL - 2) << 18);
+                ((HACTAR_CLK_SCALE_PLLMUL - 2) << 18);
 
     // set usb divider
     uint32_t usb_mask = (HACTAR_CLK_SCALE_USB == 15) ? RCC_CFGR_USBPRE : 0;
@@ -294,7 +294,7 @@ static uint32_t getSystemClockNonCL(void)
 
 #endif
 
-    sysclk *= HACTAR_CLK_SCALE_PLLMULL;
+    sysclk *= HACTAR_CLK_SCALE_PLLMUL;
 #endif
 
     return sysclk;

@@ -87,7 +87,7 @@
     {
         var ref = window.open()
 
-        ref.document.write("<pre>#define HACTAR_CLK_MUX_RTC     ");
+        ref.document.write("<pre>#define HACTAR_CLK_MUX_RTC      ");
         if(rtcsel == 1)
             ref.document.write("HACTAR_CLK_MUX_RTC_SRC_HSE\n");
         else if(rtcsel == 2)
@@ -95,19 +95,19 @@
         else
             ref.document.write("HACTAR_CLK_MUX_RTC_SRC_LSI\n");
 
-        ref.document.write("#define HACTAR_CLK_MUX_PREDIV1 ");
+        ref.document.write("#define HACTAR_CLK_MUX_PREDIV1  ");
         if(prediv1src == 1)
             ref.document.write("HACTAR_CLK_MUX_PREDIV1_SRC_HSE\n");
         else
             ref.document.write("HACTAR_CLK_MUX_PREDIV1_SRC_PLL2MUL\n");
 
-        ref.document.write("#define HACTAR_CLK_MUX_PLL     ");
+        ref.document.write("#define HACTAR_CLK_MUX_PLL      ");
         if(pllsrc == 1)
             ref.document.write("HACTAR_CLK_MUX_PLL_SRC_DIV2\n");
         else
             ref.document.write("HACTAR_CLK_MUX_PLL_SRC_PREDIV1\n");
 
-        ref.document.write("#define HACTAR_CLK_MUX_SW      ");
+        ref.document.write("#define HACTAR_CLK_MUX_SW       ");
         if(sw == 1)
             ref.document.write("HACTAR_CLK_MUX_SW_SRC_PLLMUL\n");
         else if(sw == 2)
@@ -115,35 +115,35 @@
         else
             ref.document.write("HACTAR_CLK_MUX_SW_SRC_HSE\n");
 
-        ref.document.write("#define HACTAR_CLK_MUX_STK     ");
+        ref.document.write("#define HACTAR_CLK_MUX_STK      ");
         if(stksrc == 1)
             ref.document.write("HACTAR_CLK_MUX_STK_SRC_AHBPRE\n");
         else
             ref.document.write("HACTAR_CLK_MUX_STK_SRC_DIV8\n");
 
-        ref.document.write("#define HACTAR_CLK_MUX_I2S2    ");
+        ref.document.write("#define HACTAR_CLK_MUX_I2S2     ");
         if(i2s2src == 1)
             ref.document.write("HACTAR_CLK_MUX_I2S2_SRC_SYSCLK\n");
         else
             ref.document.write("HACTAR_CLK_MUX_I2S2_SRC_PLL3MUL\n");
 
-        ref.document.write("#define HACTAR_CLK_MUX_I2S3    ");
+        ref.document.write("#define HACTAR_CLK_MUX_I2S3     ");
         if(i2s3src == 1)
             ref.document.write("HACTAR_CLK_MUX_I2S3_SRC_SYSCLK\n");
         else
             ref.document.write("HACTAR_CLK_MUX_I2S3_SRC_MUL2\n");
 
         ref.document.write("\n\
-#define HACTAR_CLK_SCALE_PREDIV2 "+prediv2+" \n\
-#define HACTAR_CLK_SCALE_PREDIV1 "+prediv1+" \n\
-#define HACTAR_CLK_SCALE_PLLMUL  "+(pllmul*10)+" \n\
-#define HACTAR_CLK_SCALE_PLL2MUL "+pll2mul+" \n\
-#define HACTAR_CLK_SCALE_PLL3MUL "+pll3mul+" \n\
-#define HACTAR_CLK_SCALE_AHB     "+ahb+" \n\
-#define HACTAR_CLK_SCALE_APB1    "+apb1+" \n\
-#define HACTAR_CLK_SCALE_APB2    "+apb2+" \n\
-#define HACTAR_CLK_SCALE_ADC     "+adc+" \n\
-#define HACTAR_CLK_SCALE_USB     "+usb+"\n</pre>");
+#define HACTAR_CLK_SCALE_PREDIV2  "+prediv2+"  \/\/ 1..16\n\
+#define HACTAR_CLK_SCALE_PREDIV1  "+prediv1+"  \/\/ 1..16\n\
+#define HACTAR_CLK_SCALE_PLLMUL   "+(pllmul*10)+" \/\/ 4,5,6,7,8,9 and 6.5 (x10)\n\
+#define HACTAR_CLK_SCALE_PLL2MUL  "+pll2mul+"  \/\/ 8..14,16,20\n\
+#define HACTAR_CLK_SCALE_PLL3MUL  "+pll3mul+"  \/\/ 8..14,16,20\n\
+#define HACTAR_CLK_SCALE_AHB      "+ahb+"  \/\/ 1,2,4,8,16,64,128,256,512\n\
+#define HACTAR_CLK_SCALE_APB1     "+apb1+"  \/\/ 1,2,4,8,16\n\
+#define HACTAR_CLK_SCALE_APB2     "+apb2+"  \/\/ 1,2,4,8,16\n\
+#define HACTAR_CLK_SCALE_ADC      "+adc+"  \/\/ 2,4,6,8\n\
+#define HACTAR_CLK_SCALE_USB      "+usb+"  \/\/ 2,3\n\</pre>");
 
     }
 
@@ -343,7 +343,15 @@
             </select>
           </td>
         </tr>
-        <tr><td>AHB</td><td><input type="text" value="1" id="ahb" onchange="calc();"> (1..512)</td></tr>
+        <tr>
+          <td>AHB</td>
+          <td>
+            <select id="ahb" onchange="calc();">
+              <option selected>1</option><option>2</option><option>4</option>
+              <option>8</option><option>16</option><option>64</option>
+              <option>128</option><option>256</option><option>512</option>
+            </select>
+          </td>
         <tr>
           <td>APB1</td>
           <td>

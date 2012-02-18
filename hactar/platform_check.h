@@ -155,8 +155,8 @@
 #endif
 
 // check pll mul
-#if HACTAR_CLK_SCALE_PLLMULL < 2 || HACTAR_CLK_SCALE_PLLMULL > 16
-#error HACTAR_CLK_SCALE_PLLMULL: invalid value
+#if HACTAR_CLK_SCALE_PLLMUL < 2 || HACTAR_CLK_SCALE_PLLMUL > 16
+#error HACTAR_CLK_SCALE_PLLMUL: invalid value
 #endif
 
 // check usb scale
