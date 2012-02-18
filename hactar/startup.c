@@ -10,71 +10,40 @@
 #include <hactar/startup.h>
 #include <hactar/platform_check.h>
 
-static void hactarStartupPeriphCL(void)
+#ifdef HACTAR_DEV_CL
+
+static void startupCL(void)
 {
-    uint32_t ppre_lt[] = {0, 0, 4, 0, 5, 0, 0, 0, 6, 0,
-                          0, 0, 0, 0, 0, 0, 7};
+    // disable all clock interrupts
+    RCC->CIR = RCC->CIR & ~(0x7F << 8);
 
-    // set AHB prescaler
-    int32_t i;
-    for(i = 0; i < 9; i++) {
-        if(HACTAR_CLK_SCALE_AHB == (1 << i)) {
-            // bug in STM code.. they expect it to be zeros *grr*
-            // see APBAHBPrescTable in stm32f10x_rcc
-            if (i == 0)
-                RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE);
-            else
-                RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE) | \
-                            ((0x8 + (i - 1)) << 4);
-            break;
-        }
-    }
-
-    // Set systick source
-#if HACTAR_CLK_MUX_STK == HACTAR_CLK_MUX_STK_SRC_AHBPRE
-    SysTick->CTRL |= SysTick_CLKSource_HCLK;
-#else
-    SysTick->CTRL &= SysTick_CLKSource_HCLK_Div8;
-#endif
-
-    // ADC Prescaler
-    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_ADCPRE) | \
-                ((HACTAR_CLK_SCALE_ADC - 2) / 2) << 14;
-
-    // Prescaler for PCLK1
-    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PPRE1) | \
-                (ppre_lt[HACTAR_CLK_SCALE_APB1] << 8);
-
-    // Prescaler for PCLK2
-    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PPRE2) | \
-                (ppre_lt[HACTAR_CLK_SCALE_APB2] << 11);
-}
-
-static void hactarStartupCL(void)
-{
-    // disable all clock interrupts and clear pending bits
-    RCC->CIR = (RCC->CIR & ~0xFFFF) | 0xFF0000;
+    // clear pending bits
+    RCC->CIR =  RCC->CIR | (0xFF << 16);
 
 #if (HACTAR_CLK_MUX_RTC == HACTAR_CLK_MUX_RTC_SRC_LSE)
 
     // enable LSE and wait if it gets used by the RTC
-    RCC->BDCR |= RCC_BDCR_LSEON
+    RCC->BDCR |= RCC_BDCR_LSEON;
     while(!(RCC->BDCR & RCC_BDCR_LSERDY));
 
 #endif
 
-    // set RTC src
-    RCC->BDCR = (RCC->BDCR & ~RCC_BDCR_RTCSEL) | HACTAR_CLK_MUX_RTC_SRC_MASK;
-
 #if (HACTAR_CLK_MUX_RTC == HACTAR_CLK_MUX_RTC_SRC_HSE) || \
-	(HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_HSE) || \
-	(HACTAR_CLK_MUX_PLL == HACTAR_CLK_MUX_PLL_SRC_PREDIV1)
+    (HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_HSE) || \
+    (HACTAR_CLK_MUX_PLL == HACTAR_CLK_MUX_PLL_SRC_PREDIV1)
 
     // switch on HSE and wait for ready
     RCC->CR |= RCC_CR_HSEON;
     while(!(RCC->CR & RCC_CR_HSERDY));
 
 #endif
+
+    // enabled LSI
+    RCC->CSR |= RCC_CSR_LSION;
+    while(!(RCC->CSR & RCC_CSR_LSIRDY));
+
+    // set RTC src
+    RCC->BDCR = (RCC->BDCR & ~RCC_BDCR_RTCSEL) | HACTAR_CLK_MUX_RTC_SRC_MASK;
 
     // Calculate system clock for setting the number of flash wait states
     uint32_t sysclk = hactarGetSystemClock();
@@ -192,22 +161,9 @@ static void hactarStartupCL(void)
 #endif
 }
 
-// This gets called from the reset handler
-void SystemInit(void)
+static uint32_t getSystemClockCL(void)
 {
-#ifdef STM32F10X_CL
-    hactarStartupCL();
-    hactarStartupPeriphCL();
-#endif
-}
-
-// Returns the system clock based on the configuration given in platform.h
-uint32_t hactarGetSystemClock(void)
-{
-    static uint32_t sysclk = 0;
-
-    if(sysclk != 0)
-        return sysclk;
+    uint32_t sysclk;
 
 #if HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_HSI
     sysclk = HSI_VALUE;
@@ -232,4 +188,196 @@ uint32_t hactarGetSystemClock(void)
 #endif
 
     return sysclk;
+}
+
+#elif defined HACTAR_DEV_NO_CL
+
+static void startupNonCL(void)
+{
+    // disable all clock interrupts
+    RCC->CIR = RCC->CIR & ~(0x1F << 8);
+    // clear pending bits
+    RCC->CIR =  RCC->CIR | (0x9F << 16);
+
+#if (HACTAR_CLK_MUX_RTC == HACTAR_CLK_MUX_RTC_SRC_LSE)
+
+    // enable LSE and wait if it gets used by the RTC
+    RCC->BDCR |= RCC_BDCR_LSEON;
+    while(!(RCC->BDCR & RCC_BDCR_LSERDY));
+
+#endif
+
+#if (HACTAR_CLK_MUX_PLL == HACTAR_CLK_MUX_PLL_SRC_HSE) || \
+    (HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_HSE) || \
+    (HACTAR_CLK_MUX_RTC == HACTAR_CLK_MUX_RTC_SRC_HSE)
+
+    // switch on HSE and wait for ready
+    RCC->CR |= RCC_CR_HSEON;
+    while(!(RCC->CR & RCC_CR_HSERDY));
+
+#endif
+
+    // enabled LSI
+    RCC->CSR |= RCC_CSR_LSION;
+    while(!(RCC->CSR & RCC_CSR_LSIRDY));
+
+    // set RTC src
+    RCC->BDCR = (RCC->BDCR & ~RCC_BDCR_RTCSEL) | HACTAR_CLK_MUX_RTC_SRC_MASK;
+
+    // Calculate system clock for setting the number of flash wait states
+    uint32_t sysclk = hactarGetSystemClock();
+    uint32_t flash_wait_states;
+    if(sysclk <= 24000000)
+        flash_wait_states = FLASH_ACR_LATENCY_0;
+    else if(sysclk <= 48000000)
+        flash_wait_states = FLASH_ACR_LATENCY_1;
+    else
+        flash_wait_states = FLASH_ACR_LATENCY_2;
+
+    // Prefetch buffer enable
+    FLASH->ACR |= FLASH_ACR_PRFTBE;
+    // Set flash latency / wait states
+    FLASH->ACR = (FLASH->ACR & ~FLASH_ACR_LATENCY) | flash_wait_states;
+
+    // disable PLL
+    RCC->CR &= ~RCC_CR_PLLON;
+
+    // set PLXTPRE src
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PLLXTPRE) | \
+                HACTAR_CLK_MUX_PLLXTPRE_SRC_MASK;
+
+    // set PLL src
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PLLSRC) | HACTAR_CLK_MUX_PLL_SRC_MASK;
+
+    // enable PLL again and wait for it to be ready
+    RCC->CR |= RCC_CR_PLLON;
+    while(!(RCC->CR & RCC_CR_PLLRDY));
+
+    // set PLL multiplier
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PLLMULL) | \
+                ((HACTAR_CLK_SCALE_PLLMULL - 2) << 18);
+
+    // set usb divider
+    uint32_t usb_mask = (HACTAR_CLK_SCALE_USB == 15) ? RCC_CFGR_USBPRE : 0;
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_USBPRE) | usb_mask;
+
+    // set SW src
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_SW) | HACTAR_CLK_MUX_SW_SRC_MASK;
+
+#if (HACTAR_CLK_MUX_PLL != HACTAR_CLK_MUX_PLL_SRC_HSI) && \
+    (HACTAR_CLK_MUX_SW != HACTAR_CLK_MUX_SW_SRC_HSI)
+
+    // HSI (we can disable if we don't use it and after switching away from it)
+    RCC->CR &= ~RCC_CR_HSION;
+
+#endif
+}
+
+static uint32_t getSystemClockNonCL(void)
+{
+    uint32_t sysclk;
+
+#if HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_HSI
+    return HSI_VALUE;
+#elif HACTAR_CLK_MUX_SW == HACTAR_CLK_MUX_SW_SRC_HSE
+    return HSE_VALUE;
+#else
+
+#if HACTAR_CLK_MUX_PLL == HACTAR_CLK_MUX_PLL_SRC_HSI
+    sysclk = HSI_VALUE / 2;
+#elif HACTAR_CLK_MUX_PLL == HACTAR_CLK_MUX_PLL_SRC_HSE
+    sysclk = HSE_VALUE;
+
+#if HACTAR_CLK_MUX_PLLXTPRE == HACTAR_CLK_MUX_PLLXTPRE_SRC_DIV2
+    sysclk /= 2;
+#endif
+
+#endif
+
+    sysclk *= HACTAR_CLK_SCALE_PLLMULL;
+#endif
+
+    return sysclk;
+}
+
+#endif
+
+static void startupPeriph(void)
+{
+    uint32_t ppre_lt[] = {0, 0, 4, 0, 5, 0, 0, 0, 6, 0,
+                          0, 0, 0, 0, 0, 0, 7};
+
+    // set AHB prescaler
+    int32_t i, mask = 0;
+    for(i = 0; i < 9; i++) {
+        if(HACTAR_CLK_SCALE_AHB == (1 << i)) {
+            // bug in STM code.. they expect it to be zeros *grr*
+            // see APBAHBPrescTable in stm32f10x_rcc
+            if (i != 0)
+                mask = ((0x8 + (i - 1)) << 4);
+            break;
+        }
+    }
+
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_HPRE) | mask;
+
+    // Set systick source
+#if HACTAR_CLK_MUX_STK == HACTAR_CLK_MUX_STK_SRC_AHBPRE
+    SysTick->CTRL |= SysTick_CLKSource_HCLK;
+#else
+    SysTick->CTRL &= SysTick_CLKSource_HCLK_Div8;
+#endif
+
+    // ADC Prescaler
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_ADCPRE) | \
+                ((HACTAR_CLK_SCALE_ADC - 2) / 2) << 14;
+
+    // Prescaler for PCLK1
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PPRE1) | \
+                (ppre_lt[HACTAR_CLK_SCALE_APB1] << 8);
+
+    // Prescaler for PCLK2
+    RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_PPRE2) | \
+                (ppre_lt[HACTAR_CLK_SCALE_APB2] << 11);
+}
+
+// This gets called from the reset handler before main()
+void hactarSystemInit(void)
+{
+#ifdef HACTAR_DEV_CL
+    startupCL();
+#else
+    startupNonCL();
+#endif
+    startupPeriph();
+}
+
+// Returns the system clock based on the configuration given in platform.h
+uint32_t hactarGetSystemClock(void)
+{
+    static uint32_t sysclk = 0;
+
+    if(sysclk != 0)
+        return sysclk;
+
+#ifdef HACTAR_DEV_CL
+    sysclk = getSystemClockCL();
+#else
+    sysclk = getSystemClockNonCL();
+#endif
+
+    return sysclk;
+}
+
+// Get the systick frequency
+uint32_t hactarGetSystickClock(void)
+{
+    uint32_t clock;
+
+    clock = hactarGetSystemClock() / HACTAR_CLK_SCALE_AHB;
+#if HACTAR_CLK_MUX_STK == HACTAR_CLK_MUX_STK_SRC_DIV8
+    clock /= 8;
+#endif
+
+    return clock;
 }

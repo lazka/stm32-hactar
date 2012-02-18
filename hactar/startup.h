@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 uint32_t hactarGetSystemClock(void);
-void SystemInit(void);
+uint32_t hactarGetSystickClock(void);
+void hactarSystemInit(void);
 
 #endif

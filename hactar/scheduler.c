@@ -8,9 +8,7 @@
 #include <stdio.h>
 
 #include <hactar/scheduler.h>
-#include <hactar/misc.h>
-#include <hactar/startup.h>
-#include <hactar/platform_check.h>
+#include <hactar/hactar.h>
 
 /*
  * Notes:
@@ -42,16 +40,13 @@ void hactarInitScheduler(uint32_t frequency)
 // there is a rounding error) or < 0 if setting failed.
 int configureSystickTimer(uint32_t frequency)
 {
-    uint32_t ticks;
+    uint32_t ticks, clock;
 
     if(frequency == 0)
         return -1;
 
-#if HACTAR_CLK_MUX_STK == HACTAR_CLK_MUX_STK_SRC_DIV8
-    frequency *= 8;
-#endif
-
-    ticks = hactarGetSystemClock() / (frequency * HACTAR_CLK_SCALE_AHB);
+    clock = hactarGetSystickClock();
+    ticks = clock / frequency;
 
     // the register needs n-1 set do trigger the event every n ticks
     // zero ticks is possible but would simply disable it
@@ -68,7 +63,7 @@ int configureSystickTimer(uint32_t frequency)
                     SysTick_CTRL_TICKINT_Msk |
                     SysTick_CTRL_ENABLE_Msk;
 
-    return hactarGetSystemClock() / ticks;
+    return clock / ticks;
 }
 
 void SysTick_Handler(void)

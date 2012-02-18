@@ -8,7 +8,7 @@
 #include "stm32f10x.h"
 #include <stdint.h>
 
-extern void SystemInit(void);
+extern void hactarSystemInit(void);
 extern int main(void);
 
 extern uint32_t _sidata;
@@ -36,7 +36,7 @@ void Reset_Handler(void) {
     while(dst < &_ebss)
         *(dst++) = 0;
 
-    SystemInit();
+    hactarSystemInit();
 
     main();
 

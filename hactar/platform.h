@@ -15,11 +15,12 @@
 // If defined, you need the fat driver included
 // Copy ffconf.h and integer.h to your project and rename or remove them
 // in the fat driver
+
 //#define HACTAR_USE_FATFS
 
 // Clock config ---------------------------------------------------------------
 
-#ifdef STM32F10X_CL
+#ifdef HACTAR_DEV_CL // STM32F105/7
 
 #define HACTAR_CLK_MUX_RTC     HACTAR_CLK_MUX_RTC_SRC_HSE
 #define HACTAR_CLK_MUX_PREDIV1 HACTAR_CLK_MUX_PREDIV1_SRC_PLL2MUL
@@ -40,25 +41,24 @@
 #define HACTAR_CLK_SCALE_ADC     6  // 2,4,6,8
 #define HACTAR_CLK_SCALE_USB     3  // 2,3
 
-#else
+#elif defined HACTAR_DEV_NO_CL // STM32F101/2/3
 
-#define HACTAR_CLK_HSI
-#define HACTAR_CLK_HSE
-#define HACTAR_CLK_LSI
-#define HACTAR_CLK_LSE
+#define HACTAR_CLK_MUX_RTC              HACTAR_CLK_MUX_RTC_SRC_HSE
+#define HACTAR_CLK_MUX_PLLXTPRE         HACTAR_CLK_MUX_PLLXTPRE_SRC_DIV2
+#define HACTAR_CLK_MUX_PLL              HACTAR_CLK_MUX_PLL_SRC_HSE
+#define HACTAR_CLK_MUX_SW               HACTAR_CLK_MUX_SW_SRC_PLLMUL
+#define HACTAR_CLK_MUX_STK              HACTAR_CLK_MUX_STK_SRC_DIV8
 
-#define HACTAR_CLK_MUX_RTCS
-#define HACTAR_CLK_MUX_PLLXTPRE
-#define HACTAR_CLK_MUX_PLL
-#define HACTAR_CLK_MUX_SW
-#define HACTAR_CLK_MUX_STK
+#define HACTAR_CLK_SCALE_PLLMULL        9  // 2..16
+#define HACTAR_CLK_SCALE_AHB            1  // 1..512
+#define HACTAR_CLK_SCALE_APB1           2  // 1,2,4,8,16
+#define HACTAR_CLK_SCALE_APB2           1  // 1,2,4,8,16
+#define HACTAR_CLK_SCALE_ADC            6  // 2,4,6,8
+#define HACTAR_CLK_SCALE_USB            15 // 10,15 (x10)
 
-#define HACTAR_CLK_SCALE_PLLMULL
-#define HACTAR_CLK_SCALE_AHB
-#define HACTAR_CLK_SCALE_APB1
-#define HACTAR_CLK_SCALE_APB2
-#define HACTAR_CLK_SCALE_ADC
-#define HACTAR_CLK_SCALE_USB
+#elif defined HACTER_DEV_VL // STM32F100
+
+#error "nothing here yet"
 
 #endif
 
