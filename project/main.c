@@ -16,7 +16,7 @@
 
 int main(void)
 {
-    //hactarInitScheduler(1);
+    //hactarSchedulerInit(1);
 
     //initEvalLCDTermExample();         // Eval Board LCD Terminal
     //initEvalFramebufferExample();     // Eval Board Framebuffer Terminal

@@ -355,18 +355,11 @@ void hactarSystemInit(void)
 // Returns the system clock based on the configuration given in platform.h
 uint32_t hactarGetSystemClock(void)
 {
-    static uint32_t sysclk = 0;
-
-    if(sysclk != 0)
-        return sysclk;
-
 #ifdef HACTAR_DEV_CL
-    sysclk = getSystemClockCL();
+    return getSystemClockCL();
 #else
-    sysclk = getSystemClockNonCL();
+    return getSystemClockNonCL();
 #endif
-
-    return sysclk;
 }
 
 // Get the systick frequency

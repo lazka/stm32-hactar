@@ -10,6 +10,107 @@
 #include <hactar/scheduler.h>
 #include <hactar/hactar.h>
 
+static hactarThread* threads[HACTAR_N_THREADS];
+
+static struct {
+    uint32_t active_index_;
+    size_t thread_count_;
+} sched_state;
+
+// Add a thread to the scheduler, so it gets scheduled
+int32_t hactarThreadAdd(hactarThread* thread)
+{
+    if(sched_state.thread_count_ == HACTAR_N_THREADS)
+        return -1;
+
+    thread->active_ = 0;
+    thread->inactive_status_ = INIT;
+    threads[sched_state.thread_count_] = thread;
+    sched_state.thread_count_++;
+
+    return 0;
+}
+
+// Schedule a thread for removal
+// In case the thread is allocated on the stack/heap or you want to reuse
+// the thread memory, you have to call hactarSchedulerWaitGone first.
+int32_t hactarThreadRemove(hactarThread* thread)
+{
+    thread->active_ = 0;
+    thread->inactive_status_ = DEAD;
+    return 0;
+}
+
+int32_t hactarThreadSetSleep(hactarThread* thread, uint8_t sleep)
+{
+    if(!sleep)
+        thread->active_ = 1;
+    else
+    {
+        thread->inactive_status_ = SLEEPING;
+        if(thread == threads[sched_state.active_index_])
+            hactarSchedulerSchedule();
+    }
+
+    return 0;
+}
+
+// Wait until the thread memory can be reused
+int32_t hactarThreadWaitGone(hactarThread* thread)
+{
+    if(thread->active_ || thread->inactive_status_ != DEAD)
+        return -1;
+
+    while(thread->inactive_status_ != BURIED);
+
+    return 0;
+}
+
+// remove a thread from the list, by shifting all after it back
+// sets the inactive status to buried, meaning the thread memory will
+// not be touched again.
+static void removeThread(uint32_t index)
+{
+    size_t j;
+    hactarThread* to_remove = threads[index];
+
+    for(j = index + 1; j < sched_state.thread_count_; j++)
+       threads[j - 1] = threads[j];
+
+    sched_state.thread_count_--;
+    to_remove->inactive_status_ = BURIED;
+}
+
+// Do a context switch..
+void hactarSchedulerSchedule(void)
+{
+    size_t i, j;
+    hactarThread* active = threads[sched_state.active_index_];
+    hactarThread* next = active;
+
+    for(i = 0; i < sched_state.thread_count_; i++)
+    {
+        j = (sched_state.active_index_ + i) % sched_state.thread_count_;
+        next = threads[j];
+        if(next->active_)
+            break;
+        else
+        {
+            if(next->inactive_status_ == DEAD)
+            {
+                removeThread(j);
+                i--;
+                continue;
+            }
+        }
+    }
+
+    if(next == active)
+        return;
+
+    // go go go...
+}
+
 /*
  * Notes:
  *  - An ISR does not pre-emt itself.
@@ -23,7 +124,7 @@
  *  - SVCall is sync
  */
 
-void hactarInitScheduler(uint32_t frequency)
+void hactarSchedulerInit(uint32_t frequency)
 {
     // test
     interruptsDisable();
@@ -32,13 +133,13 @@ void hactarInitScheduler(uint32_t frequency)
     NVIC_SetPriority(PendSV_IRQn, PENDSV_PRIO);
     NVIC_SetPriority(SysTick_IRQn, SYSTCK_PRIO);
 
-    assert(configureSystickTimer(frequency) >= 0);
+    assert(hactarSystickTimer(frequency) >= 0);
 }
 
 // Frequency in HZ
 // Returns the actual frequency that was set (If the clock is low,
 // there is a rounding error) or < 0 if setting failed.
-int configureSystickTimer(uint32_t frequency)
+int hactarSystickTimer(uint32_t frequency)
 {
     uint32_t ticks, clock;
 

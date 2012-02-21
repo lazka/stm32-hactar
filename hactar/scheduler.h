@@ -20,7 +20,25 @@
 #define PENDSV_PRIO (MINIMUM_PRIO)
 #define SYSTCK_PRIO (MINIMUM_PRIO - 1)
 
-void hactarInitScheduler(uint32_t frequency);
-int configureSystickTimer(uint32_t frequency);
+void hactarSchedulerInit(uint32_t frequency);
+int hactarSystickTimer(uint32_t frequency);
+void hactarSchedulerSchedule(void);
+
+#define HACTAR_N_THREADS (3)
+#define HACTAR_STACK_SIZE (1000)
+
+typedef enum {DEAD, SLEEPING, INIT, BURIED} hactarInactiveStatus;
+
+typedef struct {
+    uint8_t active_;
+    hactarInactiveStatus inactive_status_;
+    char* name_[10];
+    uint8_t stack_[HACTAR_STACK_SIZE];
+} hactarThread;
+
+int32_t hactarThreadAdd(hactarThread* thread);
+int32_t hactarThreadRemove(hactarThread* thread);
+int32_t hactarThreadWaitGone(hactarThread* thread);
+int32_t hactarThreadSetSleep(hactarThread* thread, uint8_t sleep);
 
 #endif
