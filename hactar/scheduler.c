@@ -243,10 +243,10 @@ int32_t threadSetSleep(Thread* thread, uint8_t sleep)
 int32_t schedulerInit(uint32_t frequency)
 {
     // Make pendsv the lowest priority interrupt
-    NVIC_SetPriority(PendSV_IRQn, PENDSV_PRIO);
+    NVIC_SetPriority(PendSV_IRQn, PRIO_PENDSV);
 
-    // Move systick below the scheduler prio mask
-    NVIC_SetPriority(SysTick_IRQn, SYSTCK_PRIO);
+    // Make systick use a slightly higher priority
+    NVIC_SetPriority(SysTick_IRQn, PRIO_SYSTICK);
 
     // Add the idle thread as first and set is as the active one,
     // The next schedule will switch to a user thread if one is available

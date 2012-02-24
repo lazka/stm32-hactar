@@ -13,22 +13,27 @@
 
 #include "stm32f10x.h"
 
-#define PRIO_LEVELS (1 << __NVIC_PRIO_BITS)
-#define MINIMUM_PRIO  (PRIO_LEVELS - 1)
-#define MAXIMUM_PRIO  (0)
+#define PRIO_LEVELS     (1 << __NVIC_PRIO_BITS)
+#define PRIO_MINIMUM    (PRIO_LEVELS - 1)
+#define PRIO_MAXIMUM    (0)
+#define PRIO_PENDSV     (PRIO_MINIMUM)
+#define PRIO_SYSTICK    (PRIO_MINIMUM - 1)
 
-#define SVCALL_PRIO (MAXIMUM_PRIO + 1)
-#define PENDSV_PRIO (MINIMUM_PRIO)
-#define SYSTCK_PRIO (MINIMUM_PRIO - 1)
+#define __SVC()     asm volatile ("SVC 0")
+#define __PENDSV()  (SCB->ICSR = SCB_ICSR_PENDSVSET)
 
-#define __SVC() asm volatile ("SVC 0")
-#define __PENDSV() (SCB->ICSR = SCB_ICSR_PENDSVSET)
+// #define BASEPRI_SET    (PRIO_SYSTICK << (8 - __NVIC_PRIO_BITS))
+// #define BASEPRI_UNSET  (0x0)
+// (((1 << 4) - 1) - 1) << (8 - 4) = 0xe0
+// no preprocessor possible in inline asm..
 
-#define INTERRUPTS_DISABLE() asm volatile ("cpsid   i" : : : "memory")
-#define INTERRUPTS_ENABLE() asm volatile ("cpsie   i" : : : "memory")
+#define SCHEDULER_DISABLE() asm volatile \
+    ("mov r0, #0xe0     \n"\
+     "MSR basepri, r0   \n" : : : "memory", "r0")
 
-#define SCHEDULER_DISABLE() INTERRUPTS_DISABLE()
-#define SCHEDULER_ENABLE() INTERRUPTS_ENABLE()
+#define SCHEDULER_ENABLE()  asm volatile \
+    ("mov r0, #0x00     \n"\
+     "MSR basepri, r0   \n" : : : "memory", "r0")
 
 #define IRQ_RETURN_PSP 0xFFFFFFFD
 #define IRQ_RETURN_MSP 0xFFFFFFF9
