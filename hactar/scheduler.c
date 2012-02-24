@@ -58,27 +58,22 @@ static int32_t setSystick(uint32_t frequency)
 // Selects the next thread; returns != 0 if a context switch is needed
 static uint32_t schedSchedule(void)
 {
-    size_t i, idle = 0;
+    size_t i, j;
 
     schedulerLock();
 
-    // get the next active one
-    for(i = ACTIVE + 1; i != ACTIVE; i++)
+    for(i = 0; i < COUNT; i++)
     {
-        if(i >= COUNT)
-            i = 0;
-
-        if(THREAD(i) == &idle_thread)
-            idle = i;
-        else if(THREAD(i)->active_)
+        j = ((ACTIVE + i) % COUNT) + 1;
+        if(THREAD(j)->active_)
         {
-            NEXT = i;
+            NEXT = j;
             schedulerUnlock();
             return 1;
         }
     }
 
-    // None found, check the running one
+    // None found, check the running one (could be idle)
     if(THREAD(ACTIVE)->active_)
     {
         schedulerUnlock();
@@ -86,7 +81,7 @@ static uint32_t schedSchedule(void)
     }
 
     // no active thread and not already idle, switch to idle
-    NEXT = idle;
+    NEXT = 0;
     schedulerUnlock();
     return 1;
 }
@@ -145,14 +140,13 @@ int32_t threadAdd(Thread* thread, void* func,
 
     // "Append" do schedule array and make it available
     schedulerLock();
-    if(COUNT == HACTAR_N_THREADS + 1)
+    if(COUNT == HACTAR_N_THREADS)
     {
         schedulerUnlock();
         return -1;
     }
 
-    THREAD(COUNT) = thread;
-    COUNT++;
+    THREAD(++COUNT) = thread;
     schedulerUnlock();
 
     return 0;
@@ -169,8 +163,7 @@ void threadYield(void)
 // Remove a thread. If thread == NULL, the calling thread will be removed.
 int32_t threadRemove(Thread* thread)
 {
-    size_t i;
-    uint32_t yield = 0;
+    size_t i, j;
 
     schedulerLock();
 
@@ -184,24 +177,25 @@ int32_t threadRemove(Thread* thread)
             continue;
 
         // Move all back
-        for(i++ ;i < COUNT; i++)
-            THREAD(i - 1) = THREAD(i);
+        for(j = i + 1; j < COUNT; j++)
+            THREAD(j - 1) = THREAD(j);
+
+        // Adjust active/next if it was moved
+        if(ACTIVE > i)
+            ACTIVE--;
+        if(NEXT > i)
+            NEXT--;
 
         if(thread == THREAD(ACTIVE))
-            yield = 1;
-
-        // make sure we aren't our of bounds
-        ACTIVE--;
-
-        // done
-        schedulerUnlock();
-
-        // yield if we are the caller
-        if(yield)
         {
-            __SVC();
+            ACTIVE = NEXT = 0;
+            schedulerUnlock();
+            threadYield();
             while(1);
+            return -1;
         }
+
+        schedulerUnlock();
         return 0;
     }
 
@@ -219,6 +213,12 @@ int32_t threadSetSleep(Thread* thread, uint8_t sleep)
     if(thread == NULL)
         thread = THREAD(ACTIVE);
 
+    if(thread->active_ == !sleep)
+    {
+        schedulerUnlock();
+        return -1;
+    }
+
     if(!sleep)
         thread->active_ = 1;
     else
@@ -228,7 +228,7 @@ int32_t threadSetSleep(Thread* thread, uint8_t sleep)
         if(thread == THREAD(ACTIVE))
         {
             schedulerUnlock();
-            __SVC();
+            threadYield();
             // Race ?? .. but we need to wait so this is blocking
             while(!thread->active_);
             return 0;
@@ -248,10 +248,10 @@ int32_t schedulerInit(uint32_t frequency)
     // Move systick below the scheduler prio mask
     NVIC_SetPriority(SysTick_IRQn, SYSTCK_PRIO);
 
-    // Add the idle thread
-    threadAdd(&idle_thread, &schedIdle, idle_stack, COUNT_OF(idle_stack));
-
-    // Set an active one
+    // Add the idle thread as first and set is as the active one,
+    // The next schedule will switch to a user thread if one is available
+    schedInitStack(&idle_thread, &schedIdle, idle_stack, COUNT_OF(idle_stack));
+    THREAD(0) = &idle_thread;
     ACTIVE = 0;
 
     // Set the systick, and return error if the frequency couldn't get set
