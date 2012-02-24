@@ -5,13 +5,9 @@
 // published by the Free Software Foundation.
 //
 
-#ifdef USE_STM3210C_EVAL
+#ifndef EX_SCHEDULER_H__
+#define EX_SCHEDULER_H__
 
-#ifndef EX_EVAL_LCD_TERM_H__
-#define EX_EVAL_LCD_TERM_H__
-
-void initEvalLCDTermExample(void);
+void initSchedulerExample(void);
 
 #endif
-
-#endif // USE_STM3210C_EVAL

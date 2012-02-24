@@ -18,6 +18,11 @@
 
 //#define HACTAR_USE_FATFS
 
+// Scheduler ------------------------------------------------------------------
+
+#define HACTAR_N_THREADS (3)
+#define HACTAR_STACK_SIZE (1000)
+
 // Clock config ---------------------------------------------------------------
 
 #ifdef HACTAR_DEV_CL // STM32F105/7

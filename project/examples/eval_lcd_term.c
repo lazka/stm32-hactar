@@ -5,6 +5,8 @@
 // published by the Free Software Foundation.
 //
 
+#ifdef USE_STM3210C_EVAL
+
 #include <hactar/stdio_devs/eval_lcd.h>
 #include <hactar/stdio_devs/usart.h>
 #include <hactar/hactar.h>
@@ -44,3 +46,5 @@ void initEvalLCDTermExample(void)
     // Start terminal
     startTerminal(term_cmds, COUNT_OF(term_cmds));
 }
+
+#endif // USE_STM3210C_EVAL
