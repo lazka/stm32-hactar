@@ -11,16 +11,6 @@
 
 #include <hactar/misc.h>
 
-void interruptsDisable()
-{
-    asm volatile ("cpsid   i" : : : "memory");
-}
-
-void interruptsEnable()
-{
-    asm volatile ("cpsie   i" : : : "memory");
-}
-
 void __hactar_assert(const char* file, int line, const char* func,
         const char* expr)
 {

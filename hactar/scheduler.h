@@ -21,8 +21,14 @@
 #define PENDSV_PRIO (MINIMUM_PRIO)
 #define SYSTCK_PRIO (MINIMUM_PRIO - 1)
 
-#define __SVC() __asm volatile ("SVC 0")
+#define __SVC() asm volatile ("SVC 0")
 #define __PENDSV() (SCB->ICSR = SCB_ICSR_PENDSVSET)
+
+#define INTERRUPTS_DISABLE() asm volatile ("cpsid   i" : : : "memory")
+#define INTERRUPTS_ENABLE() asm volatile ("cpsie   i" : : : "memory")
+
+#define SCHEDULER_DISABLE() INTERRUPTS_DISABLE()
+#define SCHEDULER_ENABLE() INTERRUPTS_ENABLE()
 
 #define IRQ_RETURN_PSP 0xFFFFFFFD
 #define IRQ_RETURN_MSP 0xFFFFFFF9

@@ -58,7 +58,7 @@ static int32_t setSystick(uint32_t frequency)
 // Selects the next thread; returns != 0 if a context switch is needed
 static uint32_t schedSchedule(void)
 {
-    size_t i, idle;
+    size_t i, idle = 0;
 
     schedulerLock();
 
@@ -129,14 +129,12 @@ static void schedInitStack(Thread* thread, void* func,
 // Makes sure that scheduler state access is mutual exclusive
 void schedulerLock(void)
 {
-    // TODO: use prio mask
-    __disable_irq();
+    SCHEDULER_DISABLE();
 }
 
 void schedulerUnlock(void)
 {
-    // TODO: use prio mask
-    __enable_irq();
+    SCHEDULER_ENABLE();
 }
 
 // Add a thread to the scheduler, so it gets scheduled
@@ -300,7 +298,7 @@ void SVC_Handler(void)
     {
         // was called from PSP or another interrupt
 
-        // TODO: this could get used for sync context switching
+        // this could get used for sync context switching
     }
     else
     {
@@ -326,26 +324,55 @@ void SVC_Handler(void)
 
 void __attribute__( ( naked ) ) PendSV_Handler(void)
 {
+    // This has to be done first, GCC will use r4-r11 with -Os.
+    // Use r0, since that got already pushed by hardware, so it is safe here
     asm volatile (
         "MRS r0, psp            \n" // get the user stack pointer
         "STMDB r0!, {r4-r11}    \n" // push r4-r11 on the user stack and dec r0
+        "MSR psp, r0            \n" // update stack pointer
+    : : :
+    "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11");
+
+    SCHEDULER_DISABLE();
+
+    // Now save the stack pointer to THREAD(ACTIVE)->sp_
+    asm volatile (
+        "MRS r0, psp            \n" // get the user stack pointer
         "STR r0, [%0]           \n" // save new sp value
-        "LDR r0, [%1]           \n" // load new sp for new thread
-        "LDMFD r0!, {r4-r11}    \n" // pop r4-r11 from stack, inc r0
-        "MSR psp, r0            \n" // set user stack pointer
-        "LDR r0, [%2]           \n" // switch active <-> next:
+    : :
+    "r" (&THREAD(ACTIVE)->sp_) :
+    "r0", "memory");
+
+    // Switch ACTIVE <-> NEXT with one register + stack
+    asm volatile (
+        "LDR r0, [%0]           \n" // switch active <-> next:
         "PUSH {r0}              \n" //   so pendsv can be called multiple times
-        "LDR r0, [%3]           \n" //   without scheduling and we don't need
-        "STR r0, [%2]           \n" //   to handle it..
+        "LDR r0, [%1]           \n" //   without scheduling and we don't need
+        "STR r0, [%0]           \n" //   to handle it..
         "POP {r0}               \n" //
-        "STR r0, [%3]           \n" //
-        "BX lr                  \n" // return
-        : :
-        "r" (&THREAD(ACTIVE)->sp_), "r" (&THREAD(NEXT)->sp_),
-        "r" (&ACTIVE), "r" (&NEXT)
-        // mark all registers we use as modified so GCC doesn't use them
-        // for getting the memory addresses.
-        // the code above uses only one register, so r1-r3 is left for GCC.
-        // r7 missing since it isn't allowed and wont change anyway here
-        : "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11");
+        "STR r0, [%1]           \n" //
+     : :
+     "r" (&ACTIVE), "r" (&NEXT) :
+     "r0", "memory");
+
+    // Load the new stack pointer
+    asm volatile (
+        "LDR r0, [%0]           \n" // load new sp for new thread
+        "MSR psp, r0            \n" // set user stack pointer
+    : :
+    "r" (&THREAD(ACTIVE)->sp_) :
+    "r0", "memory");
+
+    SCHEDULER_ENABLE();
+
+    // Restore the stack and return to PSP (PendSV is lowest priority,
+    // so it can never preempt another interrupt or itself, only user code)
+    asm volatile (
+        "MRS r0, psp            \n" // load new sp for new thread
+        "LDMIA r0!, {r4-r11}    \n" // pop r4-r11 from stack, inc r0
+        "MSR psp, r0            \n" // adjust user stack pointer
+        "bx lr                  \n" // return
+       : :
+       "r" (&THREAD(ACTIVE)->sp_) :
+       "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11");
 }
