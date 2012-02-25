@@ -20,6 +20,9 @@ static struct {
     size_t active_; // active thread index
     size_t next_;   // next thread index
     size_t count_;  // above values are only valid if count > 0
+#if defined(HACTAR_NEWLIB_REENT) && defined(__DYNAMIC_REENT__)
+    uint8_t in_isr_;
+#endif
 } sched;
 
 static uint8_t idle_stack[100];
@@ -244,28 +247,36 @@ int32_t threadSetSleep(Thread* thread, uint8_t sleep)
 }
 
 /* If you want to use newlib functions in an interrupt context:
+ * This will set the reent struct to the global one and disable interrupts
+ * for that period.
  * schedulerISRNewlibStart()
  * printf("foobar")
  * schedulerISRNewlibEnd()
  */
 
 // Make the global reent struct the active one
-// No locking needed, since interrupts can not be preempted by scheduling
-// interrupts.
 void schedulerISRNewlibStart(void)
 {
-#if defined(HACTAR_NEWLIB_REENT) && !defined(__DYNAMIC_REENT__)
+#if defined(HACTAR_NEWLIB_REENT)
+    INTERRUPTS_DISABLE();
+#if !defined(__DYNAMIC_REENT__)
     _REENT = _GLOBAL_REENT;
+#else
+    sched.in_isr_ = 1;
+#endif
 #endif
 }
 
 // Use the active thread reent struct
-// No locking needed, since interrupts can not be preempted by scheduling
-// interrupts.
 void schedulerISRNewlibEnd(void)
 {
-#if defined(HACTAR_NEWLIB_REENT) && !defined(__DYNAMIC_REENT__)
+#if defined(HACTAR_NEWLIB_REENT)
+#if !defined(__DYNAMIC_REENT__)
     _REENT = &THREAD(ACTIVE)->reent_;
+#else
+    sched.in_isr_ = 0;
+#endif
+    INTERRUPTS_ENABLE();
 #endif
 }
 
@@ -278,7 +289,11 @@ struct _reent * __getreent(void)
 
     // getting the active thread is not atomic atm...
     schedulerLock();
-    reent = &THREAD(ACTIVE)->reent_;
+    if(sched.in_isr_)
+        reent = _GLOBAL_REENT
+    else
+        reent = &THREAD(ACTIVE)->reent_;
+
     schedulerUnlock();
     return reent;
 }

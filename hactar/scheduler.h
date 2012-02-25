@@ -23,6 +23,9 @@
 #define __SVC()     asm volatile ("SVC 0")
 #define __PENDSV()  (SCB->ICSR = SCB_ICSR_PENDSVSET)
 
+#define INTERRUPTS_DISABLE() asm volatile ("cpsid   i" : : : "memory")
+#define INTERRUPTS_ENABLE() asm volatile ("cpsie   i" : : : "memory")
+
 // #define BASEPRI_SET    (PRIO_SYSTICK << (8 - __NVIC_PRIO_BITS))
 // #define BASEPRI_UNSET  (0x0)
 // (((1 << 4) - 1) - 1) << (8 - 4) = 0xe0
