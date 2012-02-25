@@ -14,9 +14,6 @@
 #include <hactar/misc.h>
 #include <hactar/stdio_dev.h>
 
-#undef errno
-extern int errno;
-
 int _kill(int pid, int sig)
 {
     errno = EINVAL;

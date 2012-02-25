@@ -10,6 +10,7 @@
 
 #include <hactar/platform_check.h>
 #include <stdint.h>
+#include <reent.h>
 
 #include "stm32f10x.h"
 
@@ -26,7 +27,6 @@
 // #define BASEPRI_UNSET  (0x0)
 // (((1 << 4) - 1) - 1) << (8 - 4) = 0xe0
 // no preprocessor possible in inline asm..
-
 #define SCHEDULER_DISABLE() asm volatile \
     ("mov r0, #0xe0     \n"\
      "MSR basepri, r0   \n" : : : "memory", "r0")
@@ -42,10 +42,21 @@ typedef enum {
     SLEEPING,
 } InactiveStatus;
 
+/*
+ * Reentrancy, two ways:
+ *  1) __DYNAMIC_REENT__ is defined: newlib will call __getreent to get
+ *     the currently active reent struct
+ *  2) otherwise, we need to switch the active reent struct pointer
+ *     on each context switch (this is the default in codesourcery g++)
+ */
+
 typedef struct {
     uint8_t active_; // if it should get scheduled
     InactiveStatus inactive_status_; // if not active, what is the reason
     uint32_t sp_; // for saving the stack pointer on context switch
+#ifdef HACTAR_NEWLIB_REENT
+    struct _reent reent_;
+#endif
 } Thread;
 
 typedef struct {
@@ -75,5 +86,8 @@ void    threadYield(void);
 int32_t schedulerInit(uint32_t frequency);
 void    schedulerLock(void);
 void    schedulerUnlock(void);
+
+void schedulerISRNewlibStart(void);
+void schedulerISRNewlibEnd(void);
 
 #endif

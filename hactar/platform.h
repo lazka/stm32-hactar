@@ -20,8 +20,11 @@
 
 // Scheduler ------------------------------------------------------------------
 
-#define HACTAR_N_THREADS (3)
-#define HACTAR_STACK_SIZE (1000)
+// Maximum number of active threads
+#define HACTAR_N_THREADS (10)
+// Needed if you use stdlib functions from more than one thread
+// (interrupts included).
+#define HACTAR_NEWLIB_REENT
 
 // Clock config ---------------------------------------------------------------
 

@@ -22,7 +22,6 @@ static struct {
     size_t count_;  // above values are only valid if count > 0
 } sched;
 
-
 static uint8_t idle_stack[100];
 static Thread idle_thread;
 
@@ -119,6 +118,11 @@ static void schedInitStack(Thread* thread, void* func,
 
     // Set active
     thread->active_ = 1;
+
+#ifdef HACTAR_NEWLIB_REENT
+    _REENT_INIT_PTR(&thread->reent_);
+#endif
+
 }
 
 // Makes sure that scheduler state access is mutual exclusive
@@ -239,6 +243,47 @@ int32_t threadSetSleep(Thread* thread, uint8_t sleep)
     return 0;
 }
 
+/* If you want to use newlib functions in an interrupt context:
+ * schedulerISRNewlibStart()
+ * printf("foobar")
+ * schedulerISRNewlibEnd()
+ */
+
+// Make the global reent struct the active one
+// No locking needed, since interrupts can not be preempted by scheduling
+// interrupts.
+void schedulerISRNewlibStart(void)
+{
+#if defined(HACTAR_NEWLIB_REENT) && !defined(__DYNAMIC_REENT__)
+    _REENT = _GLOBAL_REENT;
+#endif
+}
+
+// Use the active thread reent struct
+// No locking needed, since interrupts can not be preempted by scheduling
+// interrupts.
+void schedulerISRNewlibEnd(void)
+{
+#if defined(HACTAR_NEWLIB_REENT) && !defined(__DYNAMIC_REENT__)
+    _REENT = &THREAD(ACTIVE)->reent_;
+#endif
+}
+
+#if defined(HACTAR_NEWLIB_REENT) && defined(__DYNAMIC_REENT__)
+// In case __DYNAMIC_REENT__ is defined, newlib will call
+// __get_reent instead of following the _REENT pointer.
+struct _reent * __getreent(void)
+{
+    struct _reent *reent;
+
+    // getting the active thread is not atomic atm...
+    schedulerLock();
+    reent = &THREAD(ACTIVE)->reent_;
+    schedulerUnlock();
+    return reent;
+}
+#endif
+
 // Enable the scheduler, will not return
 int32_t schedulerInit(uint32_t frequency)
 {
@@ -315,6 +360,10 @@ void SVC_Handler(void)
         // The CPU will restore registers from r0 and up, so move 8 up
         __set_PSP(THREAD(NEXT)->sp_ + 8 * 4);
 
+#if defined(HACTAR_NEWLIB_REENT) && !defined(__DYNAMIC_REENT__)
+        _REENT = &THREAD(ACTIVE)->reent_;
+#endif
+
         // Make the interrupt return to the psp stack
         // by loading the magic value in the pc
         void *addr = (void *) IRQ_RETURN_PSP;
@@ -344,6 +393,12 @@ void __attribute__( ( naked ) ) PendSV_Handler(void)
     "r0", "memory");
 
     // Switch ACTIVE <-> NEXT with one register + stack
+    // Example: Scheduling triggers a pendsv, pendsv gets entered,
+    // pending bit cleared, starts to execute first instruction,
+    // since there is no locking active, systick can preempt and cancel
+    // first instruction, systick sets pendsv pending again ->
+    // pendsv gets tailchained again, getting called twice in a row without
+    // a new schedule.. so this needs to be handled
     asm volatile (
         "LDR r0, [%0]           \n" // switch active <-> next:
         "PUSH {r0}              \n" //   so pendsv can be called multiple times
@@ -354,6 +409,16 @@ void __attribute__( ( naked ) ) PendSV_Handler(void)
      : :
      "r" (&ACTIVE), "r" (&NEXT) :
      "r0", "memory");
+
+#if defined(HACTAR_NEWLIB_REENT) && !defined(__DYNAMIC_REENT__)
+    // Set the reent struct pointer
+    asm volatile (
+        "MOV r0, %0         \n"
+        "STR r0, [%1]       \n"
+        : :
+        "r" (&THREAD(ACTIVE)->reent_), "r" (&_REENT) :
+        "r0", "memory");
+#endif
 
     // Load the new stack pointer
     asm volatile (
