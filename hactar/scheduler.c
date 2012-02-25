@@ -443,16 +443,19 @@ void __attribute__( ( naked ) ) PendSV_Handler(void)
     "r" (&THREAD(ACTIVE)->sp_) :
     "r0", "memory");
 
-    SCHEDULER_ENABLE();
-
     // Restore the stack and return to PSP (PendSV is lowest priority,
     // so it can never preempt another interrupt or itself, only user code)
     asm volatile (
         "MRS r0, psp            \n" // load new sp for new thread
         "LDMIA r0!, {r4-r11}    \n" // pop r4-r11 from stack, inc r0
         "MSR psp, r0            \n" // adjust user stack pointer
-        "bx lr                  \n" // return
        : :
        "r" (&THREAD(ACTIVE)->sp_) :
        "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11");
+
+    SCHEDULER_ENABLE();
+
+    asm volatile (
+        "bx lr                  \n" // return
+    : : :);
 }
