@@ -14,7 +14,28 @@
 #include <stdint.h>
 
 #include <hactar/font.h>
-#include <hactar/fb_types.h>
+
+struct FbRect
+{
+    size_t x1_;
+    size_t y1_;
+    size_t x2_;
+    size_t y2_;
+};
+typedef struct FbRect FbRect;
+
+typedef struct DisplayInfo DisplayInfo;
+
+struct FbInfo
+{
+    uint8_t *data_;
+    size_t height_;
+    size_t width_;
+    uint8_t clip_;
+    FbRect clip_rect_;
+    DisplayInfo *display_;
+};
+typedef struct FbInfo FbInfo;
 
 #define FB_DEFAULT 0
 #define FB_BLACK FB_DEFAULT

@@ -6,6 +6,7 @@
 //
 
 #include <hactar/framebuffer.h>
+#include <hactar/display.h>
 
 // Initializes the fbInit struct. Has to be called before passing the struct
 // to any other function.

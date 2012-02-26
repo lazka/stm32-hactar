@@ -5,9 +5,6 @@
 // published by the Free Software Foundation.
 //
 
-#ifndef EX_DOGM128_FB_H__
-#define EX_DOGM128_FB_H__
-
 #include "dogm128_framebuffer.h"
 
 #include <hactar/hactar.h>
@@ -43,4 +40,3 @@ void initDogm128FramebufferExample(void)
     startTerminal(NULL, 0);
 }
 
-#endif

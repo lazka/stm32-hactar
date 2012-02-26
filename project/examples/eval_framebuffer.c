@@ -7,9 +7,6 @@
 
 #ifdef USE_STM3210C_EVAL
 
-#ifndef EX_EVAL_FRAMEBUFFER_H__
-#define EX_EVAL_FRAMEBUFFER_H__
-
 #include "eval_framebuffer.h"
 
 #include <stdio.h>
@@ -45,7 +42,5 @@ void initEvalFramebufferExample(void)
     // Start terminal
     startTerminal(NULL, 0);
 }
-
-#endif
 
 #endif // USE_STM3210C_EVAL
