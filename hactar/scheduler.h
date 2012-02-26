@@ -9,6 +9,7 @@
 #define HACTAR_SCHEDULER_H__
 
 #include <hactar/platform_check.h>
+#include <hactar/locks.h>
 #include <stdint.h>
 #include <reent.h>
 
@@ -43,6 +44,7 @@
 
 typedef enum {
     SLEEPING,
+    MUTEX,
 } InactiveStatus;
 
 /*
@@ -53,10 +55,18 @@ typedef enum {
  *     on each context switch (this is the default in codesourcery g++)
  */
 
-typedef struct {
+typedef struct Thread Thread;
+typedef struct mutex_t mutex_t;
+
+typedef struct Thread{
     uint8_t active_; // if it should get scheduled
     InactiveStatus inactive_status_; // if not active, what is the reason
+
     uint32_t sp_; // for saving the stack pointer on context switch
+
+    Thread *next_; // used for mutex waiting list
+    mutex_t *mutex_; // if waiting for a mutex
+
 #ifdef HACTAR_NEWLIB_REENT
     struct _reent reent_;
 #endif
@@ -89,6 +99,7 @@ void    threadYield(void);
 int32_t schedulerInit(uint32_t frequency);
 void    schedulerLock(void);
 void    schedulerUnlock(void);
+Thread* schedulerActiveThread(void);
 
 void schedulerISRNewlibStart(void);
 void schedulerISRNewlibEnd(void);

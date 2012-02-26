@@ -4,16 +4,26 @@
 #ifndef HACTAR_LOCKS_H__
 #define HACTAR_LOCKS_H__
 
-typedef struct {
+#include <hactar/scheduler.h>
+
+typedef struct spinlock_t{
     volatile unsigned int lock;
 } spinlock_t;
 
-void hactarSpinInit(spinlock_t *lock);
+typedef struct Thread Thread;
+typedef struct mutex_t{
+    spinlock_t lock;
+    Thread *owner;
+} mutex_t;
 
-void hactarSpinLock(spinlock_t *lock);
+void spinInit(spinlock_t *lock);
+void spinLock(spinlock_t *lock);
+void spinUnlock(spinlock_t *lock);
+int  spinTrylock(spinlock_t *lock);
 
-void hactarSpinUnlock(spinlock_t *lock);
-
-int hactarSpinTrylock(spinlock_t *lock);
+void mutexInit(mutex_t *lock);
+void mutexLock(mutex_t *lock);
+void mutexUnlock(mutex_t *lock);
+int  mutexTrylock(mutex_t *lock);
 
 #endif

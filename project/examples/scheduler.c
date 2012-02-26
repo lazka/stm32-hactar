@@ -7,19 +7,29 @@
 
 #include "scheduler.h"
 #include <hactar/hactar.h>
+#include <errno.h>
+#include <unistd.h>
+
+mutex_t lock;
 
 static void foo(void)
 {
-    while(1);
+    mutexLock(&lock);
+    while(close(42) == -1 && errno == EBADF);
+    mutexUnlock(&lock);
 }
 
 static void foo2(void)
 {
-    while(1);
+    mutexLock(&lock);
+    while(errno == 0);
+    mutexUnlock(&lock);
 }
 
 void initSchedulerExample(void)
 {
+    mutexInit(&lock);
+
     Thread thread;
     uint8_t stack[500];
     threadAdd(&thread, &foo, stack, 500);

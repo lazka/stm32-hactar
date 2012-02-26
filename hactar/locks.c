@@ -1,14 +1,16 @@
 // from Android/Linux spinlock.h
 // + modifications to make it compile with thumb2
 
+#include <stddef.h>
 #include <hactar/locks.h>
+#include <hactar/misc.h>
 
-void hactarSpinInit(spinlock_t *lock)
+void spinInit(spinlock_t *lock)
 {
     lock->lock = 0;
 }
 
-void hactarSpinLock(spinlock_t *lock)
+void spinLock(spinlock_t *lock)
 {
     unsigned long tmp;
 
@@ -26,7 +28,7 @@ void hactarSpinLock(spinlock_t *lock)
     __asm__ ("": : :"memory");
 }
 
-void hactarSpinUnlock(spinlock_t *lock)
+void spinUnlock(spinlock_t *lock)
 {
     __asm__ ("": : :"memory");
 
@@ -37,7 +39,7 @@ void hactarSpinUnlock(spinlock_t *lock)
     : "cc");
 }
 
-int hactarSpinTrylock(spinlock_t *lock)
+int spinTrylock(spinlock_t *lock)
 {
     unsigned long tmp;
 
@@ -56,4 +58,79 @@ int hactarSpinTrylock(spinlock_t *lock)
     } else {
         return 0;
     }
+}
+
+void mutexInit(mutex_t *lock)
+{
+    spinInit(&lock->lock);
+    lock->owner = NULL;
+}
+
+int  mutexTrylock(mutex_t *lock)
+{
+    spinLock(&lock->lock);
+    if(lock->owner == NULL)
+    {
+        lock->owner = schedulerActiveThread();;
+        lock->owner->mutex_ = lock;
+        spinUnlock(&lock->lock);
+        return 0;
+    }
+    spinUnlock(&lock->lock);
+    return -1;
+}
+
+void mutexLock(mutex_t *lock)
+{
+    Thread *thread, *self;
+    self = schedulerActiveThread();
+
+    spinLock(&lock->lock);
+    if(lock->owner == NULL)
+    {
+        lock->owner = self;
+        spinUnlock(&lock->lock);
+    }
+    else
+    {
+        assert(lock->owner != self);
+
+        // Append to the waiting list
+        thread = lock->owner;
+        while(thread->next_)
+            thread = thread->next_;
+        thread->next_ = self;
+
+        // Set mutex
+        self->mutex_ = lock;
+        self->inactive_status_ = MUTEX;
+
+        // set sleeping while scheduling is locked and unlock spinlock
+        schedulerLock();
+        self->active_ = 0;
+        spinUnlock(&lock->lock);
+        schedulerUnlock();
+        threadYield();
+    }
+}
+
+void mutexUnlock(mutex_t *lock)
+{
+    Thread *thread, *self;
+    self = schedulerActiveThread();
+
+    spinLock(&lock->lock);
+
+    assert(lock->owner == self);
+
+    // If no next it's simply NULL
+    thread = self->next_;
+    lock->owner = thread;
+    if(thread)
+    {
+        thread->mutex_ = NULL;
+        thread->active_ = 1;
+    }
+
+    spinUnlock(&lock->lock);
 }

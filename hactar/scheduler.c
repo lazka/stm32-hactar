@@ -122,6 +122,8 @@ static void schedInitStack(Thread* thread, void* func,
     // Set active
     thread->active_ = 1;
 
+    thread->next_ = NULL;
+
 #ifdef HACTAR_NEWLIB_REENT
     _REENT_INIT_PTR(&thread->reent_);
 #endif
@@ -160,11 +162,14 @@ int32_t threadAdd(Thread* thread, void* func,
 }
 
 // Tells the scheduler to move work to another thread if possible..
-// This call is async, so it could take some time before the switch.
 void threadYield(void)
 {
+    Thread *thread = schedulerActiveThread();
+
     if(schedSchedule())
         __PENDSV();
+
+    while(!thread->active_);
 }
 
 // Remove a thread. If thread == NULL, the calling thread will be removed.
@@ -210,6 +215,16 @@ int32_t threadRemove(Thread* thread)
     return -1;
 }
 
+// FIXME: set an active thread pointer on context switch so this is atomic
+Thread* schedulerActiveThread(void)
+{
+    Thread *thread;
+    schedulerLock();
+    thread = THREAD(ACTIVE);
+    schedulerUnlock();
+    return thread;
+}
+
 // Set a thread sleeping, which means it will not be scheduled until
 // it is set active again.
 // Calling with NULL will set the status of the calling thread.
@@ -236,8 +251,6 @@ int32_t threadSetSleep(Thread* thread, uint8_t sleep)
         {
             schedulerUnlock();
             threadYield();
-            // Race ?? .. but we need to wait so this is blocking
-            while(!thread->active_);
             return 0;
         }
     }
