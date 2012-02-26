@@ -15,14 +15,14 @@ mutex_t lock;
 static void foo(void)
 {
     mutexLock(&lock);
-    while(close(42) == -1 && errno == EBADF);
+    while(1);
     mutexUnlock(&lock);
 }
 
 static void foo2(void)
 {
     mutexLock(&lock);
-    while(errno == 0);
+    while(1);
     mutexUnlock(&lock);
 }
 

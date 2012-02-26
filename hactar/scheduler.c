@@ -200,9 +200,10 @@ int32_t threadRemove(Thread* thread)
 
         if(thread == THREAD(ACTIVE))
         {
-            ACTIVE = NEXT = 0;
+            NEXT = 0;
             schedulerUnlock();
-            threadYield();
+            if(schedSchedule())
+                __PENDSV();
             while(1);
             return -1;
         }
