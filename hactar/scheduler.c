@@ -67,7 +67,7 @@ static uint32_t schedSchedule(void)
     for(i = 0; i < COUNT; i++)
     {
         j = ((ACTIVE + i) % COUNT) + 1;
-        if(THREAD(j)->active_)
+        if(THREAD(j)->status_ == STATUS_ACTIVE)
         {
             NEXT = j;
             schedulerUnlock();
@@ -76,7 +76,7 @@ static uint32_t schedSchedule(void)
     }
 
     // None found, check the running one (could be idle)
-    if(THREAD(ACTIVE)->active_)
+    if(THREAD(ACTIVE)->status_ == STATUS_ACTIVE)
     {
         schedulerUnlock();
         return 0;
@@ -120,8 +120,10 @@ static void schedInitStack(Thread* thread, void* func,
     thread->sp_ = (uint32_t)stack_frame;
 
     // Set active
-    thread->active_ = 1;
+    thread->status_ = STATUS_ACTIVE;
 
+    // Mutex stuff
+    thread->mutex_ = NULL;
     thread->next_ = NULL;
 
 #ifdef HACTAR_NEWLIB_REENT
@@ -231,21 +233,17 @@ int32_t threadSetSleep(Thread* thread, uint8_t sleep)
     if(thread == NULL)
         thread = THREAD(ACTIVE);
 
-    if(thread->active_ == !sleep)
+    if((thread->status_ == STATUS_ACTIVE) == !sleep)
     {
         schedulerUnlock();
         return -1;
     }
 
     if(!sleep)
-    {
-        thread->inactive_status_ = NONE;
-        thread->active_ = 1;
-    }
+        thread->status_ = STATUS_ACTIVE;
     else
     {
-        thread->active_ = 0;
-        thread->inactive_status_ = SLEEPING;
+        thread->status_ = STATUS_SLEEPING;
         if(thread == THREAD(ACTIVE))
         {
             schedulerUnlock();
@@ -320,7 +318,7 @@ int32_t schedulerInit(uint32_t frequency)
     // Make systick use a slightly higher priority
     NVIC_SetPriority(SysTick_IRQn, PRIO_SYSTICK);
 
-    //NVIC_SetPriority(SVCall_IRQn, PRIO_MAXIMUM);
+    NVIC_SetPriority(SVCall_IRQn, PRIO_SVCALL);
 
     // Add the idle thread as first and set is as the active one,
     // The next schedule will switch to a user thread if one is available

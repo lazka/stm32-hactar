@@ -72,7 +72,6 @@ int  mutexTrylock(mutex_t *lock)
     if(lock->owner == NULL)
     {
         lock->owner = schedulerActiveThread();;
-        lock->owner->mutex_ = lock;
         spinUnlock(&lock->lock);
         return 0;
     }
@@ -82,7 +81,7 @@ int  mutexTrylock(mutex_t *lock)
 
 void mutexLock(mutex_t *lock)
 {
-    Thread *thread, *self;
+    Thread *last, *self;
     self = schedulerActiveThread();
 
     spinLock(&lock->lock);
@@ -96,18 +95,17 @@ void mutexLock(mutex_t *lock)
         assert(lock->owner != self);
 
         // Append to the waiting list
-        thread = lock->owner;
-        while(thread->next_)
-            thread = thread->next_;
-        thread->next_ = self;
+        last = lock->owner;
+        while(last->next_)
+            last = last->next_;
+        last->next_ = self;
 
         // Set mutex
         self->mutex_ = lock;
-        self->inactive_status_ = MUTEX;
 
         // set sleeping while scheduling is locked and unlock spinlock
         schedulerLock();
-        self->active_ = 0;
+        self->status_ = STATUS_MUTEX;
         spinUnlock(&lock->lock);
         schedulerUnlock();
         threadYield();
@@ -116,7 +114,7 @@ void mutexLock(mutex_t *lock)
 
 void mutexUnlock(mutex_t *lock)
 {
-    Thread *thread, *self;
+    Thread *sleeper, *self;
     self = schedulerActiveThread();
 
     spinLock(&lock->lock);
@@ -124,13 +122,13 @@ void mutexUnlock(mutex_t *lock)
     assert(lock->owner == self);
 
     // If no next it's simply NULL
-    thread = self->next_;
-    lock->owner = thread;
-    if(thread)
+    sleeper = self->next_;
+    lock->owner = sleeper;
+    if(sleeper != NULL)
     {
-        thread->mutex_ = NULL;
-        thread->inactive_status_ = NONE;
-        thread->active_ = 1;
+        sleeper->mutex_ = NULL;
+        sleeper->status_ = STATUS_ACTIVE;
+        self->next_ = NULL;
     }
 
     spinUnlock(&lock->lock);

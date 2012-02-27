@@ -20,6 +20,7 @@
 #define PRIO_MAXIMUM    (0)
 #define PRIO_PENDSV     (PRIO_MINIMUM)
 #define PRIO_SYSTICK    (PRIO_MINIMUM - 1)
+#define PRIO_SVCALL     (PRIO_MINIMUM - 2)
 
 #define __SVC()     asm volatile ("SVC 0")
 #define __PENDSV()  (SCB->ICSR = SCB_ICSR_PENDSVSET)
@@ -27,7 +28,7 @@
 #define INTERRUPTS_DISABLE() asm volatile ("cpsid   i" : : : "memory")
 #define INTERRUPTS_ENABLE() asm volatile ("cpsie   i" : : : "memory")
 
-#define BASEPRI_SET    (PRIO_SYSTICK << (8 - __NVIC_PRIO_BITS))
+#define BASEPRI_SET    (PRIO_SVCALL << (8 - __NVIC_PRIO_BITS))
 #define BASEPRI_UNSET  (0x0)
 
 #define SCHEDULER_DISABLE() asm volatile \
@@ -41,11 +42,11 @@
 #define IRQ_RETURN_PSP 0xFFFFFFFD
 #define IRQ_RETURN_MSP 0xFFFFFFF9
 
-typedef enum {
-    SLEEPING,
-    MUTEX,
-    NONE,
-} InactiveStatus;
+typedef enum ThreadStatus {
+    STATUS_ACTIVE=1,
+    STATUS_SLEEPING=2,
+    STATUS_MUTEX=3,
+} ThreadStatus;
 
 /*
  * Reentrancy, two ways:
@@ -59,8 +60,7 @@ typedef struct Thread Thread;
 typedef struct mutex_t mutex_t;
 
 typedef struct Thread{
-    uint8_t active_; // if it should get scheduled
-    InactiveStatus inactive_status_; // if not active, what is the reason
+    ThreadStatus status_; // if it should get scheduled
 
     uint32_t sp_; // for saving the stack pointer on context switch
 
