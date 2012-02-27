@@ -27,17 +27,16 @@
 #define INTERRUPTS_DISABLE() asm volatile ("cpsid   i" : : : "memory")
 #define INTERRUPTS_ENABLE() asm volatile ("cpsie   i" : : : "memory")
 
-// #define BASEPRI_SET    (PRIO_SYSTICK << (8 - __NVIC_PRIO_BITS))
-// #define BASEPRI_UNSET  (0x0)
-// (((1 << 4) - 1) - 1) << (8 - 4) = 0xe0
-// no preprocessor possible in inline asm..
+#define BASEPRI_SET    (PRIO_SYSTICK << (8 - __NVIC_PRIO_BITS))
+#define BASEPRI_UNSET  (0x0)
+
 #define SCHEDULER_DISABLE() asm volatile \
     ("mov r0, #0xe0     \n"\
-     "MSR basepri, r0   \n" : : : "memory", "r0")
+     "MSR basepri, r0   \n" : : "i" (BASEPRI_SET) : "memory", "r0")
 
 #define SCHEDULER_ENABLE()  asm volatile \
     ("mov r0, #0x00     \n"\
-     "MSR basepri, r0   \n" : : : "memory", "r0")
+     "MSR basepri, r0   \n" : : "i" (BASEPRI_UNSET) : "memory", "r0")
 
 #define IRQ_RETURN_PSP 0xFFFFFFFD
 #define IRQ_RETURN_MSP 0xFFFFFFF9
@@ -45,6 +44,7 @@
 typedef enum {
     SLEEPING,
     MUTEX,
+    NONE,
 } InactiveStatus;
 
 /*

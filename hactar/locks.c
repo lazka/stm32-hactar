@@ -85,9 +85,7 @@ void mutexLock(mutex_t *lock)
     Thread *thread, *self;
     self = schedulerActiveThread();
 
-    while(spinTrylock(&lock->lock) != 0)
-        threadYield();
-
+    spinLock(&lock->lock);
     if(lock->owner == NULL)
     {
         lock->owner = self;
@@ -131,6 +129,7 @@ void mutexUnlock(mutex_t *lock)
     if(thread)
     {
         thread->mutex_ = NULL;
+        thread->inactive_status_ = NONE;
         thread->active_ = 1;
     }
 

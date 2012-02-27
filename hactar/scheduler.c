@@ -164,7 +164,8 @@ int32_t threadAdd(Thread* thread, void* func,
 // Tells the scheduler to move work to another thread if possible..
 void threadYield(void)
 {
-    __SVC();
+    if(schedSchedule())
+        __SVC();
 }
 
 // Remove a thread. If thread == NULL, the calling thread will be removed.
@@ -237,7 +238,10 @@ int32_t threadSetSleep(Thread* thread, uint8_t sleep)
     }
 
     if(!sleep)
+    {
+        thread->inactive_status_ = NONE;
         thread->active_ = 1;
+    }
     else
     {
         thread->active_ = 0;
@@ -315,6 +319,8 @@ int32_t schedulerInit(uint32_t frequency)
 
     // Make systick use a slightly higher priority
     NVIC_SetPriority(SysTick_IRQn, PRIO_SYSTICK);
+
+    //NVIC_SetPriority(SVCall_IRQn, PRIO_MAXIMUM);
 
     // Add the idle thread as first and set is as the active one,
     // The next schedule will switch to a user thread if one is available
@@ -449,8 +455,7 @@ void __attribute__( ( naked ) ) SVC_Handler(void)
     "i" (IRQ_RETURN_MSP), "i" (IRQ_RETURN_PSP) :
     "r0", "cc");
 
-    // Do a scheduler and call PendSV
-    schedSchedule();
+    // Do a context switch
     PendSV_Handler();
 
     // Since PendSV is naked, lr is wrong now, so load the user return value
