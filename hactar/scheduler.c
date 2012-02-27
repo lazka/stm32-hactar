@@ -123,7 +123,6 @@ static void schedInitStack(Thread* thread, void* func,
     thread->status_ = STATUS_ACTIVE;
 
     // Mutex stuff
-    thread->mutex_ = NULL;
     thread->next_ = NULL;
 
 #ifdef HACTAR_NEWLIB_REENT
@@ -369,6 +368,8 @@ void SysTick_Handler(void)
 
 void __attribute__( ( naked ) ) PendSV_Handler(void)
 {
+    SCHEDULER_DISABLE();
+
     // This has to be done first, GCC will use r4-r11 with -Os.
     // Use r0, since that got already pushed by hardware, so it is safe here
     asm volatile (
@@ -377,8 +378,6 @@ void __attribute__( ( naked ) ) PendSV_Handler(void)
         "MSR psp, r0            \n" // update stack pointer
     : : :
     "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11");
-
-    SCHEDULER_DISABLE();
 
     // Now save the stack pointer to THREAD(ACTIVE)->sp_
     asm volatile (

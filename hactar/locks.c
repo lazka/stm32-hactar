@@ -100,9 +100,6 @@ void mutexLock(mutex_t *lock)
             last = last->next_;
         last->next_ = self;
 
-        // Set mutex
-        self->mutex_ = lock;
-
         // set sleeping while scheduling is locked and unlock spinlock
         schedulerLock();
         self->status_ = STATUS_MUTEX;
@@ -126,7 +123,6 @@ void mutexUnlock(mutex_t *lock)
     lock->owner = sleeper;
     if(sleeper != NULL)
     {
-        sleeper->mutex_ = NULL;
         sleeper->status_ = STATUS_ACTIVE;
         self->next_ = NULL;
     }

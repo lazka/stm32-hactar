@@ -65,7 +65,6 @@ typedef struct Thread{
     uint32_t sp_; // for saving the stack pointer on context switch
 
     Thread *next_; // used for mutex waiting list
-    mutex_t *mutex_; // if waiting for a mutex
 
 #ifdef HACTAR_NEWLIB_REENT
     struct _reent reent_;
