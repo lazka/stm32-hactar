@@ -54,9 +54,9 @@ int spinTrylock(spinlock_t *lock)
 
     if (tmp == 0) {
         __asm__ ("": : :"memory");
-        return 1;
-    } else {
         return 0;
+    } else {
+        return -1;
     }
 }
 
@@ -85,7 +85,9 @@ void mutexLock(mutex_t *lock)
     Thread *thread, *self;
     self = schedulerActiveThread();
 
-    spinLock(&lock->lock);
+    while(spinTrylock(&lock->lock) != 0)
+        threadYield();
+
     if(lock->owner == NULL)
     {
         lock->owner = self;

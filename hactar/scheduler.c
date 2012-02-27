@@ -164,12 +164,7 @@ int32_t threadAdd(Thread* thread, void* func,
 // Tells the scheduler to move work to another thread if possible..
 void threadYield(void)
 {
-    Thread *thread = schedulerActiveThread();
-
-    if(schedSchedule())
-        __PENDSV();
-
-    while(!thread->active_);
+    __SVC();
 }
 
 // Remove a thread. If thread == NULL, the calling thread will be removed.
@@ -202,8 +197,7 @@ int32_t threadRemove(Thread* thread)
         {
             NEXT = 0;
             schedulerUnlock();
-            if(schedSchedule())
-                __PENDSV();
+            threadYield();
             while(1);
             return -1;
         }
@@ -332,6 +326,18 @@ int32_t schedulerInit(uint32_t frequency)
     if(setSystick(frequency) < 0)
         return -1;
 
+    // Select the first thread
+    schedSchedule();
+    ACTIVE = NEXT;
+
+    // The CPU will restore registers from r0 and up, so move 8 up
+    __set_PSP(THREAD(NEXT)->sp_ + 8 * 4);
+
+    // set the reent struct
+#if defined(HACTAR_NEWLIB_REENT) && !defined(__DYNAMIC_REENT__)
+    _REENT = &THREAD(ACTIVE)->reent_;
+#endif
+
     // Enable interrupts (SVC needs it)
     __enable_irq();
 
@@ -355,49 +361,6 @@ void SysTick_Handler(void)
         __PENDSV();
 
     // Do some time base work here maybe..
-}
-
-void SVC_Handler(void)
-{
-    uint32_t lr;
-
-    // get the link register
-    asm volatile ("MOV %0, lr" : "=r" (lr) );
-
-    // Check from where it was called from
-    // 0xFFFFFFF1 - handler
-    // 0xFFFFFFF9 - main
-    // 0xFFFFFFFD - process
-    if((lr ^ 0x9) & 0xF)
-    {
-        // was called from PSP or another interrupt
-
-        // this could get used for sync context switching
-    }
-    else
-    {
-        // was called from MSP, which only happens on start
-        // so we can use the first user stack and return to it
-
-        // This is needed since changing the stack pointer in a C function
-        // is dangerous (could use the stack) and returning from an IRQ
-        // to another stack is easy.
-
-        schedSchedule();
-        ACTIVE = NEXT;
-
-        // The CPU will restore registers from r0 and up, so move 8 up
-        __set_PSP(THREAD(NEXT)->sp_ + 8 * 4);
-
-#if defined(HACTAR_NEWLIB_REENT) && !defined(__DYNAMIC_REENT__)
-        _REENT = &THREAD(ACTIVE)->reent_;
-#endif
-
-        // Make the interrupt return to the psp stack
-        // by loading the magic value in the pc
-        void *addr = (void *) IRQ_RETURN_PSP;
-        asm volatile("bx %0" : : "r" (addr));
-    }
 }
 
 void __attribute__( ( naked ) ) PendSV_Handler(void)
@@ -472,4 +435,29 @@ void __attribute__( ( naked ) ) PendSV_Handler(void)
     asm volatile (
         "bx lr                  \n" // return
     : : :);
+}
+
+void __attribute__( ( naked ) ) SVC_Handler(void)
+{
+    asm volatile (
+        "MOV    r0, lr  \n" // If SVC gets called from the main stack
+        "CMP    r0, %0  \n" // return to the user stack.
+        "ITT    eq      \n"
+        "MOVEQ  r0, %1  \n"
+        "BXEQ   r0      \n"
+    : :
+    "i" (IRQ_RETURN_MSP), "i" (IRQ_RETURN_PSP) :
+    "r0", "cc");
+
+    // Do a scheduler and call PendSV
+    schedSchedule();
+    PendSV_Handler();
+
+    // Since PendSV is naked, lr is wrong now, so load the user return value
+    asm volatile (
+        "MOV    r0, %0   \n"
+        "bx     r0       \n"
+    : :
+    "i" (IRQ_RETURN_PSP) :
+    "r0");
 }
