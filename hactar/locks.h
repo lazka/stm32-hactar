@@ -4,8 +4,6 @@
 #ifndef HACTAR_LOCKS_H__
 #define HACTAR_LOCKS_H__
 
-#include <hactar/scheduler.h>
-
 typedef struct spinlock_t{
     volatile unsigned int lock;
 } spinlock_t;

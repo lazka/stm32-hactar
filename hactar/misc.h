@@ -13,11 +13,12 @@
 
 #include "stm32f10x.h"
 
-#define COUNT_OF(array) (sizeof(array) / sizeof(array[0]))
-
-void interruptsDisable();
-
-void interruptsEnable();
+#define COUNT_OF(array)     (sizeof(array) / sizeof(array[0]))
+#define WEAK                __attribute__ ((weak))
+#define NAKED               __attribute__ ((naked))
+#define STRINGIFY(s)        #s
+#define LIKELY(x)           __builtin_expect((x),1)
+#define UNLIKELY(x)         __builtin_expect((x),0)
 
 void GPIO_GetPinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,
         GPIO_InitTypeDef* GPIO_InitStruct);

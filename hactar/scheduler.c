@@ -8,7 +8,8 @@
 #include <stdio.h>
 
 #include <hactar/scheduler.h>
-#include <hactar/hactar.h>
+#include <hactar/startup.h>
+#include <hactar/misc.h>
 
 #define THREAD(i)           sched.threads_[i]
 #define ACTIVE              sched.active_
@@ -367,7 +368,7 @@ void SysTick_Handler(void)
     // Do some time base work here maybe..
 }
 
-void __attribute__( ( naked ) ) PendSV_Handler(void)
+void NAKED PendSV_Handler(void)
 {
     // This has to be done first, GCC will use r4-r11 with -Os.
     // Use r0, since that got already pushed by hardware, so it is safe here
@@ -435,7 +436,7 @@ void __attribute__( ( naked ) ) PendSV_Handler(void)
        "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11");
 }
 
-void __attribute__( ( naked ) ) SVC_Handler(void)
+void NAKED SVC_Handler(void)
 {
     asm volatile (
         "MOV    r0, lr  \n" // If SVC gets called from the main stack

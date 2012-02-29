@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <hactar/locks.h>
 #include <hactar/misc.h>
+#include <hactar/scheduler.h>
 
 void spinInit(spinlock_t *lock)
 {

@@ -5,11 +5,11 @@
 // published by the Free Software Foundation.
 //
 
+#include <hactar/misc.h>
+
 #define BOOTRAM (void*)0xF1E0F85F
 #define DEFAULT_HANDLER Default_Handler
 
-#define WEAK __attribute__ ((weak))
-#define STRINGIFY(s) #s
 #define SDEF(irq, handler) STRINGIFY(weak irq = handler)
 #define IRQ_WEAK(irq) void WEAK irq(void); _Pragma(SDEF(irq, DEFAULT_HANDLER))
 
