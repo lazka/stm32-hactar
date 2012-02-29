@@ -314,10 +314,11 @@ int32_t schedulerInit(uint32_t frequency)
     // Make pendsv the lowest priority interrupt
     NVIC_SetPriority(PendSV_IRQn, PRIO_PENDSV);
 
+    // SVCall is the same, so they don't do a context switch at the same time
+    NVIC_SetPriority(SVCall_IRQn, PRIO_SVCALL);
+
     // Make systick use a slightly higher priority
     NVIC_SetPriority(SysTick_IRQn, PRIO_SYSTICK);
-
-    NVIC_SetPriority(SVCall_IRQn, PRIO_SVCALL);
 
     // Add the idle thread as first and set is as the active one,
     // The next schedule will switch to a user thread if one is available
@@ -368,8 +369,6 @@ void SysTick_Handler(void)
 
 void __attribute__( ( naked ) ) PendSV_Handler(void)
 {
-    SCHEDULER_DISABLE();
-
     // This has to be done first, GCC will use r4-r11 with -Os.
     // Use r0, since that got already pushed by hardware, so it is safe here
     asm volatile (
@@ -378,6 +377,8 @@ void __attribute__( ( naked ) ) PendSV_Handler(void)
         "MSR psp, r0            \n" // update stack pointer
     : : :
     "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11");
+
+    SCHEDULER_DISABLE();
 
     // Now save the stack pointer to THREAD(ACTIVE)->sp_
     asm volatile (
@@ -423,21 +424,17 @@ void __attribute__( ( naked ) ) PendSV_Handler(void)
     "r" (&THREAD(ACTIVE)->sp_) :
     "r0", "memory");
 
+    SCHEDULER_ENABLE();
+
     // Restore the stack and return to PSP (PendSV is lowest priority,
     // so it can never preempt another interrupt or itself, only user code)
     asm volatile (
-        "MRS r0, psp            \n" // load new sp for new thread
-        "LDMIA r0!, {r4-r11}    \n" // pop r4-r11 from stack, inc r0
-        "MSR psp, r0            \n" // adjust user stack pointer
-       : :
-       "r" (&THREAD(ACTIVE)->sp_) :
+        "MRS    r0, psp             \n" // load new sp for new thread
+        "LDMIA  r0!, {r4-r11}       \n" // pop r4-r11 from stack, inc r0
+        "MSR    psp, r0             \n" // adjust user stack pointer
+        "BX     lr                  \n" // return
+       : : :
        "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11");
-
-    SCHEDULER_ENABLE();
-
-    asm volatile (
-        "bx lr                  \n" // return
-    : : :);
 }
 
 void __attribute__( ( naked ) ) SVC_Handler(void)

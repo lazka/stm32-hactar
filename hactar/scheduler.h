@@ -20,7 +20,7 @@
 #define PRIO_MAXIMUM    (0)
 #define PRIO_PENDSV     (PRIO_MINIMUM)
 #define PRIO_SYSTICK    (PRIO_MINIMUM - 1)
-#define PRIO_SVCALL     (PRIO_MINIMUM - 2)
+#define PRIO_SVCALL     (PRIO_MINIMUM)
 
 #define __SVC()     asm volatile ("SVC 0")
 #define __PENDSV()  (SCB->ICSR = SCB_ICSR_PENDSVSET)
