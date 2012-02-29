@@ -113,12 +113,12 @@ static void schedInitStack(Thread* thread, void* func,
     // Default psr
     stack_frame->psr = 0x21000000;
     // PC to start func
-    stack_frame->pc = (uint32_t)func;
+    stack_frame->pc = func;
     // Reset value for return, shoudln't get reached
     stack_frame->lr = (uint32_t)&schedExit;
 
     // Save stack pointer
-    thread->sp_ = (uint32_t)stack_frame;
+    thread->sp_ = stack_frame;
 
     // Set active
     thread->status_ = STATUS_ACTIVE;
@@ -321,6 +321,9 @@ int32_t schedulerInit(uint32_t frequency)
     // Make systick use a slightly higher priority
     NVIC_SetPriority(SysTick_IRQn, PRIO_SYSTICK);
 
+    // Enable the bus fault handler
+    SCB->SHCSR = (SCB->SHCSR | SCB_SHCSR_BUSFAULTENA_Msk);
+
     // Add the idle thread as first and set is as the active one,
     // The next schedule will switch to a user thread if one is available
     schedInitStack(&idle_thread, &schedIdle, idle_stack, COUNT_OF(idle_stack));
@@ -336,7 +339,7 @@ int32_t schedulerInit(uint32_t frequency)
     ACTIVE = NEXT;
 
     // The CPU will restore registers from r0 and up, so move 8 up
-    __set_PSP(THREAD(NEXT)->sp_ + 8 * 4);
+    __set_PSP((uint32_t)THREAD(NEXT)->sp_ + 8 * 4);
 
     // set the reent struct
 #if defined(HACTAR_NEWLIB_REENT) && !defined(__DYNAMIC_REENT__)
@@ -455,4 +458,38 @@ void NAKED SVC_Handler(void)
         "bx     lr              \n"
     : :
     "i" (IRQ_RETURN_PSP) :);
+}
+
+void NAKED BusFault_Handler(void)
+{
+    // If SVC gets called from main/handler
+    // produce a hard fault by writing to 0x0
+    asm volatile (
+        "MOV    r0, lr      \n"
+        "CMP    r0, %0      \n"
+        "ITT    ne          \n"
+        "MOVNE  r0, %1      \n"
+        "STRNE  r1, [r0]    \n"
+    : :
+    "i" (IRQ_RETURN_PSP), "i" (0x0) :
+    "r0", "cc");
+
+    // If not mark the current thread dead
+    asm volatile (
+        "MOV    r0, %1     \n"
+        "STR    r0, [%0]   \n"
+    ::
+    "r" (&THREAD(ACTIVE)->status_), "i" (STATUS_DIED) :
+    "r0", "memory");
+
+    // Since the error happened in the user process with the fault,
+    // we can safely switch away without breaking the scheduler
+    asm volatile (
+       "BL      schedSchedule   \n"
+       "BL      PendSV_Handler  \n"
+       "MOV     lr, %0          \n"
+       "bx      lr              \n"
+   : :
+   "i" (IRQ_RETURN_PSP) :
+   );
 }

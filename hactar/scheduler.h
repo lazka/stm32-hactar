@@ -41,11 +41,13 @@
 
 #define IRQ_RETURN_PSP 0xFFFFFFFD
 #define IRQ_RETURN_MSP 0xFFFFFFF9
+#define IRQ_RETURN_ISR 0xFFFFFFF1
 
 typedef enum ThreadStatus {
     STATUS_ACTIVE=1,
     STATUS_SLEEPING=2,
     STATUS_MUTEX=3,
+    STATUS_DIED=4,
 } ThreadStatus;
 
 /*
@@ -55,21 +57,6 @@ typedef enum ThreadStatus {
  *  2) otherwise, we need to switch the active reent struct pointer
  *     on each context switch (this is the default in codesourcery g++)
  */
-
-typedef struct Thread Thread;
-typedef struct mutex_t mutex_t;
-
-typedef struct Thread{
-    ThreadStatus status_; // if it should get scheduled
-
-    uint32_t sp_; // for saving the stack pointer on context switch
-
-    Thread *next_; // used for mutex waiting list
-
-#ifdef HACTAR_NEWLIB_REENT
-    struct _reent reent_;
-#endif
-} Thread;
 
 typedef struct {
     uint32_t r4;
@@ -86,9 +73,25 @@ typedef struct {
     uint32_t r3;
     uint32_t r12;
     uint32_t lr;
-    uint32_t pc;
+    void (*pc)(void);
+    //uint32_t pc;
     uint32_t psr;
 } InitStack;
+
+typedef struct Thread Thread;
+typedef struct mutex_t mutex_t;
+
+typedef struct Thread{
+    ThreadStatus status_; // if it should get scheduled
+
+    InitStack *sp_; // for saving the stack pointer on context switch
+
+    Thread *next_; // used for mutex waiting list
+
+#ifdef HACTAR_NEWLIB_REENT
+    struct _reent reent_;
+#endif
+} Thread;
 
 int32_t threadAdd(Thread* thread, void* func, uint8_t* stack, size_t stack_size);
 int32_t threadRemove(Thread* thread);

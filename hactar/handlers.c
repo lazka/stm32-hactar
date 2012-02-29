@@ -119,11 +119,6 @@ void HardFault_Handler(void)
     checkFault();
 }
 
-void BusFault_Handler(void)
-{
-    checkFault();
-}
-
 void UsageFault_Handler(void)
 {
     checkFault();
