@@ -452,14 +452,11 @@ void __attribute__( ( naked ) ) SVC_Handler(void)
     "i" (IRQ_RETURN_MSP), "i" (IRQ_RETURN_PSP) :
     "r0", "cc");
 
-    // Do a context switch
-    PendSV_Handler();
-
     // Since PendSV is naked, lr is wrong now, so load the user return value
     asm volatile (
-        "MOV    r0, %0   \n"
-        "bx     r0       \n"
+        "BL     PendSV_Handler  \n"
+        "MOV    lr, %0          \n"
+        "bx     lr              \n"
     : :
-    "i" (IRQ_RETURN_PSP) :
-    "r0");
+    "i" (IRQ_RETURN_PSP) :);
 }
