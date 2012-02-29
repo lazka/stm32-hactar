@@ -372,9 +372,9 @@ void __attribute__( ( naked ) ) PendSV_Handler(void)
     // This has to be done first, GCC will use r4-r11 with -Os.
     // Use r0, since that got already pushed by hardware, so it is safe here
     asm volatile (
-        "MRS r0, psp            \n" // get the user stack pointer
-        "STMDB r0!, {r4-r11}    \n" // push r4-r11 on the user stack and dec r0
-        "MSR psp, r0            \n" // update stack pointer
+        "MRS    r0, psp         \n" // get the user stack pointer
+        "STMDB  r0!, {r4-r11}   \n" // push r4-r11 on the user stack and dec r0
+        "MSR    psp, r0         \n" // update stack pointer
     : : :
     "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11");
 
@@ -382,35 +382,33 @@ void __attribute__( ( naked ) ) PendSV_Handler(void)
 
     // Now save the stack pointer to THREAD(ACTIVE)->sp_
     asm volatile (
-        "MRS r0, psp            \n" // get the user stack pointer
-        "STR r0, [%0]           \n" // save new sp value
+        "MRS    r0, psp     \n" // get the user stack pointer
+        "STR    r0, [%0]    \n" // save new sp value
     : :
     "r" (&THREAD(ACTIVE)->sp_) :
     "r0", "memory");
 
-    // Switch ACTIVE <-> NEXT with one register + stack
-    // Example: Scheduling triggers a pendsv, pendsv gets entered,
+    // Warning: Scheduling triggers a pendsv, pendsv gets entered,
     // pending bit cleared, starts to execute first instruction,
     // since there is no locking active, systick can preempt and cancel
     // first instruction, systick sets pendsv pending again ->
     // pendsv gets tailchained again, getting called twice in a row without
     // a new schedule.. so this needs to be handled
+
+    // ACTIVE = NEXT, in case PendSV is called twice, it will simply
+    // switch to itself.
     asm volatile (
-        "LDR r0, [%0]           \n" // switch active <-> next:
-        "PUSH {r0}              \n" //   so pendsv can be called multiple times
-        "LDR r0, [%1]           \n" //   without scheduling and we don't need
-        "STR r0, [%0]           \n" //   to handle it..
-        "POP {r0}               \n" //
-        "STR r0, [%1]           \n" //
+        "LDR    r0, [%0]    \n"
+        "STR    r0, [%1]    \n"
      : :
-     "r" (&ACTIVE), "r" (&NEXT) :
+     "r" (&NEXT), "r" (&ACTIVE) :
      "r0", "memory");
 
 #if defined(HACTAR_NEWLIB_REENT) && !defined(__DYNAMIC_REENT__)
     // Set the reent struct pointer
     asm volatile (
-        "MOV r0, %0         \n"
-        "STR r0, [%1]       \n"
+        "MOV    r0, %0      \n"
+        "STR    r0, [%1]    \n"
         : :
         "r" (&THREAD(ACTIVE)->reent_), "r" (&_REENT) :
         "r0", "memory");
@@ -418,8 +416,8 @@ void __attribute__( ( naked ) ) PendSV_Handler(void)
 
     // Load the new stack pointer
     asm volatile (
-        "LDR r0, [%0]           \n" // load new sp for new thread
-        "MSR psp, r0            \n" // set user stack pointer
+        "LDR    r0, [%0]    \n" // load new sp for new thread
+        "MSR    psp, r0     \n" // set user stack pointer
     : :
     "r" (&THREAD(ACTIVE)->sp_) :
     "r0", "memory");
