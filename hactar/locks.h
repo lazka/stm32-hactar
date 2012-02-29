@@ -14,6 +14,7 @@ typedef struct Thread Thread;
 typedef struct mutex_t{
     spinlock_t lock;
     Thread *owner;
+    Thread *waitqueue;
 } mutex_t;
 
 void spinInit(spinlock_t *lock);
