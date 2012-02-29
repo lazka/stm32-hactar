@@ -462,6 +462,11 @@ void NAKED SVC_Handler(void)
 
 void NAKED BusFault_Handler(void)
 {
+    // While it doesn't matter if we invalidate the registers
+    // of the faulty process, it's nice to know the state of the process
+    // before it crashed.
+    asm volatile ("PUSH {r4-r11}" ::: "memory");
+
     // If SVC gets called from main/handler
     // produce a hard fault by writing to 0x0
     asm volatile (
@@ -481,6 +486,9 @@ void NAKED BusFault_Handler(void)
     ::
     "r" (&THREAD(ACTIVE)->status_), "i" (STATUS_DIED) :
     "r0", "memory");
+
+    // Restore possible altered registers
+    asm volatile ("POP {r4-r11}" ::: "memory");
 
     // Since the error happened in the user process with the fault,
     // we can safely switch away without breaking the scheduler
