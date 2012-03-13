@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <hactar/assert.h>
 
 #include "stm32f10x.h"
 
@@ -24,13 +25,5 @@
 
 void GPIO_GetPinConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,
         GPIO_InitTypeDef* GPIO_InitStruct);
-
-#ifdef NDEBUG
-#define assert(expr) ((void)0)
-#else
-#define assert(expr) ((expr) ? (void)0 : __hactar_assert(__FILE__, __LINE__, __func__, #expr))
-#endif
-
-void __hactar_assert(const char* file, int line, const char* func, const char* expr);
 
 #endif

@@ -5,19 +5,7 @@
 // published by the Free Software Foundation.
 //
 
-#include <stdio.h>
-#include <malloc.h>
-#include <unistd.h>
-
 #include <hactar/misc.h>
-
-void __hactar_assert(const char* file, int line, const char* func,
-        const char* expr)
-{
-    fflush(stdout);
-    fiprintf(stderr, "ASSERT: %s[%i]\n%s (%s)\n", file, line, func, expr);
-    while(1);
-}
 
 /*
  * Example:
