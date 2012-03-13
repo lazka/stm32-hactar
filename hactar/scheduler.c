@@ -397,7 +397,7 @@ void NAKED PendSV_Handler(void)
         "STMDB  r0!, {r4-r11}   \n" // push r4-r11 on the user stack and dec r0
         "MSR    psp, r0         \n" // update stack pointer
     : : :
-    "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11");
+    "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11", "memory");
 
     SCHEDULER_DISABLE();
 
@@ -453,7 +453,7 @@ void NAKED PendSV_Handler(void)
         "MSR    psp, r0             \n" // adjust user stack pointer
         "BX     lr                  \n" // return
        : : :
-       "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11");
+       "r0", "r4", "r5", "r6", "r8", "r9", "r10", "r11", "memory");
 }
 
 void NAKED SVC_Handler(void)
