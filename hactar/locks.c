@@ -61,6 +61,21 @@ int spinTrylock(spinlock_t *lock)
     }
 }
 
+// Like a normal spinlock, except this can be used
+// in an interrupt context. All code using this lock must
+// use the IRQ variant even if called from an process context.
+void spinLockIRQ(spinlock_t *lock)
+{
+    // This is just a call to the recursive interrupt disable.
+    // But it's easier to think of it as a lock.
+    interruptsDisable();
+}
+
+void spinUnlockIRQ(spinlock_t *lock)
+{
+    interruptsEnable();
+}
+
 void mutexInit(mutex_t *lock)
 {
     spinInit(&lock->lock);
@@ -70,7 +85,9 @@ void mutexInit(mutex_t *lock)
 
 int  mutexTrylock(mutex_t *lock)
 {
-    spinLock(&lock->lock);
+    while(spinTrylock(&lock->lock) != 0)
+        threadYield();
+
     if(lock->owner == NULL)
     {
         lock->owner = schedulerActiveThread();
@@ -86,7 +103,9 @@ void mutexLock(mutex_t *lock)
     Thread *last, *self;
     self = schedulerActiveThread();
 
-    spinLock(&lock->lock);
+    while(spinTrylock(&lock->lock) != 0)
+        threadYield();
+
     if(lock->owner == NULL)
     {
         lock->owner = self;
@@ -120,7 +139,8 @@ void mutexUnlock(mutex_t *lock)
 {
     Thread *sleeper;
 
-    spinLock(&lock->lock);
+    while(spinTrylock(&lock->lock) != 0)
+        threadYield();
 
     assert(lock->owner == schedulerActiveThread());
 

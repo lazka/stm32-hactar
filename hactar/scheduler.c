@@ -29,6 +29,8 @@ static struct {
 static uint8_t idle_stack[100];
 static Thread idle_thread;
 
+static size_t irq_disable_count;
+
 // Frequency in HZ
 // Returns the actual frequency that was set (If the clock is low,
 // there is a rounding error) or < 0 if setting failed.
@@ -256,6 +258,18 @@ int32_t threadSetSleep(Thread* thread, uint8_t sleep)
     return 0;
 }
 
+void interruptsDisable(void)
+{
+    if(!irq_disable_count++)
+        asm volatile ("cpsid   i" : : : "memory");
+}
+
+void interruptsEnable(void)
+{
+    if(!--irq_disable_count)
+        asm volatile ("cpsie   i" : : : "memory");
+}
+
 /* If you want to use newlib functions in an interrupt context:
  * This will set the reent struct to the global one and disable interrupts
  * for that period.
@@ -268,7 +282,7 @@ int32_t threadSetSleep(Thread* thread, uint8_t sleep)
 void schedulerISRNewlibStart(void)
 {
 #if defined(HACTAR_NEWLIB_REENT)
-    INTERRUPTS_DISABLE();
+    interruptsDisable();
 #if !defined(__DYNAMIC_REENT__)
     _REENT = _GLOBAL_REENT;
 #else
@@ -286,7 +300,7 @@ void schedulerISRNewlibEnd(void)
 #else
     sched.in_isr_ = 0;
 #endif
-    INTERRUPTS_ENABLE();
+    interruptsEnable();
 #endif
 }
 
@@ -331,8 +345,8 @@ int32_t schedulerInit(uint32_t frequency)
     ACTIVE = 0;
 
     // Set the systick, and return error if the frequency couldn't get set
-    if(setSystick(frequency) < 0)
-        return -1;
+    ///if(setSystick(frequency) < 0)
+    //    return -1;
 
     // Select the first thread
     schedSchedule();

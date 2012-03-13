@@ -25,9 +25,6 @@
 #define __SVC()     asm volatile ("SVC 0")
 #define __PENDSV()  (SCB->ICSR = SCB_ICSR_PENDSVSET)
 
-#define INTERRUPTS_DISABLE() asm volatile ("cpsid   i" : : : "memory")
-#define INTERRUPTS_ENABLE() asm volatile ("cpsie   i" : : : "memory")
-
 #define BASEPRI_SET    (PRIO_SVCALL << (8 - __NVIC_PRIO_BITS))
 #define BASEPRI_UNSET  (0x0)
 
@@ -104,5 +101,8 @@ Thread* schedulerActiveThread(void);
 
 void schedulerISRNewlibStart(void);
 void schedulerISRNewlibEnd(void);
+
+void interruptsEnable(void);
+void interruptsDisable(void);
 
 #endif
