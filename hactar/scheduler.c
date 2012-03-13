@@ -345,8 +345,8 @@ int32_t schedulerInit(uint32_t frequency)
     ACTIVE = 0;
 
     // Set the systick, and return error if the frequency couldn't get set
-    ///if(setSystick(frequency) < 0)
-    //    return -1;
+    if(setSystick(frequency) < 0)
+        return -1;
 
     // Select the first thread
     schedSchedule();
