@@ -18,5 +18,6 @@
 #include <hactar/term.h>
 #include <hactar/sdcard.h>
 #include <hactar/crc.h>
+#include <hactar/ringbuffer.h>
 
 #endif

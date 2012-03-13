@@ -30,6 +30,7 @@ static uint8_t idle_stack[100];
 static Thread idle_thread;
 
 static size_t irq_disable_count;
+static size_t sched_disable_count;
 
 // Frequency in HZ
 // Returns the actual frequency that was set (If the clock is low,
@@ -137,12 +138,14 @@ static void schedInitStack(Thread* thread, void* func,
 // Makes sure that scheduler state access is mutual exclusive
 void schedulerLock(void)
 {
-    SCHEDULER_DISABLE();
+    if(!sched_disable_count++)
+        SCHEDULER_DISABLE();
 }
 
 void schedulerUnlock(void)
 {
-    SCHEDULER_ENABLE();
+    if(!--sched_disable_count)
+        SCHEDULER_ENABLE();
 }
 
 // Add a thread to the scheduler, so it gets scheduled

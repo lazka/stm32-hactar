@@ -14,6 +14,8 @@
 #include "stm32f10x.h"
 
 #define COUNT_OF(array)     (sizeof(array) / sizeof(array[0]))
+#define MIN(X, Y)           ((X) < (Y) ? (X) : (Y))
+#define MAX(X, Y)           ((X) > (Y) ? (X) : (Y))
 #define WEAK                __attribute__ ((weak))
 #define NAKED               __attribute__ ((naked))
 #define STRINGIFY(s)        #s
