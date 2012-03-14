@@ -338,8 +338,10 @@ int32_t schedulerInit(uint32_t frequency)
     // Make systick use a slightly higher priority
     NVIC_SetPriority(SysTick_IRQn, PRIO_SYSTICK);
 
+#ifdef HACTAR_CATCH_BUSFAULT
     // Enable the bus fault handler
     SCB->SHCSR = (SCB->SHCSR | SCB_SHCSR_BUSFAULTENA_Msk);
+#endif
 
     // Add the idle thread as first and set is as the active one,
     // The next schedule will switch to a user thread if one is available
@@ -477,6 +479,7 @@ void NAKED SVC_Handler(void)
     "i" (IRQ_RETURN_PSP) :);
 }
 
+#ifdef HACTAR_CATCH_BUSFAULT
 void NAKED BusFault_Handler(void)
 {
     // While it doesn't matter if we invalidate the registers
@@ -518,3 +521,4 @@ void NAKED BusFault_Handler(void)
    "i" (IRQ_RETURN_PSP) :
    );
 }
+#endif // HACTAR_CATCH_BUSFAULT

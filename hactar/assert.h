@@ -8,6 +8,8 @@
 #ifndef HACTER_ASSERT_H__
 #define HACTER_ASSERT_H__
 
+#include <hactar/platform_check.h>
+
 #ifdef NDEBUG
 #define assert(expr) ((void)0)
 #else

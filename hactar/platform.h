@@ -15,8 +15,10 @@
 // If defined, you need the fat driver included
 // Copy ffconf.h and integer.h to your project and rename or remove them
 // in the fat driver
-
 //#define HACTAR_USE_FATFS
+
+// If defined not debug functionality like assert
+//#define NDEBUG
 
 // Scheduler ------------------------------------------------------------------
 
@@ -25,6 +27,9 @@
 // Needed if you use stdlib functions from more than one thread
 // (interrupts included).
 #define HACTAR_NEWLIB_REENT
+
+// If defined, pause the responsible thread and continue execution
+#define HACTAR_CATCH_BUSFAULT
 
 // Clock config ---------------------------------------------------------------
 
