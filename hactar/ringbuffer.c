@@ -100,9 +100,11 @@ void ringBufferWrite(RingBuffer *rb, uint8_t *src, size_t count)
         {
             rb->waiter_ = schedulerActiveThread();
             rb->waiter_->status_ = STATUS_SLEEPING;
+            rb->unlock_();
+            threadYield();
         }
-        rb->unlock_();
-        threadYield();
+        else
+            rb->unlock_();
 
         // update again after wakeup
         free = rb->size_ - rb->count_;
@@ -133,9 +135,12 @@ void ringBufferRead(RingBuffer *rb, uint8_t *dst, size_t count)
         {
             rb->waiter_ = schedulerActiveThread();
             rb->waiter_->status_ = STATUS_SLEEPING;
+            rb->unlock_();
+            threadYield();
         }
-        rb->unlock_();
-        threadYield();
+        else
+            rb->unlock_();
+
         used = rb->count_;
     }
 
