@@ -20,6 +20,14 @@
 // If defined not debug functionality like assert
 //#define NDEBUG
 
+// STDOUT ---------------------------------------------------------------------
+
+// STDOUT USART CONFIG
+#define HACTAR_STDOUT_USART         USART2
+#define HACTAR_STDOUT_USART_PORT    GPIOD
+#define HACTAR_STDOUT_USART_RX_PIN  GPIO_Pin_6
+#define HACTAR_STDOUT_USART_TX_PIN  GPIO_Pin_5
+
 // Scheduler ------------------------------------------------------------------
 
 // Maximum number of active threads

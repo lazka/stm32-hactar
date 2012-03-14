@@ -87,6 +87,8 @@ typedef struct Thread{
 #ifdef HACTAR_NEWLIB_REENT
     struct _reent reent_;
 #endif
+
+    void (*func_)(); // this is just for the debugger showing the func name
 } Thread;
 
 int32_t threadAdd(Thread* thread, void* func, uint8_t* stack, size_t stack_size);

@@ -133,6 +133,7 @@ static void schedInitStack(Thread* thread, void* func,
     _REENT_INIT_PTR(&thread->reent_);
 #endif
 
+    thread->func_ = func;
 }
 
 // Makes sure that scheduler state access is mutual exclusive
