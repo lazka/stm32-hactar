@@ -120,14 +120,13 @@ size_t ringBufferWriteIRQ(RingBuffer *rb, uint8_t *src, size_t count)
 
 void ringBufferRead(RingBuffer *rb, uint8_t *dst, size_t count)
 {
-    size_t temp;
+    size_t used = rb->count_;
 
-    while(count > rb->count_)
+    while(count > used)
     {
-        temp = rb->count_;
-        read(rb, dst, rb->count_);
-        dst += temp;
-        count -= temp;
+        read(rb, dst, used);
+        dst += used;
+        count -= used;
 
         rb->lock_();
         if(count > rb->count_)
@@ -137,6 +136,7 @@ void ringBufferRead(RingBuffer *rb, uint8_t *dst, size_t count)
         }
         rb->unlock_();
         threadYield();
+        used = rb->count_;
     }
 
     read(rb, dst, count);
