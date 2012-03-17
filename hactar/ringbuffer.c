@@ -25,9 +25,10 @@ void ringBufferInit(RingBuffer *rb, uint8_t *buffer, size_t size, bool irq)
     rb->buffer_ = buffer;
     rb->size_ = size;
     rb->waiter_ = NULL;
-    rb->start_ = 0;
+    rb->start_ = 1;
     rb->end_ = 0;
     rb->count_ = 0;
+    rb->callback_ = NULL;
 }
 
 static void write(RingBuffer *rb, uint8_t *src, size_t count)
@@ -47,6 +48,12 @@ static void write(RingBuffer *rb, uint8_t *src, size_t count)
 
     __sync_add_and_fetch(&rb->count_, count);
 
+    if(rb->callback_)
+    {
+        rb->callback_();
+        rb->callback_ = NULL;
+    }
+
     if(rb->waiter_)
     {
         rb->waiter_->status_ = STATUS_ACTIVE;
@@ -56,12 +63,12 @@ static void write(RingBuffer *rb, uint8_t *src, size_t count)
 
 static void read(RingBuffer *rb, uint8_t *src, size_t count)
 {
-    if(rb->start_ + count > rb->size_)
+    if(rb->start_ + count >= rb->size_)
     {
         size_t part = rb->size_ - rb->start_;
         memcpy(src, &rb->buffer_[rb->start_], part);
-        memcpy(src + part, rb->buffer_, count - part);
         rb->start_ = count - part;
+        memcpy(src + part, rb->buffer_, rb->start_);
     }
     else
     {
@@ -113,6 +120,11 @@ void ringBufferWrite(RingBuffer *rb, uint8_t *src, size_t count)
     write(rb, src, count);
 }
 
+size_t ringBufferTryWrite(RingBuffer *rb, uint8_t *src, size_t count)
+{
+    return ringBufferWriteIRQ(rb, src, count);
+}
+
 size_t ringBufferWriteIRQ(RingBuffer *rb, uint8_t *src, size_t count)
 {
     count = MIN(rb->size_ - rb->count_, count);
@@ -147,9 +159,19 @@ void ringBufferRead(RingBuffer *rb, uint8_t *dst, size_t count)
     read(rb, dst, count);
 }
 
+size_t ringBufferTryRead(RingBuffer *rb, uint8_t *dst, size_t count)
+{
+    return ringBufferReadIRQ(rb, dst, count);
+}
+
 size_t ringBufferReadIRQ(RingBuffer *rb, uint8_t *dst, size_t count)
 {
     count = MIN(rb->count_, count);
     read(rb, dst, count);
     return count;
+}
+
+void ringBufferSetDataCallback(RingBuffer *rb, void (*cb)())
+{
+    rb->callback_ = cb;
 }
