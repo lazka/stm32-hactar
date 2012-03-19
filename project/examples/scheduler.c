@@ -14,16 +14,23 @@ mutex_t lock;
 
 static void foo(void)
 {
-    mutexLock(&lock);
-    while(1);
-    mutexUnlock(&lock);
+    while(1)
+    {
+        mutexLock(&lock);
+        threadYield();
+        mutexUnlock(&lock);
+        threadYield();
+    }
 }
 
 static void foo2(void)
 {
-    mutexLock(&lock);
-    while(1);
-    mutexUnlock(&lock);
+    while(1)
+    {
+        mutexLock(&lock);
+        threadYield();
+        mutexUnlock(&lock);
+    }
 }
 
 void initSchedulerExample(void)
@@ -31,12 +38,12 @@ void initSchedulerExample(void)
     mutexInit(&lock);
 
     Thread thread;
-    uint8_t stack[500];
-    threadAdd(&thread, &foo, stack, 500);
+    uint8_t stack[1000];
+    threadAdd(&thread, &foo, stack, 1000);
 
     Thread thread2;
-    uint8_t stack2[500];
-    threadAdd(&thread2, &foo2, stack2, 500);
+    uint8_t stack2[1000];
+    threadAdd(&thread2, &foo2, stack2, 1000);
 
-    schedulerInit(100);
+    schedulerInit(1000);
 }

@@ -10,39 +10,55 @@
 #include <hactar/hactar.h>
 
 #define STACK_SIZE (300)
-#define BUFFER_SIZE (200)
+#define BUFFER_SIZE (500)
 
 RingBuffer send_buffer;
 RingBuffer receive_buffer;
 
+static void enableTXE(void)
+{
+    USART_ITConfig(HACTAR_STDOUT_USART, USART_IT_TXE, ENABLE);
+}
+
 void USART2_IRQHandler(void)
 {
     uint8_t temp;
+    size_t count;
 
     if(USART_GetITStatus(HACTAR_STDOUT_USART, USART_IT_RXNE) != RESET)
     {
         temp = (USART_ReceiveData(HACTAR_STDOUT_USART) & 0x7F);
-        ringBufferWriteIRQ(&receive_buffer, &temp, 1);
+        count = ringBufferWriteIRQ(&receive_buffer, &temp, 1);
     }
 
     if(USART_GetITStatus(HACTAR_STDOUT_USART, USART_IT_TXE) != RESET)
     {
-        ringBufferReadIRQ(&send_buffer, &temp, 1);
-        USART_SendData(HACTAR_STDOUT_USART, temp);
+        count = ringBufferReadIRQ(&send_buffer, &temp, 1);
+        if(count != 0)
+            USART_SendData(HACTAR_STDOUT_USART, temp);
+        else
+        {
+            USART_ITConfig(HACTAR_STDOUT_USART, USART_IT_TXE, DISABLE);
+            ringBufferSetDataCallback(&send_buffer, enableTXE);
+        }
     }
 }
 
 static void sender(void)
 {
-    uint8_t temp[6] = "01234";
+    uint8_t temp[6] = "012345";
 
+    ringBufferSetDataCallback(&send_buffer, enableTXE);
     while(1)
-        ringBufferWrite(&send_buffer, temp, 5);
+        ringBufferWrite(&send_buffer, temp, 6);
 }
 
 static void receiver(void)
 {
     uint8_t temp[3];
+
+    USART_ITConfig(HACTAR_STDOUT_USART, USART_IT_RXNE, ENABLE);
+
     while(1)
         ringBufferRead(&receive_buffer, temp, 3);
 }
@@ -119,9 +135,6 @@ void initRingBufferExample(void)
     /* Enable USART */
     USART_Cmd(HACTAR_STDOUT_USART, ENABLE);
 
-    USART_ITConfig(HACTAR_STDOUT_USART, USART_IT_TXE, ENABLE);
-    USART_ITConfig(HACTAR_STDOUT_USART, USART_IT_RXNE, ENABLE);
-
     // go go go
-    schedulerInit(50);
+    schedulerInit(500);
 }
