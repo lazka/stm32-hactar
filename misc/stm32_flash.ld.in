@@ -1,0 +1,62 @@
+#define DEF_STACK_END (0x20000000+RAM_LENGTH*1024)
+#define DEF_FLASH_END (0x08000000+FLASH_LENGTH*1024)
+
+ENTRY(Reset_Handler)
+
+_estack = DEF_STACK_END;
+_eflash = DEF_FLASH_END;
+
+MEMORY
+{
+  FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = FLASH_LENGTH*1024
+  RAM (xrw)       : ORIGIN = 0x20000000, LENGTH = RAM_LENGTH*1024
+}
+
+SECTIONS
+{
+  .text :
+  {
+    _sflash = .;
+    KEEP(*(.interrupt_vector))
+
+    . = ALIGN(4);
+    _spretext = .;
+    *(.text)
+    *(.text*)
+    _epretext = .;
+
+    _srodata = .;
+    *(.rodata)
+    *(.rodata*)
+    _erodata = .;
+
+    . = ALIGN(4);
+    _etext = .;
+  } >FLASH
+
+  _sidata = .;
+
+  .data :
+  {
+    . = ALIGN(4);
+    _sdata = .;
+    *(.data)
+    *(.data*)
+
+    . = ALIGN(4);
+    _edata = .;
+  } >RAM AT> FLASH
+
+  .bss :
+  {
+    . = ALIGN(4);
+    _sbss = .;
+    *(.bss)
+    *(.bss*)
+    *(COMMON)
+
+    . = ALIGN(4);
+    _ebss = .;
+    _end = .;
+  } >RAM
+}
