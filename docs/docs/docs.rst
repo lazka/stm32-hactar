@@ -5,8 +5,6 @@ STM32LIB Docs
 Documentation
 -------------
 
-FIXME
-
 FAQ
 ---
 
@@ -32,17 +30,17 @@ creating the project. This seems to be a known bug:
 http://sourceforge.net/tracker/index.php?func=detail&aid=3027456&group_id=181918&atid=899126
 You have to create a new project to get it working again.
 
-** Eclipse doesn't execute post compile actions like "Create Flash Image", "Create Listing" or "Print Listing".**
+**Eclipse doesn't execute post compile actions like "Create Flash Image", "Create Listing" or "Print Listing".**
 
 Probably a bug because something was changed in the main `C/C++ Build` panel.
 Workarround: Add the needed commands manually under `C/C++ Build -> Settings
 -> Build Steps -> Post-build steps`
 
-** The GDB server dies everytime I start it, returning -256 or -7 ... **
+**The GDB server dies everytime I start it, returning -256 or -7 ...**
 
 Hold down the STM32 reset button while starting the GDB server.
 
-** I get "Error: registers may not be the same -- `strexb r0,r0,[r1]`" while compiling **
+**I get "Error: registers may not be the same -- `strexb r0,r0,[r1]`" while compiling**
 
 You are hitting a bug in the CMSIS library (probably while using -Os).
 Change "=r" to "=&r" in the functions __STREXB and __STREXH which you

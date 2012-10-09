@@ -201,7 +201,7 @@ parallel make (make -j).
 Include Paths, Source Paths and Symbols
 =======================================
 
-FIXME
+Define one of the following devices:
 
  * STM32F10X_LD
  * STM32F10X_LD_VL
@@ -212,12 +212,13 @@ FIXME
  * STM32F10X_XL
  * STM32F10X_CL
 
-`USE_STDPERIPH_DRIVER`, `USE_STM3210C_EVAL`
+Enable the "Standard Preiph Library" or the "EVAL" Drivers with the following defines:
+
+ * `USE_STDPERIPH_DRIVER`
+ * `USE_STM3210C_EVAL`
 
 .. image:: img/symbol.png
 
+All include paths are defined by environment variables through the startup script:
+
 .. image:: img/includes.png
-
-.. image:: img/sources.png
-
-.. image:: img/library_filter.png
